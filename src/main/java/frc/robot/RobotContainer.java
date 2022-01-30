@@ -21,6 +21,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.util.sendable.Sendable;
+import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.commands.DefaultDriveCommand;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -31,10 +34,12 @@ import edu.wpi.first.util.sendable.Sendable;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  private final XboxController m_controller = new XboxController(0);
 
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
   private final TestingSubsystem m_testingSubsystem = new TestingSubsystem();
+  private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(); 
   private ShuffleboardTab tab = Shuffleboard.getTab("Testing");
 
 
@@ -43,12 +48,18 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+    m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
+            m_drivetrainSubsystem,
+            () -> -modifyAxis(m_controller.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+            () -> -modifyAxis(m_controller.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+            () -> -modifyAxis(m_controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
+    ));
+
     // Configure the button bindings
     configureButtonBindings();
     SmartDashboard.putNumber("Encoder", m_testingSubsystem.testingMotor.getSelectedSensorVelocity() * (1.0/2048.0) * 600.0);
-    SmartDashboard.putData("Toggle Motor", new RunCommand(() -> m_testingSubsystem.setTestingRPM(rpm), m_testingSubsystem));
-    // SmartDashboard.putNumber("Motor Set RPM", 0);
-    
+    SmartDashboard.putData("Toggle Motor", new RunCommand(() -> m_testingSubsystem.setTestingRPM(rpm), m_testingSubsystem));    
     
   }
 
@@ -71,5 +82,26 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
     return m_autoCommand;
+  }
+  private static double deadband(double value, double deadband) {
+    if (Math.abs(value) > deadband) {
+      if (value > 0.0) {
+        return (value - deadband) / (1.0 - deadband);
+      } else {
+        return (value + deadband) / (1.0 - deadband);
+      }
+    } else {
+      return 0.0;
+    }
+  }
+
+  private static double modifyAxis(double value) {
+    // Deadband
+    value = deadband(value, 0.05);
+
+    // Square the axis
+    value = Math.copySign(value * value, value);
+
+    return value;
   }
 }
