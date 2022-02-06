@@ -19,6 +19,7 @@ import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.TestingSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.util.sendable.Sendable;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -71,7 +72,10 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-
+    new Button(m_controller::getBButton)
+            // No requirements because we don't need to interrupt anything
+            .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+  
   }
 
   /**
