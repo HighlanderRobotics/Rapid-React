@@ -18,17 +18,12 @@ import io.github.oblarg.oblog.annotations.Log;
 public class ShooterSubsystem extends SubsystemBase {
   public final TalonFX feeder;
   public final TalonFX flywheel;
-  // public final CANSparkMax hood;
-  // @Log
-  // public final DutyCycleEncoder hoodEncoder;
-
+ 
   /** Creates a new ExampleSubsystem. */
   public ShooterSubsystem() {
     feeder = new TalonFX(Constants.FEEDER_MOTOR);
     flywheel = new TalonFX(Constants.FLYWHEEL_MOTOR);
-    // hood = new CANSparkMax(Constants.HOOD_ANGLE_MOTOR, MotorType.kBrushless);
-    // hoodEncoder = new DutyCycleEncoder(0);
-    // hood.setIdleMode(IdleMode.kBrake);
+    
     flywheel.selectProfileSlot(0, 0);
   }
 
@@ -38,8 +33,9 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void setTargetRPM(double rpm){
-    double targetVelocity = (rpm * 2048) / 600 / 2;
-    flywheel.set(TalonFXControlMode.PercentOutput, targetVelocity);
+    //might need to be divided by 2
+    double targetVelocity = (rpm * 2048) / 600;
+    flywheel.set(TalonFXControlMode.Velocity, targetVelocity);
   }
 
   // public void moveHood(double power){

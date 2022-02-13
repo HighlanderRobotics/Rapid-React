@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TestingSubsystem;
 import io.github.oblarg.oblog.annotations.Config;
@@ -42,12 +43,13 @@ public class RobotContainer {
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
   private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
+  private final HoodSubsystem m_hoodSubsystem = new HoodSubsystem();
  // private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(); 
   private ShuffleboardTab tab = Shuffleboard.getTab("Testing");
 
 
 
-  private double rpm = 2300.0;
+  private double rpm = 500.0;
   private double feederRPM = 500;
 
   @Log
@@ -76,8 +78,9 @@ public class RobotContainer {
     // SmartDashboard.putData("Hood Down", new RunCommand(() -> m_shooterSubsystem.moveHood(-1)));
     SmartDashboard.putData("Run Shooter", new RunCommand(() -> m_shooterSubsystem.setTargetRPM(rpm), m_shooterSubsystem));
     
-        
-    
+    m_shooterSubsystem.setDefaultCommand(new RunCommand(() -> m_shooterSubsystem.setTargetRPM(0), m_shooterSubsystem));
+    m_hoodSubsystem.setSetpoint(20);
+    m_hoodSubsystem.enable();
   }
 
   /**
