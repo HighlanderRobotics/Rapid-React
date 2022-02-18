@@ -25,6 +25,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.util.sendable.Sendable;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.AutoAim;
 
 
 
@@ -63,7 +64,8 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
     SmartDashboard.putNumber("Encoder", m_testingSubsystem.testingMotor.getSelectedSensorVelocity() * (1.0/2048.0) * 600.0);
-    SmartDashboard.putData("Toggle Motor", new RunCommand(() -> m_testingSubsystem.setTestingRPM(rpm), m_testingSubsystem));    
+    SmartDashboard.putData("Toggle Motor", new RunCommand(() -> m_testingSubsystem.setTestingRPM(rpm), m_testingSubsystem));
+    SmartDashboard.putData("Auto Aim", new AutoAim(m_limelightsubststem, m_drivetrainSubsystem));
   }
 
   /**
