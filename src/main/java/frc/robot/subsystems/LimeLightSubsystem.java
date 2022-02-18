@@ -7,11 +7,14 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -25,7 +28,9 @@ public class LimeLightSubsystem extends SubsystemBase {
   NetworkTable table;
   public double x;
   public double y;
+  public double pidOutput = 0;
   public boolean isPointingAtTarget;
+  public PIDController limelightPID = Constants.AUTOAIM_PID_CONTROLLER;
   private ShuffleboardTab tab = Shuffleboard.getTab("Drive Readouts");
   private NetworkTableEntry isLimelightDetecting = 
       tab.add("Limelight Status", false)
@@ -79,6 +84,11 @@ public class LimeLightSubsystem extends SubsystemBase {
     return isPointingAtTarget;
   }
 
+  public double autoAim () {
+    double output = limelightPID.calculate(horizontalOffset);
+    return output;
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -97,5 +107,7 @@ public class LimeLightSubsystem extends SubsystemBase {
     verticalOffset = y;
 
   }
+
+  
 
 }

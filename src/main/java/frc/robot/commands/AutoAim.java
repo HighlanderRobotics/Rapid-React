@@ -7,6 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
+import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.LimeLightSubsystem;
 
@@ -21,7 +22,7 @@ public class AutoAim extends PIDCommand {
   public AutoAim(LimeLightSubsystem limeLightSubsystem, DrivetrainSubsystem drivetrainSubsystem) {
     super(
         // The controller that the command will use
-        new PIDController(0.003, 0, 0),
+        Constants.AUTOAIM_PID_CONTROLLER,
         // This should return the measurement
         () -> limeLightSubsystem.getHorizontalOffset(),
         // This should return the setpoint (can also be a constant)
@@ -33,7 +34,7 @@ public class AutoAim extends PIDCommand {
         });
         m_limeLightSubsystem = limeLightSubsystem;
         m_drivetrainSubsystem = drivetrainSubsystem;
-        addRequirements(drivetrainSubsystem);
+        // addRequirements(drivetrainSubsystem);
     // Use addRequirements() here to declare subsystem dependencies.
     // Configure additional PID options by calling `getController` here.
   }
