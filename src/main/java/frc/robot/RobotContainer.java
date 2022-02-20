@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.TestingSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -42,6 +43,7 @@ public class RobotContainer {
   private final TestingSubsystem m_testingSubsystem = new TestingSubsystem();
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(); 
   private ShuffleboardTab tab = Shuffleboard.getTab("Testing");
+  private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
 
 
   private double rpm = 2300;
@@ -74,6 +76,10 @@ public class RobotContainer {
     new Button(m_controller::getBButton)
             // No requirements because we don't need to interrupt anything
             .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+    new Button(m_controller::getAButton)
+            .whenPressed(new RunCommand(() -> m_intakeSubsystem.setIntakeRPM(1000)));
+    new Button(m_controller::getXButton)
+            .whenPressed(new RunCommand(() -> m_intakeSubsystem.toggleIntake()));
   
   }
 
