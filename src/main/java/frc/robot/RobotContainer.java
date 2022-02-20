@@ -79,7 +79,7 @@ public class RobotContainer {
     SmartDashboard.putData("Run Shooter", new RunCommand(() -> m_shooterSubsystem.setTargetRPM(rpm), m_shooterSubsystem));
     
     m_shooterSubsystem.setDefaultCommand(new RunCommand(() -> m_shooterSubsystem.setTargetRPM(0), m_shooterSubsystem));
-    m_hoodSubsystem.setSetpoint(20);
+    m_hoodSubsystem.setDefaultCommand(new RunCommand(() -> m_hoodSubsystem.setSetpoint(20), m_hoodSubsystem));;
     m_hoodSubsystem.enable();
   }
 

@@ -51,4 +51,7 @@ public final class Constants {
     public static final int FEEDER_MOTOR = 9;
     public static final int FLYWHEEL_MOTOR = 10;
     public static final int HOOD_ANGLE_MOTOR = 11;
+
+    public static final int HOOD_ENCODER_A = 0; // dio ports for A and B for quadrature on rev encoder for hood
+    public static final int HOOD_ENCODER_B = 1;
 }
