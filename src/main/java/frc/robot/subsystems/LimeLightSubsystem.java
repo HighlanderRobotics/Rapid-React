@@ -10,6 +10,8 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -89,11 +91,16 @@ public class LimeLightSubsystem extends SubsystemBase {
     return output;
   }
 
+  public void controllerRumble(XboxController controller) {
+    controller.setRumble(RumbleType.kLeftRumble, horizontalOffset * 0.025);
+    controller.setRumble(RumbleType.kRightRumble, horizontalOffset * 0.025);
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    double x = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0.0);
-    double y = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0.0);
+    double horizontalOffset = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0.0);
+    double verticalOffset = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0.0);
     double area = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ta").getDouble(0.0);
     isPointingAtTarget = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0.0) == 1;
     SmartDashboard.putNumber("limelightX", x);
@@ -102,10 +109,6 @@ public class LimeLightSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("is limelight detecting target", isPointingAtTarget);
     
     isLimelightDetecting.setBoolean(isPointingAtTarget);
-
-    horizontalOffset = x;
-    verticalOffset = y;
-
   }
 
   
