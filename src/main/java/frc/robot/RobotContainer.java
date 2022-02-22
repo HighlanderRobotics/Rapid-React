@@ -66,7 +66,7 @@ public class RobotContainer {
     configureButtonBindings();
     SmartDashboard.putNumber("Encoder", m_testingSubsystem.testingMotor.getSelectedSensorVelocity() * (1.0/2048.0) * 600.0);
     SmartDashboard.putData("Toggle Motor", new RunCommand(() -> m_testingSubsystem.setTestingRPM(rpm), m_testingSubsystem));
-    SmartDashboard.putData("Auto Aim", new AutoAim(m_limelightsubststem, m_drivetrainSubsystem));
+    SmartDashboard.putData("Auto Aim", new AutoAim(m_limelightsubststem, m_drivetrainSubsystem, m_controller));
   }
 
   /**
