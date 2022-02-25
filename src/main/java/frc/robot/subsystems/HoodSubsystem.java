@@ -14,6 +14,7 @@ import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 
@@ -21,6 +22,11 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
     /** Creates a new ExampleSubsystem. */
     public final CANSparkMax hood;
     public final Encoder angleEncoder;
+    public final DigitalInput topLimitSwitch;
+    public final DigitalInput bottomLimitSwitch;
+    //need calibration
+    public double topLimit = 10;
+    public double bottomLimit = 0;
     // Feedforward for the hood
     // Static is set to 0, since I assume we don't need any static power added to the motor
     // Other two numbers were found on https://reca.lc/arm based on the assumptions:
@@ -36,6 +42,8 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
         hood.setIdleMode(IdleMode.kBrake);
         // Last argument reverses direction
         angleEncoder = new Encoder(Constants.HOOD_ENCODER_A, Constants.HOOD_ENCODER_B, true);
+        topLimitSwitch = new DigitalInput(0);
+        bottomLimitSwitch = new DigitalInput(1);
     }
 
     @Override
@@ -51,11 +59,11 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
 
     @Override
     public void setSetpoint(double setpoint) {
-        if (setpoint < 13) {
-            setpoint = 13;
+        if (setpoint < bottomLimit) {
+            setpoint = bottomLimit;
         }
-        if(setpoint > 46) {
-            setpoint = 46;
+        if(setpoint > topLimit) {
+            setpoint = topLimit;
         }
         super.setSetpoint(setpoint);
     }
