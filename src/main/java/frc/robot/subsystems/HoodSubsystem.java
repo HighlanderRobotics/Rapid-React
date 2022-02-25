@@ -42,8 +42,8 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
         hood.setIdleMode(IdleMode.kBrake);
         // Last argument reverses direction
         angleEncoder = new Encoder(Constants.HOOD_ENCODER_A, Constants.HOOD_ENCODER_B, true);
-        topLimitSwitch = new DigitalInput(0);
-        bottomLimitSwitch = new DigitalInput(1);
+        topLimitSwitch = new DigitalInput(Constants.HOOD_LIMIT_SWITCH_TOP);
+        bottomLimitSwitch = new DigitalInput(Constants.HOOD_LIMIT_SWITCH_BOTTOM);
     }
 
     @Override

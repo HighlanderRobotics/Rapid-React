@@ -54,4 +54,7 @@ public final class Constants {
 
     public static final int HOOD_ENCODER_A = 0; // dio ports for A and B for quadrature on rev encoder for hood
     public static final int HOOD_ENCODER_B = 1;
+
+    public static final int HOOD_LIMIT_SWITCH_TOP = 0;
+    public static final int HOOD_LIMIT_SWITCH_BOTTOM = 1;
 }
