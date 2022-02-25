@@ -77,4 +77,15 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
         // this is to measure the angle and we set it to 13, the starting angle. 20:1 is the (probably wrong?) gear ratio. 
         return rotations/20 * 360 + 13;
     }
+
+    @Override
+    public void periodic() {
+        super.periodic();
+        if (topLimitSwitch.get()) {
+            topLimit = angleEncoder.getDistance();
+        }
+        if (bottomLimitSwitch.get()){
+            bottomLimit = angleEncoder.getDistance();
+        }
+    }
 }
