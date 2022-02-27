@@ -23,6 +23,7 @@ import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.util.sendable.Sendable;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -44,7 +45,8 @@ public class RobotContainer {
 
   private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
   private final HoodSubsystem m_hoodSubsystem = new HoodSubsystem();
- // private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(); 
+  
+  private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(); 
   private ShuffleboardTab tab = Shuffleboard.getTab("Testing");
 
 
@@ -91,7 +93,10 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-
+    new Button(m_controller::getBButton)
+            // No requirements because we don't need to interrupt anything
+            .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+  
   }
 
   /**
