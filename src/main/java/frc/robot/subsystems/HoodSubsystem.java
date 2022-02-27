@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import frc.robot.Constants;
+import frc.robot.components.LimitSwitch;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
@@ -22,28 +23,30 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
     /** Creates a new ExampleSubsystem. */
     public final CANSparkMax hood;
     public final Encoder angleEncoder;
-    public final DigitalInput topLimitSwitch;
-    public final DigitalInput bottomLimitSwitch;
+    @Log
+    public final LimitSwitch topLimitSwitch;
+    @Log
+    public final LimitSwitch bottomLimitSwitch;
     //need calibration
-    public double topLimit = 10;
-    public double bottomLimit = 0;
+    public double topLimit = 38;
+    public double bottomLimit = 13;
     // Feedforward for the hood
     // Static is set to 0, since I assume we don't need any static power added to the motor
     // Other two numbers were found on https://reca.lc/arm based on the assumptions:
     // 1 NEO 550, 5in to CoM, 5lbs; should update this if we have more information
-    public final ArmFeedforward feedforward = new ArmFeedforward(0, 0.08, 3.91);
+    public final ArmFeedforward feedforward = new ArmFeedforward(0, 0.008, 0.0391);
     @Log
     double rotations;
     
     public HoodSubsystem()
     {
-        super(new PIDController(-0.03, 0, 0));
+        super(new PIDController(-0.003, 0, 0));
         hood = new CANSparkMax(Constants.HOOD_ANGLE_MOTOR, MotorType.kBrushless);
         hood.setIdleMode(IdleMode.kBrake);
         // Last argument reverses direction
         angleEncoder = new Encoder(Constants.HOOD_ENCODER_A, Constants.HOOD_ENCODER_B, true);
-        topLimitSwitch = new DigitalInput(Constants.HOOD_LIMIT_SWITCH_TOP);
-        bottomLimitSwitch = new DigitalInput(Constants.HOOD_LIMIT_SWITCH_BOTTOM);
+        topLimitSwitch = new LimitSwitch(Constants.HOOD_LIMIT_SWITCH_TOP, true);
+        bottomLimitSwitch = new LimitSwitch(Constants.HOOD_LIMIT_SWITCH_BOTTOM, true);
     }
 
     @Override
