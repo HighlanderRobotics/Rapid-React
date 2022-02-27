@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LimeLightSubsystem;
 import frc.robot.subsystems.TestingSubsystem;
 import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
@@ -28,6 +29,8 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.util.sendable.Sendable;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.AutoAim;
+
 
 
 /**
@@ -39,6 +42,7 @@ import frc.robot.commands.DefaultDriveCommand;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final XboxController m_controller = new XboxController(0);
+  private final LimeLightSubsystem m_limelightsubststem = new LimeLightSubsystem();
 
   private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
   private final HoodSubsystem m_hoodSubsystem = new HoodSubsystem();
@@ -65,12 +69,6 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
-   // m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
-           // m_drivetrainSubsystem,
-           // () -> -modifyAxis(m_controller.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-           // () -> -modifyAxis(m_controller.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-           // () -> -modifyAxis(m_controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
-    //));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -81,6 +79,18 @@ public class RobotContainer {
     m_shooterSubsystem.setDefaultCommand(new RunCommand(() -> m_shooterSubsystem.setTargetRPM(0), m_shooterSubsystem));
     m_hoodSubsystem.setDefaultCommand(new RunCommand(() -> m_hoodSubsystem.setSetpoint(20), m_hoodSubsystem));;
     m_hoodSubsystem.enable();
+    m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
+            m_drivetrainSubsystem,
+            () -> -modifyAxis(m_controller.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+            () -> -modifyAxis(m_controller.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+            () -> -modifyAxis(m_controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+            true
+    ));
+
+    // Configure the button bindings
+    configureButtonBindings();
+    
+    SmartDashboard.putData("Auto Aim", new AutoAim(m_limelightsubststem, m_drivetrainSubsystem, m_controller));
   }
 
   /**
