@@ -18,6 +18,7 @@ import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LimeLightSubsystem;
+import frc.robot.subsystems.RoutingSubsystem;
 import frc.robot.subsystems.TestingSubsystem;
 import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
@@ -51,6 +52,8 @@ public class RobotContainer {
   private ShuffleboardTab tab = Shuffleboard.getTab("Testing");
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
 
+  private final RoutingSubsystem m_routingSubsystem = new RoutingSubsystem();
+
 
 
   private double rpm = 500.0;
@@ -75,10 +78,11 @@ public class RobotContainer {
     // SmartDashboard.putData("Hood Up", new RunCommand(() -> m_shooterSubsystem.moveHood(1)));
     // SmartDashboard.putData("Hood Down", new RunCommand(() -> m_shooterSubsystem.moveHood(-1)));
     SmartDashboard.putData("Run Shooter", new RunCommand(() -> m_shooterSubsystem.setTargetRPM(rpm), m_shooterSubsystem));
+    SmartDashboard.putData("Run Routing", new RunCommand(() -> m_routingSubsystem.runRouting(true), m_routingSubsystem));
     
     m_shooterSubsystem.setDefaultCommand(new RunCommand(() -> m_shooterSubsystem.setTargetRPM(0), m_shooterSubsystem));
-    m_hoodSubsystem.setDefaultCommand(new RunCommand(() -> m_hoodSubsystem.setSetpoint(20), m_hoodSubsystem));;
-    m_hoodSubsystem.enable();
+    //m_hoodSubsystem.setDefaultCommand(new RunCommand(() -> m_hoodSubsystem.setSetpoint(20), m_hoodSubsystem));;
+    //m_hoodSubsystem.enable();
     m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
             m_drivetrainSubsystem,
             () -> -modifyAxis(m_controller.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
