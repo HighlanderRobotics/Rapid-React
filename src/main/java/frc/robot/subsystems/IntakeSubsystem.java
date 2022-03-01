@@ -12,6 +12,7 @@ import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.components.Falcon;
 
 public class IntakeSubsystem extends SubsystemBase {
 
@@ -24,8 +25,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void setIntakeRPM(double rpm){
-    double targetVelocity = (rpm * 2048)/600;
-    intakeMotor.set(TalonFXControlMode.Velocity, targetVelocity);
+    intakeMotor.set(TalonFXControlMode.Velocity, Falcon.rpmToTicks(rpm));
   }
 
   public void toggleIntake(){

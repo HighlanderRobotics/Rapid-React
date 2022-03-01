@@ -13,6 +13,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.components.Falcon;
 import io.github.oblarg.oblog.annotations.Log;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -34,8 +35,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void setTargetRPM(double rpm){
     //might need to be divided by 2
-    double targetVelocity = (rpm * 2048) / 600;
-    flywheel.set(TalonFXControlMode.Velocity, targetVelocity);
+    flywheel.set(TalonFXControlMode.Velocity, Falcon.rpmToTicks(rpm));
   }
 
   // public void moveHood(double power){

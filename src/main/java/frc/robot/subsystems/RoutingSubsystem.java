@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.components.Falcon;
 
 public class RoutingSubsystem extends SubsystemBase {
   DigitalInput lowerBeambreak = new DigitalInput(Constants.LOWER_BEAMBREAK);
@@ -20,12 +21,10 @@ public class RoutingSubsystem extends SubsystemBase {
   public RoutingSubsystem() {}
   
   public void setInnerFeederRPM(double rpm){
-    double targetVelocity = (rpm * 2048) / 600;
-    innerFeeder.set(TalonFXControlMode.Velocity, targetVelocity);
+    innerFeeder.set(TalonFXControlMode.Velocity, Falcon.rpmToTicks(rpm));
   }
   public void setOuterFeederRPM(double rpm){
-    double targetVelocity = (rpm * 2048) / 600;
-    outerFeeder.set(TalonFXControlMode.Velocity, targetVelocity);
+    outerFeeder.set(TalonFXControlMode.Velocity, Falcon.rpmToTicks(rpm));
   }
   public void runRouting(boolean intakeOut){
     boolean ballInLower = lowerBeambreak.get();
