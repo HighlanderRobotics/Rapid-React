@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -17,6 +18,8 @@ public class RoutingSubsystem extends SubsystemBase {
   DigitalInput upperBeambreak = new DigitalInput(Constants.UPPER_BEAMBREAK);
   public final TalonFX innerFeeder = new TalonFX(Constants.INNER_FEEDER_MOTOR);
   public final TalonFX outerFeeder = new TalonFX(Constants.OUTER_FEEDER_MOTOR);
+  PIDController innerFeederPID = new PIDController(1, 0, 0);
+  PIDController outFeederPID = new PIDController(1, 0, 0);
   /** Creates a new RoutingSubsystem. */
   public RoutingSubsystem() {}
   
@@ -27,18 +30,24 @@ public class RoutingSubsystem extends SubsystemBase {
     outerFeeder.set(TalonFXControlMode.Velocity, Falcon.rpmToTicks(rpm));
   }
   public void runRouting(boolean intakeOut){
-    boolean ballInLower = lowerBeambreak.get();
-    boolean ballInUpper = upperBeambreak.get();
+    boolean ballInLower = !lowerBeambreak.get();
+    boolean ballInUpper = !upperBeambreak.get();
+    System.out.println(ballInLower);
+    System.out.println(ballInUpper);
     if(!ballInUpper){
       setInnerFeederRPM(500);
+      System.out.println("Running inner");
     } else {
       setInnerFeederRPM(0);
+      System.out.println("Not running");
     }
 
     if(intakeOut && !(ballInLower && ballInUpper)) {
       setOuterFeederRPM(500);
+      System.out.println("Running outer");
     } else {
       setOuterFeederRPM(0);
+      System.out.println("Not running");
     }
   }
   @Override
