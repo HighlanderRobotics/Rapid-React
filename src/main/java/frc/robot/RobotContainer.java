@@ -46,7 +46,7 @@ public class RobotContainer {
   private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
   private final HoodSubsystem m_hoodSubsystem = new HoodSubsystem();
   
-  private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(); 
+  //private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(); 
   private ShuffleboardTab tab = Shuffleboard.getTab("Testing");
 
 
@@ -93,9 +93,9 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-    new Button(m_controller::getBButton)
+    //new Button(m_controller::getBButton)
             // No requirements because we don't need to interrupt anything
-            .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+    //        .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
   
   }
 
