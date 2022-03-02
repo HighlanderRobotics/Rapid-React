@@ -9,4 +9,7 @@ public class Falcon {
     public static double rpmToTicks(double rpm){
         return (rpm * 2048) / 600;
     }
+    public static double ticksToRPM(double ticks){
+        return (ticks * 600) / 2048;
+    }
 }
