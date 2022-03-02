@@ -1,16 +1,19 @@
 package frc.robot.components;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
-public class LimitSwitch extends DigitalInput{
-
-    boolean reversed;
+public class LimitSwitch implements Loggable {
+    
+    final boolean reversed; 
+    final DigitalInput input;
     public LimitSwitch(int channel, boolean reversed) {
-        super(channel);
-        reversed = this.reversed;
+        input = new DigitalInput(channel);
+        this.reversed= reversed;
     }
 
     public boolean get(){
-        return super.get() != reversed;
+        return input.get() != reversed;
     }
 }

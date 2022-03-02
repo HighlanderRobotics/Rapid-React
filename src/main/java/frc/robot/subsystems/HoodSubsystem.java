@@ -23,9 +23,9 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
     /** Creates a new ExampleSubsystem. */
     public final CANSparkMax hood;
     public final Encoder angleEncoder;
-    @Log
+ 
     public final LimitSwitch topLimitSwitch;
-    @Log
+    
     public final LimitSwitch bottomLimitSwitch;
     
     // Feedforward for the hood
@@ -95,7 +95,7 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
             // don't want this to mess up the top limit; what should we do when the top limit is hit?
             //topLimit = angleEncoder.getDistance();
         }
-        if (!bottomLimitSwitch.get()){
+        if (bottomLimitSwitch.get()){
             // bottom position should be 0
            angleEncoder.reset();
         }
