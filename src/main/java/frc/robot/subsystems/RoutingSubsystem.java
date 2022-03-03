@@ -10,6 +10,7 @@ import com.ctre.phoenix.music.Orchestra;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.components.Falcon;
@@ -34,7 +35,7 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
 
     sickPipes.addInstrument(innerFeeder);
     sickPipes.addInstrument(outerFeeder);
-    sickPipes.loadMusic("./sickPipes.chrp");
+    sickPipes.loadMusic(Filesystem.getDeployDirectory() + "/sickPipes.chrp");
   }
 
   @Log
