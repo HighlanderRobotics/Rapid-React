@@ -23,13 +23,11 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
     /** Creates a new ExampleSubsystem. */
     public final CANSparkMax hood;
     public final Encoder angleEncoder;
-    @Log
+ 
     public final LimitSwitch topLimitSwitch;
-    @Log
+    
     public final LimitSwitch bottomLimitSwitch;
-    //need calibration
-    public double topLimit = 38;
-    public double bottomLimit = 13;
+    
     // Feedforward for the hood
     // Static is set to 0, since I assume we don't need any static power added to the motor
     // Other two numbers were found on https://reca.lc/arm based on the assumptions:
@@ -40,7 +38,7 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
     
     public HoodSubsystem()
     {
-        super(new PIDController(-0.003, 0, 0));
+        super(new PIDController(-0.09, 0, 0));
         hood = new CANSparkMax(Constants.HOOD_ANGLE_MOTOR, MotorType.kBrushless);
         hood.setIdleMode(IdleMode.kBrake);
         // Last argument reverses direction
@@ -54,11 +52,21 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
         // the angle to the center of mass
         // assuming this is 5 degrees from the center
         double centerAngle = Math.toRadians(setpoint - 5);
-        // setting velocity to 0 since we want it to stop?
-        double feed = feedforward.calculate(centerAngle, 0);
-        hood.set(output + feed);
-        System.out.println(output + ", " + feed);
+        // adjust output with feedforward (removed for now)
+        double adjustedPower = output + 0; //feedforward.calculate(centerAngle, 0);
+
+        // stop if it tries to go past top limit
+        if (topLimitSwitch.get() && adjustedPower < 0) {
+            adjustedPower = 0;
+        }
+
+        hood.set(adjustedPower);
+        //System.out.println(adjustedPower);
     }
+
+    //need calibration
+    public double topLimit = 40;
+    public double bottomLimit = 0;
 
     @Override
     public void setSetpoint(double setpoint) {
@@ -76,19 +84,20 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
     protected double getMeasurement() {
         // 2048 encoder ticks in a rotation
         rotations = angleEncoder.get() / 2048.0;
-        // measured angles: min is 24 max 58
-        // this is to measure the angle and we set it to 13, the starting angle. 20:1 is the (probably wrong?) gear ratio. 
-        return rotations/20 * 360 + 13;
+        //1.47 rotations in the full range - same as around 40 degrees
+        return (rotations/1.47) * 40;
     }
 
     @Override
     public void periodic() {
         super.periodic();
         if (topLimitSwitch.get()) {
-            topLimit = angleEncoder.getDistance();
+            // don't want this to mess up the top limit; what should we do when the top limit is hit?
+            //topLimit = angleEncoder.getDistance();
         }
         if (bottomLimitSwitch.get()){
-            bottomLimit = angleEncoder.getDistance();
+            // bottom position should be 0
+           angleEncoder.reset();
         }
     }
 }

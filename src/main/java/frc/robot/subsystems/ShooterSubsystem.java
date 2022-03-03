@@ -13,15 +13,16 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.components.Falcon;
 import io.github.oblarg.oblog.annotations.Log;
 
 public class ShooterSubsystem extends SubsystemBase {
-  public final TalonFX feeder;
+  
   public final TalonFX flywheel;
  
   /** Creates a new ExampleSubsystem. */
   public ShooterSubsystem() {
-    feeder = new TalonFX(Constants.FEEDER_MOTOR);
+    
     flywheel = new TalonFX(Constants.FLYWHEEL_MOTOR);
     
     flywheel.selectProfileSlot(0, 0);
@@ -34,18 +35,14 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void setTargetRPM(double rpm){
     //might need to be divided by 2
-    double targetVelocity = (rpm * 2048) / 600;
-    flywheel.set(TalonFXControlMode.Velocity, targetVelocity);
+    flywheel.set(TalonFXControlMode.Velocity, Falcon.rpmToTicks(rpm));
   }
 
   // public void moveHood(double power){
   //   hood.set(power);
   // }
 
-  public void setFeederRPM(double rpm){
-    double targetVelocity = (rpm * 2048) / 600;
-    feeder.set(TalonFXControlMode.Velocity, targetVelocity);
-  }
+  
   
   @Override
   public void simulationPeriodic() {

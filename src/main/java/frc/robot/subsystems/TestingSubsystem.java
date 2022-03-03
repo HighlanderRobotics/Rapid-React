@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.components.Falcon;
 
 public class TestingSubsystem extends SubsystemBase {
 
@@ -54,8 +55,7 @@ public class TestingSubsystem extends SubsystemBase {
   }
 
   public void setTestingRPM(double rpm){
-    double targetVelocity = (rpm * 2048) / 600;
-    testingMotor.set(TalonFXControlMode.Velocity, targetVelocity);
+    testingMotor.set(TalonFXControlMode.Velocity, Falcon.rpmToTicks(rpm));
   }
 
   public double getRPM(){
