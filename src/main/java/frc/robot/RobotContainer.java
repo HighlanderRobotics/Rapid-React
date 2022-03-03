@@ -43,7 +43,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final XboxController m_controller = new XboxController(0);
-  private final LimeLightSubsystem m_limelightsubststem = new LimeLightSubsystem();
+  private final LimeLightSubsystem m_limelightsubststem = new LimeLightSubsystem("limelight-top");
 
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 

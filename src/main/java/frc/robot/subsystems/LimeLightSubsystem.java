@@ -34,6 +34,7 @@ public class LimeLightSubsystem extends SubsystemBase {
   public boolean isPointingAtTarget;
   public PIDController limelightPID = Constants.AUTOAIM_PID_CONTROLLER;
   private ShuffleboardTab tab = Shuffleboard.getTab("Drive Readouts");
+  public String tableName;
   private NetworkTableEntry isLimelightDetecting = 
       tab.add("Limelight Status", false)
       .withWidget(BuiltInWidgets.kBooleanBox)
@@ -41,7 +42,8 @@ public class LimeLightSubsystem extends SubsystemBase {
       .withPosition(0, 0)
       .getEntry();
   
-  public LimeLightSubsystem() {
+  public LimeLightSubsystem(String tableName) {
+    tableName = this.tableName;
     lightOn();
   }
 
@@ -50,9 +52,9 @@ public class LimeLightSubsystem extends SubsystemBase {
     
 
     //read values periodically
-    x = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0.0);
-    y = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0.0);
-    double area = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ta").getDouble(0.0);
+    x = NetworkTableInstance.getDefault().getTable(tableName).getEntry("tx").getDouble(0.0);
+    y = NetworkTableInstance.getDefault().getTable(tableName).getEntry("ty").getDouble(0.0);
+    double area = NetworkTableInstance.getDefault().getTable(tableName).getEntry("ta").getDouble(0.0);
 
 
     
@@ -75,11 +77,11 @@ public class LimeLightSubsystem extends SubsystemBase {
   }
 
   public void lightOn() {
-    NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(0);
+    NetworkTableInstance.getDefault().getTable(tableName).getEntry("ledMode").setNumber(0);
   }
 
   public void lightOff() {
-    NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
+    NetworkTableInstance.getDefault().getTable(tableName).getEntry("ledMode").setNumber(1);
   }
 
   public boolean isPointingAtTarget() {
@@ -99,10 +101,10 @@ public class LimeLightSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    double horizontalOffset = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0.0);
-    double verticalOffset = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0.0);
-    double area = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ta").getDouble(0.0);
-    isPointingAtTarget = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0.0) == 1;
+    double horizontalOffset = NetworkTableInstance.getDefault().getTable(tableName).getEntry("tx").getDouble(0.0);
+    double verticalOffset = NetworkTableInstance.getDefault().getTable(tableName).getEntry("ty").getDouble(0.0);
+    double area = NetworkTableInstance.getDefault().getTable(tableName).getEntry("ta").getDouble(0.0);
+    isPointingAtTarget = NetworkTableInstance.getDefault().getTable(tableName).getEntry("tv").getDouble(0.0) == 1;
     SmartDashboard.putNumber("limelightX", x);
     SmartDashboard.putNumber("limelightY", y);
     SmartDashboard.putNumber("limelightArea", area);
