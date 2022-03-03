@@ -15,9 +15,14 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.ResetHood;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.LimeLightSubsystem;
+import frc.robot.subsystems.HoodSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TestingSubsystem;
+import io.github.oblarg.oblog.annotations.Config;
+import io.github.oblarg.oblog.annotations.Log;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
@@ -43,18 +48,37 @@ public class RobotContainer {
 
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
-  private final TestingSubsystem m_testingSubsystem = new TestingSubsystem();
-  private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(); 
+  private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
+  private final HoodSubsystem m_hoodSubsystem = new HoodSubsystem();
+  
+  //private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(); 
   private ShuffleboardTab tab = Shuffleboard.getTab("Testing");
 
 
-  private double rpm = 2300;
+
+  private double rpm = 500.0;
+  private double feederRPM = 500;
+  
+  double hoodTarget = 20.0;
+  @Config
+  public void setHoodTarget(double newTarget) {
+    hoodTarget = newTarget;
+  }
+
+  @Log
+  Command flywheelCommand = new RunCommand(() -> m_shooterSubsystem.setTargetRPM(rpm), m_shooterSubsystem);
+
+  // setter for oblog
+  @Config
+  public void setRPM(double newRPM) {
+    rpm = newRPM;
+  }
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
-    m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
+    /*m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
             m_drivetrainSubsystem,
             () -> -modifyAxis(m_controller.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
             () -> -modifyAxis(m_controller.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
@@ -67,6 +91,19 @@ public class RobotContainer {
     SmartDashboard.putNumber("Encoder", m_testingSubsystem.testingMotor.getSelectedSensorVelocity() * (1.0/2048.0) * 600.0);
     SmartDashboard.putData("Toggle Motor", new RunCommand(() -> m_testingSubsystem.setTestingRPM(rpm), m_testingSubsystem));
     SmartDashboard.putData("Auto Aim", new AutoAim(m_limelightsubststem, m_drivetrainSubsystem, m_controller));
+            () -> -modifyAxis(m_controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
+    ));*/
+
+    // Configure the button bindings
+    configureButtonBindings();
+    // SmartDashboard.putData("Hood Up", new RunCommand(() -> m_shooterSubsystem.moveHood(1)));
+    // SmartDashboard.putData("Hood Down", new RunCommand(() -> m_shooterSubsystem.moveHood(-1)));
+    SmartDashboard.putData("Run Shooter", new RunCommand(() -> m_shooterSubsystem.setTargetRPM(rpm), m_shooterSubsystem));
+    SmartDashboard.putData("Reset Hood", new ResetHood(m_hoodSubsystem));
+    
+    m_shooterSubsystem.setDefaultCommand(new RunCommand(() -> m_shooterSubsystem.setTargetRPM(0), m_shooterSubsystem));
+    m_hoodSubsystem.setDefaultCommand(new RunCommand(() -> m_hoodSubsystem.setSetpoint(hoodTarget), m_hoodSubsystem));
+    m_hoodSubsystem.enable();
   }
 
   /**
@@ -77,9 +114,9 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-    new Button(m_controller::getBButton)
+    //new Button(m_controller::getBButton)
             // No requirements because we don't need to interrupt anything
-            .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+    //        .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
   
   }
 

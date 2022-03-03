@@ -21,7 +21,7 @@ public class TestingSubsystem extends SubsystemBase {
 
   public double rpmTarget = 200;
 
-
+  
   private ShuffleboardTab tab = Shuffleboard.getTab("Testing");
   private NetworkTableEntry rpmSetpoint =
     tab.add("Set Motor RPM", 0)
