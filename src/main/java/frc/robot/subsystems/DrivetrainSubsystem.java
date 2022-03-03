@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.music.Orchestra;
 import com.kauailabs.navx.frc.AHRS;
 // import com.ctre.phoenix.sensors.PigeonIMU;
 import com.swervedrivespecialties.swervelib.Mk3SwerveModuleHelper;
@@ -39,10 +40,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
   //  An example of this constant for a Mk4 L2 module with NEOs to drive is:
   //   5880.0 / 60.0 / SdsModuleConfigurations.MK4_L2.getDriveReduction() * SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI
   /**
+   * 
    * The maximum velocity of the robot in meters per second.
    * <p>
    * This is a measure of how fast the robot should be able to drive in a straight line.
    */
+  public final Orchestra sickPipes = new Orchestra();
   public static final double MAX_VELOCITY_METERS_PER_SECOND = 100.0 / 60.0 *
           SdsModuleConfigurations.MK3_STANDARD.getDriveReduction() *
           SdsModuleConfigurations.MK3_STANDARD.getWheelDiameter() * Math.PI;
@@ -85,6 +88,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   public DrivetrainSubsystem() {
     ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
     SmartDashboard.putNumber("Heading", 0);
+    sickPipes.loadMusic("./sickPipes.chrp");
     // There are 4 methods you can call to create your swerve modules.
     // The method you use depends on what motors you are using.
     //
@@ -190,6 +194,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   public void drive(ChassisSpeeds chassisSpeeds) {
     m_chassisSpeeds = chassisSpeeds;
+  }
+
+  public void playSickPipes(){
+    
   }
 
   @Override
