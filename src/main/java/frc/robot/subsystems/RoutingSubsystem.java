@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.music.Orchestra;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -22,6 +23,7 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
   public final TalonFX outerFeeder = new TalonFX(Constants.OUTER_FEEDER_MOTOR);
   PIDController innerFeederPID = new PIDController(0.05, 0.001, 0);
   PIDController outerFeederPID = new PIDController(0.05, 0.001, 0);
+  public final Orchestra sickPipes = new Orchestra();
   /** Creates a new RoutingSubsystem. */
   public RoutingSubsystem() {
     innerFeeder.config_kP(0, innerFeederPID.getP());
@@ -29,6 +31,10 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
 
     outerFeeder.config_kP(0, outerFeederPID.getP());
     outerFeeder.config_kI(0, outerFeederPID.getI());
+
+    sickPipes.addInstrument(innerFeeder);
+    sickPipes.addInstrument(outerFeeder);
+    sickPipes.loadMusic("./sickPipes.chrp");
   }
 
   @Log
@@ -68,6 +74,11 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
       System.out.println("Not running");
     }
   }
+
+  public void playSickPipes(){
+    sickPipes.play();
+  }
+  
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

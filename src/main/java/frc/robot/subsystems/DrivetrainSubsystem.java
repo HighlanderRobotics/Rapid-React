@@ -45,7 +45,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
    * <p>
    * This is a measure of how fast the robot should be able to drive in a straight line.
    */
-  public final Orchestra sickPipes = new Orchestra();
   public static final double MAX_VELOCITY_METERS_PER_SECOND = 100.0 / 60.0 *
           SdsModuleConfigurations.MK3_STANDARD.getDriveReduction() *
           SdsModuleConfigurations.MK3_STANDARD.getWheelDiameter() * Math.PI;
@@ -88,7 +87,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
   public DrivetrainSubsystem() {
     ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
     SmartDashboard.putNumber("Heading", 0);
-    sickPipes.loadMusic("./sickPipes.chrp");
     // There are 4 methods you can call to create your swerve modules.
     // The method you use depends on what motors you are using.
     //
@@ -196,9 +194,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_chassisSpeeds = chassisSpeeds;
   }
 
-  public void playSickPipes(){
-    
-  }
 
   @Override
   public void periodic() {
