@@ -38,7 +38,7 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
     
     public HoodSubsystem()
     {
-        super(new PIDController(-0.003, 0, 0));
+        super(new PIDController(-0.09, 0, 0));
         hood = new CANSparkMax(Constants.HOOD_ANGLE_MOTOR, MotorType.kBrushless);
         hood.setIdleMode(IdleMode.kBrake);
         // Last argument reverses direction
@@ -56,7 +56,7 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
         double adjustedPower = output + 0; //feedforward.calculate(centerAngle, 0);
 
         // stop if it tries to go past top limit
-        if (topLimitSwitch.get() && adjustedPower > 0) {
+        if (topLimitSwitch.get() && adjustedPower < 0) {
             adjustedPower = 0;
         }
 
