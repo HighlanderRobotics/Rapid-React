@@ -45,22 +45,22 @@ public class RobotContainer {
   private final XboxController m_controller = new XboxController(0);
   private final LimeLightSubsystem m_limelightsubststem = new LimeLightSubsystem();
 
-  private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
-  private final HoodSubsystem m_hoodSubsystem = new HoodSubsystem();
+  // private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
+  // private final HoodSubsystem m_hoodSubsystem = new HoodSubsystem();
   
-  // private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(); 
+  private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(); 
   private ShuffleboardTab tab = Shuffleboard.getTab("Testing");
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
 
-  private final RoutingSubsystem m_routingSubsystem = new RoutingSubsystem();
+  // private final RoutingSubsystem m_routingSubsystem = new RoutingSubsystem();
 
 
 
   private double rpm = 500.0;
   private double feederRPM = 500;
 
-  @Log
-  Command flywheelCommand = new RunCommand(() -> m_shooterSubsystem.setTargetRPM(rpm), m_shooterSubsystem);
+  // @Log
+  // Command flywheelCommand = new RunCommand(() -> m_shooterSubsystem.setTargetRPM(rpm), m_shooterSubsystem);
 
   // setter for oblog
   @Config
@@ -77,19 +77,21 @@ public class RobotContainer {
     configureButtonBindings();
     // SmartDashboard.putData("Hood Up", new RunCommand(() -> m_shooterSubsystem.moveHood(1)));
     // SmartDashboard.putData("Hood Down", new RunCommand(() -> m_shooterSubsystem.moveHood(-1)));
-    SmartDashboard.putData("Run Shooter", new RunCommand(() -> m_shooterSubsystem.setTargetRPM(rpm), m_shooterSubsystem));
-    SmartDashboard.putData("Run Routing", new RunCommand(() -> m_routingSubsystem.runRouting(true), m_routingSubsystem));
+    // SmartDashboard.putData("Run Shooter", new RunCommand(() -> m_shooterSubsystem.setTargetRPM(rpm), m_shooterSubsystem));
+    // SmartDashboard.putData("Run Routing", new RunCommand(() -> m_routingSubsystem.runRouting(true), m_routingSubsystem));
     
-    m_shooterSubsystem.setDefaultCommand(new RunCommand(() -> m_shooterSubsystem.setTargetRPM(0), m_shooterSubsystem));
-    //m_hoodSubsystem.setDefaultCommand(new RunCommand(() -> m_hoodSubsystem.setSetpoint(20), m_hoodSubsystem));;
-    //m_hoodSubsystem.enable();
-    // m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
-    //         m_drivetrainSubsystem,
-    //         () -> -modifyAxis(m_controller.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-    //         () -> -modifyAxis(m_controller.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-    //         () -> -modifyAxis(m_controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
-    //         true
-    // ));
+    // m_shooterSubsystem.setDefaultCommand(new RunCommand(() -> m_shooterSubsystem.setTargetRPM(0), m_shooterSubsystem));
+    // m_hoodSubsystem.setDefaultCommand(new RunCommand(() -> m_hoodSubsystem.setSetpoint(20), m_hoodSubsystem));;
+    // m_routingSubsystem.setDefaultCommand(new RunCommand(() -> {m_routingSubsystem.innerFeeder.set(TalonFXControlMode.PercentOutput, 0);m_routingSubsystem.outerFeeder.set(TalonFXControlMode.PercentOutput, 0);}, m_routingSubsystem));
+    // m_hoodSubsystem.enable();
+    m_intakeSubsystem.setDefaultCommand(new RunCommand(() -> m_intakeSubsystem.retract(), m_intakeSubsystem));
+    m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
+            m_drivetrainSubsystem,
+            () -> -modifyAxis(m_controller.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+            () -> -modifyAxis(m_controller.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+            () -> -modifyAxis(m_controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+            true
+    ));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -105,9 +107,9 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-    // new Button(m_controller::getBButton)
-    //         // No requirements because we don't need to interrupt anything
-    //         .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+    new Button(m_controller::getBButton)
+            // No requirements because we don't need to interrupt anything
+            .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
     new Button(m_controller::getAButton)
             .whenPressed(new RunCommand(() -> m_intakeSubsystem.setIntakeRPM(1000)));
     new Button(m_controller::getXButton)
