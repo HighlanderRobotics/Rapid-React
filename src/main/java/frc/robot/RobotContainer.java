@@ -13,6 +13,7 @@ import frc.robot.commands.ResetHood;
 import frc.robot.subsystems.LimeLightSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.RoutingSubsystem;
 import io.github.oblarg.oblog.annotations.Config;
@@ -31,8 +32,7 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final XboxController m_controller = new XboxController(0);
-  private final LimeLightSubsystem m_limelightsubststem = new LimeLightSubsystem("limelight-top");
-
+  private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(new LimeLightSubsystem("limelight-top"), new LimeLightSubsystem("limelight-bottom"));
   private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
   private final HoodSubsystem m_hoodSubsystem = new HoodSubsystem();
   

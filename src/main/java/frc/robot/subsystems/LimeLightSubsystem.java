@@ -35,15 +35,10 @@ public class LimeLightSubsystem extends SubsystemBase {
   public PIDController limelightPID = Constants.AUTOAIM_PID_CONTROLLER;
   private ShuffleboardTab tab = Shuffleboard.getTab("Drive Readouts");
   public String tableName;
-  private NetworkTableEntry isLimelightDetecting = 
-      tab.add("Limelight Status", false)
-      .withWidget(BuiltInWidgets.kBooleanBox)
-      .withSize(3, 2)
-      .withPosition(0, 0)
-      .getEntry();
+
   
   public LimeLightSubsystem(String tableName) {
-    tableName = this.tableName;
+    this.tableName = tableName;
     lightOn();
   }
 
@@ -110,7 +105,6 @@ public class LimeLightSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("limelightArea", area);
     SmartDashboard.putBoolean("is limelight detecting target", isPointingAtTarget);
     
-    isLimelightDetecting.setBoolean(isPointingAtTarget);
   }
 
   
