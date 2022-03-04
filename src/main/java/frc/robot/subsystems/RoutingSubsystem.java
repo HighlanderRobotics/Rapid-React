@@ -44,9 +44,13 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
   public void setInnerFeederRPM(double rpm){
     innerFeeder.set(TalonFXControlMode.Velocity, Falcon.rpmToTicks(rpm));
   }
+
   public void setOuterFeederRPM(double rpm){
     outerFeeder.set(TalonFXControlMode.Velocity, Falcon.rpmToTicks(rpm));
   }
+
+  
+
   public void runRouting(boolean intakeOut){
     boolean ballInLower = !lowerBeambreak.get();
     boolean ballInUpper = !upperBeambreak.get();

@@ -14,18 +14,26 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.components.Falcon;
+import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
-public class ShooterSubsystem extends SubsystemBase {
+public class ShooterSubsystem extends SubsystemBase implements Loggable {
   
   public final TalonFX flywheel;
+  private double targetRPM;
  
   /** Creates a new ExampleSubsystem. */
   public ShooterSubsystem() {
-    
     flywheel = new TalonFX(Constants.FLYWHEEL_MOTOR);
     
     flywheel.selectProfileSlot(0, 0);
+    flywheel.config_kP(0, 0.15);
+    flywheel.config_kI(0, 0.0001);
+    flywheel.config_kD(0, 0);
+    flywheel.config_kF(0, 0.058);
+
+
+
   }
 
   @Override
@@ -35,17 +43,21 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void setTargetRPM(double rpm){
     //might need to be divided by 2
-    flywheel.set(TalonFXControlMode.Velocity, Falcon.rpmToTicks(rpm));
+    targetRPM = rpm;
+    flywheel.set(TalonFXControlMode.Velocity, Falcon.rpmToTicks(targetRPM));
   }
-
-  // public void moveHood(double power){
-  //   hood.set(power);
-  // }
-
-  
   
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
+  }
+
+  public boolean isRPMInRange(){
+    return (Math.abs(Falcon.ticksToRPM(flywheel.getSelectedSensorVelocity()) - targetRPM)) < 200;
+  }
+
+  @Log
+  public double currentRPM() {
+    return Falcon.ticksToRPM(flywheel.getSelectedSensorVelocity());
   }
 }
