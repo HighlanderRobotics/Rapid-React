@@ -30,8 +30,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public void toggleIntake(){
     intakeSolenoid.toggle();
-
   }
+  
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

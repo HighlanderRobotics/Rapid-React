@@ -26,6 +26,7 @@ import static frc.robot.Constants.*;
 import java.util.function.ToDoubleFunction;
 
 public class DrivetrainSubsystem extends SubsystemBase {
+  boolean lockOut = false;
   /**
    * The maximum voltage that will be delivered to the drive motors.
    * <p>
@@ -192,15 +193,34 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_chassisSpeeds = chassisSpeeds;
   }
 
+  public void lock(){
+    lockOut = true;
+  }
+
+  public void unlock(){
+    lockOut = false;
+  }
+
+  public void toggleLock(){
+    lockOut = !lockOut;
+  }
+
   @Override
   public void periodic() {
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
-    m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
-    m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
-    m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
-    m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
+    if(!lockOut){
+        m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
+        m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
+        m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
+        m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
+    } else {
+            m_frontLeftModule.set(0, 45);
+            m_frontRightModule.set(0, 45);
+            m_backLeftModule.set(0, 45);
+            m_backRightModule.set(0, 45);
+    }
 
     SmartDashboard.putNumber("heading", getGyroscopeRotation().getDegrees());
   }

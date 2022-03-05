@@ -9,8 +9,10 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.ResetHood;
 import frc.robot.subsystems.LimeLightSubsystem;
+import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -39,7 +41,7 @@ public class RobotContainer {
   private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
   private final HoodSubsystem m_hoodSubsystem = new HoodSubsystem();
   
-  // private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(); 
+  private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(); 
   private ShuffleboardTab tab = Shuffleboard.getTab("Testing");
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
 
@@ -69,7 +71,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
-    /*m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
+    m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
             m_drivetrainSubsystem,
             () -> -modifyAxis(m_controller.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
             () -> -modifyAxis(m_controller.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
@@ -77,13 +79,9 @@ public class RobotContainer {
             true
     ));
 
-    // Configure the button bindings
-    configureButtonBindings();
-    SmartDashboard.putNumber("Encoder", m_testingSubsystem.testingMotor.getSelectedSensorVelocity() * (1.0/2048.0) * 600.0);
-    SmartDashboard.putData("Toggle Motor", new RunCommand(() -> m_testingSubsystem.setTestingRPM(rpm), m_testingSubsystem));
-    SmartDashboard.putData("Auto Aim", new AutoAim(m_limelightsubststem, m_drivetrainSubsystem, m_controller));
-            () -> -modifyAxis(m_controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
-    ));*/
+  //  SmartDashboard.putData("Auto Aim", new AutoAim(m_limelightsubststem, m_drivetrainSubsystem, m_controller));
+  //           () -> -modifyAxis(m_controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
+  //   ));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -96,6 +94,7 @@ public class RobotContainer {
                                                         new RunCommand(() -> {m_routingSubsystem.setOuterFeederRPM(500); m_routingSubsystem.setInnerFeederRPM(1000);}, m_routingSubsystem)), 
                              new RunCommand(() -> m_shooterSubsystem.setTargetRPM(targetRPM), m_shooterSubsystem)));
     
+    SmartDashboard.putData("Lock Drivetrain", new InstantCommand(() -> m_drivetrainSubsystem.toggleLock()));
     m_shooterSubsystem.setDefaultCommand(new RunCommand(() -> m_shooterSubsystem.setTargetRPM(0), m_shooterSubsystem));
     m_hoodSubsystem.setDefaultCommand(new RunCommand(() -> m_hoodSubsystem.setSetpoint(hoodTarget), m_hoodSubsystem));
     m_hoodSubsystem.enable();
@@ -106,13 +105,6 @@ public class RobotContainer {
     m_shooterSubsystem.setDefaultCommand(new RunCommand(() -> m_shooterSubsystem.setTargetRPM(0), m_shooterSubsystem));
     //m_hoodSubsystem.setDefaultCommand(new RunCommand(() -> m_hoodSubsystem.setSetpoint(20), m_hoodSubsystem));;
     //m_hoodSubsystem.enable();
-    // m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
-    //         m_drivetrainSubsystem,  
-    //         () -> -modifyAxis(m_controller.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-    //         () -> -modifyAxis(m_controller.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-    //         () -> -modifyAxis(m_controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
-    //         true
-    // ));
 
     // Configure the button bindings
     configureButtonBindings();
