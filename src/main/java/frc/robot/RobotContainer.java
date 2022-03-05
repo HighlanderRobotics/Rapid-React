@@ -20,7 +20,10 @@ import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 
 /**
@@ -41,25 +44,25 @@ public class RobotContainer {
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
 
   private final RoutingSubsystem m_routingSubsystem = new RoutingSubsystem();
-
-
-
-  private double rpm = 500.0;
-  private double feederRPM = 500;
   
   double hoodTarget = 20.0;
+  double targetRPM = 500.0;
   @Config
   public void setHoodTarget(double newTarget) {
     hoodTarget = newTarget;
   }
 
+  public void setTargetRPM(double newTarget) {
+      targetRPM = newTarget;
+  }
+
   @Log
-  Command flywheelCommand = new RunCommand(() -> m_shooterSubsystem.setTargetRPM(rpm), m_shooterSubsystem);
+  Command flywheelCommand = new RunCommand(() -> m_shooterSubsystem.setTargetRPM(targetRPM), m_shooterSubsystem);
 
   // setter for oblog
   @Config
   public void setRPM(double newRPM) {
-    rpm = newRPM;
+    targetRPM = newRPM;
   }
 
 
@@ -86,8 +89,12 @@ public class RobotContainer {
     configureButtonBindings();
     // SmartDashboard.putData("Hood Up", new RunCommand(() -> m_shooterSubsystem.moveHood(1)));
     // SmartDashboard.putData("Hood Down", new RunCommand(() -> m_shooterSubsystem.moveHood(-1)));
-    SmartDashboard.putData("Run Shooter", new RunCommand(() -> m_shooterSubsystem.setTargetRPM(rpm), m_shooterSubsystem));
+    SmartDashboard.putData("Run Flywheel", new RunCommand(() -> m_shooterSubsystem.setTargetRPM(targetRPM), m_shooterSubsystem));
     SmartDashboard.putData("Reset Hood", new ResetHood(m_hoodSubsystem));
+    SmartDashboard.putData("Shoot", 
+    new ParallelCommandGroup(new SequentialCommandGroup(new WaitUntilCommand(m_shooterSubsystem::isRPMInRange), 
+                                                        new RunCommand(() -> {m_routingSubsystem.setOuterFeederRPM(500); m_routingSubsystem.setInnerFeederRPM(1000);}, m_routingSubsystem)), 
+                             new RunCommand(() -> m_shooterSubsystem.setTargetRPM(targetRPM), m_shooterSubsystem)));
     
     m_shooterSubsystem.setDefaultCommand(new RunCommand(() -> m_shooterSubsystem.setTargetRPM(0), m_shooterSubsystem));
     m_hoodSubsystem.setDefaultCommand(new RunCommand(() -> m_hoodSubsystem.setSetpoint(hoodTarget), m_hoodSubsystem));
@@ -100,7 +107,7 @@ public class RobotContainer {
     //m_hoodSubsystem.setDefaultCommand(new RunCommand(() -> m_hoodSubsystem.setSetpoint(20), m_hoodSubsystem));;
     //m_hoodSubsystem.enable();
     // m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
-    //         m_drivetrainSubsystem,
+    //         m_drivetrainSubsystem,  
     //         () -> -modifyAxis(m_controller.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
     //         () -> -modifyAxis(m_controller.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
     //         () -> -modifyAxis(m_controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
