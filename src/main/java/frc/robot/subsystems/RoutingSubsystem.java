@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
@@ -12,16 +14,17 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.components.Falcon;
+import frc.robot.components.LazyTalonFX;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
 public class RoutingSubsystem extends SubsystemBase implements Loggable {
   DigitalInput lowerBeambreak = new DigitalInput(Constants.LOWER_BEAMBREAK);
   DigitalInput upperBeambreak = new DigitalInput(Constants.UPPER_BEAMBREAK);
-  public final TalonFX innerFeeder = new TalonFX(Constants.INNER_FEEDER_MOTOR);
-  public final TalonFX outerFeeder = new TalonFX(Constants.OUTER_FEEDER_MOTOR);
-  PIDController innerFeederPID = new PIDController(0.05, 0.001, 0);
-  PIDController outerFeederPID = new PIDController(0.05, 0.001, 0);
+  public final TalonFX innerFeeder = new LazyTalonFX(Constants.INNER_FEEDER_MOTOR);
+  public final TalonFX outerFeeder = new LazyTalonFX(Constants.OUTER_FEEDER_MOTOR);
+  PIDController innerFeederPID = new PIDController(0.05, 0.0, 0);
+  PIDController outerFeederPID = new PIDController(0.05, 0.0, 0);
   /** Creates a new RoutingSubsystem. */
   public RoutingSubsystem() {
     innerFeeder.config_kP(0, innerFeederPID.getP());
@@ -29,6 +32,12 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
 
     outerFeeder.config_kP(0, outerFeederPID.getP());
     outerFeeder.config_kI(0, outerFeederPID.getI());
+
+    innerFeeder.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 20, 10, 0.25));
+    outerFeeder.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 20, 10, 0.25));
+
+    innerFeeder.setNeutralMode(NeutralMode.Brake);
+    outerFeeder.setNeutralMode(NeutralMode.Brake);
   }
 
   @Log
@@ -65,7 +74,7 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
     }
 
     if(intakeOut && !(ballInLower && ballInUpper)) {
-      setOuterFeederRPM(500);
+      setOuterFeederRPM(1000);
       System.out.println("Running outer");
     } else {
       setOuterFeederRPM(0);
