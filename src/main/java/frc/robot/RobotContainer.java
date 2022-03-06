@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.ResetHood;
+import frc.robot.commands.ShootOneBall;
 import frc.robot.subsystems.LimeLightSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
@@ -95,6 +96,7 @@ public class RobotContainer {
     SmartDashboard.putData("Run Flywheel", new RunCommand(() -> m_shooterSubsystem.setTargetRPM(targetRPM), m_shooterSubsystem));
     SmartDashboard.putData("Run Hood", new RunCommand(() -> m_hoodSubsystem.setSetpoint(hoodTarget)));
     SmartDashboard.putData("Reset Hood", new ResetHood(m_hoodSubsystem));
+    SmartDashboard.putData("Shoot one ball", new ShootOneBall(m_routingSubsystem));
     SmartDashboard.putData("Run Routing for Shooting", new RunCommand(() -> {m_routingSubsystem.setOuterFeederRPM(500); m_routingSubsystem.setInnerFeederRPM(500);}, m_routingSubsystem));
     SmartDashboard.putData("Shoot", 
     new ParallelCommandGroup(new SequentialCommandGroup(new WaitUntilCommand(m_shooterSubsystem::isRPMInRange), 
@@ -105,7 +107,8 @@ public class RobotContainer {
     m_shooterSubsystem.setDefaultCommand(new RunCommand(() -> m_shooterSubsystem.setTargetRPM(0), m_shooterSubsystem));
     m_hoodSubsystem.setDefaultCommand(new RunCommand(() -> m_hoodSubsystem.setSetpoint(hoodTarget), m_hoodSubsystem));
     m_hoodSubsystem.enable();
-    SmartDashboard.putData("Run Routing", new RunCommand(() -> m_routingSubsystem.runRouting(true), m_routingSubsystem));
+    
+    m_routingSubsystem.setDefaultCommand(new RunCommand(() -> m_routingSubsystem.runRouting(true), m_routingSubsystem));
 
     // SmartDashboard.putData("Toggle Intake", new InstantCommand(() -> m_intakeSubsystem.toggleIntake(), m_intakeSubsystem));
 

@@ -19,8 +19,8 @@ import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
 public class RoutingSubsystem extends SubsystemBase implements Loggable {
-  DigitalInput lowerBeambreak = new DigitalInput(Constants.LOWER_BEAMBREAK);
-  DigitalInput upperBeambreak = new DigitalInput(Constants.UPPER_BEAMBREAK);
+  public DigitalInput lowerBeambreak = new DigitalInput(Constants.LOWER_BEAMBREAK);
+  public DigitalInput upperBeambreak = new DigitalInput(Constants.UPPER_BEAMBREAK);
   public final TalonFX innerFeeder = new LazyTalonFX(Constants.INNER_FEEDER_MOTOR);
   public final TalonFX outerFeeder = new LazyTalonFX(Constants.OUTER_FEEDER_MOTOR);
   PIDController innerFeederPID = new PIDController(0.05, 0.0, 0);
