@@ -22,7 +22,7 @@ public class ShootOneBall extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    routingSubsystem.setOuterFeederRPM(500);
+    routingSubsystem.setOuterFeederRPM(700);
     routingSubsystem.setInnerFeederRPM(500);
   }
 
