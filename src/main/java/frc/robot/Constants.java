@@ -55,8 +55,8 @@ public final class Constants {
     public static final int HOOD_ENCODER_A = 7; // dio ports for A and B for quadrature on rev encoder for hood
     public static final int HOOD_ENCODER_B = 8;
 
-    public static final int HOOD_LIMIT_SWITCH_TOP = 0;
-    public static final int HOOD_LIMIT_SWITCH_BOTTOM = 1;
+    public static final int HOOD_LIMIT_SWITCH_TOP = 3;
+    public static final int HOOD_LIMIT_SWITCH_BOTTOM = 2;
     public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 8; // FIXME Set back right drive motor ID
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 7; // FIXME Set back right steer motor ID
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 23; // FIXME Set back right steer encoder ID

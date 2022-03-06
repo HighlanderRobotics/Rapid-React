@@ -23,9 +23,7 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
     /** Creates a new ExampleSubsystem. */
     public final CANSparkMax hood;
     public final Encoder angleEncoder;
- 
     public final LimitSwitch topLimitSwitch;
-    
     public final LimitSwitch bottomLimitSwitch;
     
     // Feedforward for the hood
@@ -69,6 +67,7 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
     public double bottomLimit = 0;
 
     @Override
+    @Config
     public void setSetpoint(double setpoint) {
         if (setpoint < bottomLimit) {
             setpoint = bottomLimit;
@@ -86,6 +85,14 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
         rotations = angleEncoder.get() / 2048.0;
         //1.47 rotations in the full range - same as around 40 degrees
         return (rotations/1.47) * 40;
+    }
+    @Log
+    public boolean getUpperLimit(){
+        return topLimitSwitch.get();
+    }
+    @Log
+    public boolean getLowerLimit(){
+        return bottomLimitSwitch.get();
     }
 
     @Override

@@ -4,7 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -37,17 +39,20 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final XboxController m_controller = new XboxController(0);
-  private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(new LimeLightSubsystem("limelight-top"), new LimeLightSubsystem("limelight-bottom"));
+  // private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(new LimeLightSubsystem("limelight-top"), new LimeLightSubsystem("limelight-bottom"));
   private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
   private final HoodSubsystem m_hoodSubsystem = new HoodSubsystem();
   
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(); 
   private ShuffleboardTab tab = Shuffleboard.getTab("Testing");
-  private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
+  // private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
 
   private final RoutingSubsystem m_routingSubsystem = new RoutingSubsystem();
-  
+
+  // private final Compressor m_compressor = new Compressor(PneumaticsModuleType.CTREPCM);
+  @Config
   double hoodTarget = 20.0;
+  @Config
   double targetRPM = 500.0;
   @Config
   public void setHoodTarget(double newTarget) {
@@ -88,7 +93,9 @@ public class RobotContainer {
     // SmartDashboard.putData("Hood Up", new RunCommand(() -> m_shooterSubsystem.moveHood(1)));
     // SmartDashboard.putData("Hood Down", new RunCommand(() -> m_shooterSubsystem.moveHood(-1)));
     SmartDashboard.putData("Run Flywheel", new RunCommand(() -> m_shooterSubsystem.setTargetRPM(targetRPM), m_shooterSubsystem));
+    SmartDashboard.putData("Run Hood", new RunCommand(() -> m_hoodSubsystem.setSetpoint(hoodTarget)));
     SmartDashboard.putData("Reset Hood", new ResetHood(m_hoodSubsystem));
+    SmartDashboard.putData("Run Routing for Shooting", new RunCommand(() -> {m_routingSubsystem.setOuterFeederRPM(500); m_routingSubsystem.setInnerFeederRPM(1000);}, m_routingSubsystem));
     SmartDashboard.putData("Shoot", 
     new ParallelCommandGroup(new SequentialCommandGroup(new WaitUntilCommand(m_shooterSubsystem::isRPMInRange), 
                                                         new RunCommand(() -> {m_routingSubsystem.setOuterFeederRPM(500); m_routingSubsystem.setInnerFeederRPM(1000);}, m_routingSubsystem)), 
@@ -100,7 +107,7 @@ public class RobotContainer {
     m_hoodSubsystem.enable();
     SmartDashboard.putData("Run Routing", new RunCommand(() -> m_routingSubsystem.runRouting(true), m_routingSubsystem));
 
-    SmartDashboard.putData("Toggle Intake", new InstantCommand(() -> m_intakeSubsystem.toggleIntake(), m_intakeSubsystem));
+    // SmartDashboard.putData("Toggle Intake", new InstantCommand(() -> m_intakeSubsystem.toggleIntake(), m_intakeSubsystem));
 
     m_shooterSubsystem.setDefaultCommand(new RunCommand(() -> m_shooterSubsystem.setTargetRPM(0), m_shooterSubsystem));
     //m_hoodSubsystem.setDefaultCommand(new RunCommand(() -> m_hoodSubsystem.setSetpoint(20), m_hoodSubsystem));;
@@ -126,10 +133,10 @@ public class RobotContainer {
     // new Button(m_controller::getBButton)
     //         // No requirements because we don't need to interrupt anything
     //         .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
-    new Button(m_controller::getAButton)
-            .whenPressed(new RunCommand(() -> m_intakeSubsystem.setIntakeRPM(1000)));
-    new Button(m_controller::getXButton)
-            .whenPressed(new RunCommand(() -> m_intakeSubsystem.toggleIntake()));
+    // new Button(m_controller::getAButton)
+    //         .whenPressed(new RunCommand(() -> m_intakeSubsystem.setIntakeRPM(1000)));
+    // new Button(m_controller::getXButton)
+    //         .whenPressed(new RunCommand(() -> m_intakeSubsystem.toggleIntake()));
   
   }
 
