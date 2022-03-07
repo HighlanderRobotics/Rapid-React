@@ -15,6 +15,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -73,7 +74,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   // FIXME Remove if you are using a Pigeon
 //   private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
   // FIXME Uncomment if you are using a NavX
- private final AHRS m_navx = new AHRS(I2C.Port.kOnboard); // NavX connected over MXP
+ private final AHRS m_navx = new AHRS(Port.kUSB); // NavX connected over MXP
 
   // These are our modules. We initialize them in the constructor.
   private final SwerveModule m_frontLeftModule;
@@ -216,10 +217,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
         m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
     } else {
-            m_frontLeftModule.set(0, -45);
-            m_frontRightModule.set(0, 45);
-            m_backLeftModule.set(0, 45);
-            m_backRightModule.set(0, -45);
+            m_frontLeftModule.set(0, 45);
+            m_frontRightModule.set(0, -45);
+            m_backLeftModule.set(0, -45);
+            m_backRightModule.set(0, 45);
     }
 
     SmartDashboard.putNumber("heading", getGyroscopeRotation().getDegrees());

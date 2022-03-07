@@ -63,22 +63,16 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
   public void runRouting(boolean intakeOut){
     boolean ballInLower = !lowerBeambreak.get();
     boolean ballInUpper = !upperBeambreak.get();
-    System.out.println(ballInLower);
-    System.out.println(ballInUpper);
     if(!ballInUpper){
       setInnerFeederRPM(1000);
-      System.out.println("Running inner");
     } else {
       setInnerFeederRPM(0);
-      System.out.println("Not running");
     }
 
     if(intakeOut && !(ballInLower && ballInUpper)) {
       setOuterFeederRPM(1000);
-      System.out.println("Running outer");
     } else {
       setOuterFeederRPM(0);
-      System.out.println("Not running");
     }
   }
   @Override

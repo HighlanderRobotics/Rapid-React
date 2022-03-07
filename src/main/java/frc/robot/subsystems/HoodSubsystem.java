@@ -59,7 +59,6 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
         }
 
         hood.set(adjustedPower);
-        //System.out.println(adjustedPower);
     }
 
     //need calibration
