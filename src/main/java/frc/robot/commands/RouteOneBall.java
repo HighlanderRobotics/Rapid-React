@@ -8,12 +8,12 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RoutingSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
-public class ShootOneBall extends CommandBase {
+public class RouteOneBall extends CommandBase {
 
   RoutingSubsystem routingSubsystem;
 
   /** Creates a new ShootWithPause. */
-  public ShootOneBall(RoutingSubsystem routingSubsystem) {
+  public RouteOneBall(RoutingSubsystem routingSubsystem) {
     this.routingSubsystem = routingSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(routingSubsystem);
@@ -23,6 +23,7 @@ public class ShootOneBall extends CommandBase {
   @Override
   public void initialize() {
     routingSubsystem.setInnerFeederRPM(500);
+    routingSubsystem.setOuterFeederRPM(500);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -33,11 +34,12 @@ public class ShootOneBall extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     routingSubsystem.setInnerFeederRPM(0);
+    routingSubsystem.setOuterFeederRPM(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return routingSubsystem.upperBeambreak.get();
+    return !routingSubsystem.upperBeambreak.get();
   }
 }

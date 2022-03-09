@@ -12,12 +12,14 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.components.Falcon;
 import frc.robot.components.LazyTalonFX;
+import frc.robot.components.ShootingLookup;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
@@ -25,21 +27,33 @@ import io.github.oblarg.oblog.annotations.Log;
 public class ShooterSubsystem extends SubsystemBase implements Loggable {
   
   public final TalonFX flywheel;
-  @Config
+
+  @Log
   private double targetRPM;
+
+  @Config
+  private double currentDistance;
+
+  @Log
+  private double testAngle;
+
+  private ShootingLookup lookup;
  
   /** Creates a new ExampleSubsystem. */
   public ShooterSubsystem() {
     flywheel = new LazyTalonFX(Constants.FLYWHEEL_MOTOR);
     flywheel.setNeutralMode(NeutralMode.Coast);
     // flywheel.configClosedloopRamp(5.0);
-    flywheel.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 20, 10, 0.25));
+    flywheel.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 10, 0.25));
 
     flywheel.selectProfileSlot(0, 0);
-    flywheel.config_kP(0, 0.2);
-    flywheel.config_kI(0, 0.001);
-    flywheel.config_kD(0, 0.0);
+    flywheel.config_kP(0, 0.06);
+    flywheel.config_kI(0, 0.0);
+    flywheel.config_kD(0, 1.0);
     flywheel.config_kF(0, 0.058);
+
+
+    
 
   }
 

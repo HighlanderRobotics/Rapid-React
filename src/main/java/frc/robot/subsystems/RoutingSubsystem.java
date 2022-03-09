@@ -70,7 +70,7 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
     }
 
     if(intakeOut && !(ballInLower && ballInUpper)) {
-      setOuterFeederRPM(1000);
+      setOuterFeederRPM(2000);
     } else {
       setOuterFeederRPM(0);
     }
