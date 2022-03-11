@@ -16,7 +16,7 @@ import edu.wpi.first.math.controller.PIDController;
  */
 public final class Constants {
 
-    public static final PIDController AUTOAIM_PID_CONTROLLER = new PIDController(0.003, 0, 0);
+    public static final PIDController AUTOAIM_PID_CONTROLLER = new PIDController(0.3, 0, 0);
     /**
      * The left-to-right distance between the drivetrain wheels
      *

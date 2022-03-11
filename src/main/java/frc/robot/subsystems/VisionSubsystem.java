@@ -71,6 +71,8 @@ public class VisionSubsystem extends SubsystemBase implements Loggable {
     }
   }
 
+
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -81,8 +83,9 @@ public class VisionSubsystem extends SubsystemBase implements Loggable {
       degreesToTarget = upperLimeLight.getHorizontalOffset();  
     }
 
-    Pair<Double, Double> targets = lookup.get(feetToTarget);
+    Pair<Double, Double> targets = lookup.get(lowerLimeLight.getDistance());
     targetRPM = targets.getFirst();
     targetHoodAngle = targets.getSecond();
+    chooseActiveLimeLight();
   }
 }

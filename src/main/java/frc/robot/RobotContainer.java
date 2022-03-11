@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.commands.AutoAim;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.ResetHood;
 import frc.robot.commands.RouteOneBall;
@@ -42,9 +43,11 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final XboxController m_controller = new XboxController(0);
-  private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(new LimeLightSubsystem("limelight-top"), new LimeLightSubsystem("limelight-bottom"));
   private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
   private final HoodSubsystem m_hoodSubsystem = new HoodSubsystem();
+  private final LimeLightSubsystem m_limeLightSubsystem = new LimeLightSubsystem("limelight-bottom");
+  private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(new LimeLightSubsystem("limelight-top"), m_limeLightSubsystem);
+
   
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(); 
   private ShuffleboardTab tab = Shuffleboard.getTab("Testing");
@@ -92,7 +95,7 @@ public class RobotContainer {
     configureButtonBindings();
     // SmartDashboard.putData("Hood Up", new RunCommand(() -> m_shooterSubsystem.moveHood(1)));
     // SmartDashboard.putData("Hood Down", new RunCommand(() -> m_shooterSubsystem.moveHood(-1)));
-    SmartDashboard.putData("Run Flywheel", new RunCommand(() -> m_shooterSubsystem.setTargetRPM(m_visionSubsystem.getTargetRPM()), m_shooterSubsystem));
+    // SmartDashboard.putData("Run Flywheel", new RunCommand(() -> m_shooterSubsystem.setTargetRPM(m_visionSubsystem.getTargetRPM()), m_shooterSubsystem));
     SmartDashboard.putData("Run Hood", new RunCommand(() -> m_hoodSubsystem.setSetpoint(m_visionSubsystem.getTargetHoodAngle()), m_hoodSubsystem));
     SmartDashboard.putData("Manual Run Flywheel", new RunCommand(() -> m_shooterSubsystem.setTargetRPM(targetRPM), m_shooterSubsystem));
     SmartDashboard.putData("Manual Run Hood", new RunCommand(() -> m_hoodSubsystem.setSetpoint(hoodTarget), m_hoodSubsystem));
@@ -125,7 +128,7 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
     
-    // SmartDashboard.putData("Auto Aim", new AutoAim(m_limelightsubststem, m_drivetrainSubsystem, m_controller));
+    SmartDashboard.putData("Auto Aim", new AutoAim(m_limeLightSubsystem, m_drivetrainSubsystem, m_controller));
   }
 
   /**

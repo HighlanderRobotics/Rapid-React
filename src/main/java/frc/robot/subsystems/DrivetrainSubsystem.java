@@ -24,12 +24,14 @@ import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
 import static frc.robot.Constants.*;
 
 import java.util.function.ToDoubleFunction;
 
-public class DrivetrainSubsystem extends SubsystemBase {
+public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
   boolean lockOut = false;
   /**
    * The maximum voltage that will be delivered to the drive motors.
@@ -89,6 +91,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
+  @Log
   private final Field2d m_field = new Field2d();
   
 

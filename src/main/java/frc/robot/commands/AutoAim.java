@@ -12,18 +12,19 @@ import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.LimeLightSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class AutoAim extends CommandBase{
-  LimeLightSubsystem m_limeLightSubsystem;
+  LimeLightSubsystem m_visionSubsystem;
   DrivetrainSubsystem m_drivetrainSubsystem;
   XboxController m_controller;
   double endThreshold = 0.5;
   /** Creates a new AutoAim. */
-  public AutoAim(LimeLightSubsystem limeLightSubsystem, DrivetrainSubsystem drivetrainSubsystem, XboxController controller) {
-        m_limeLightSubsystem = limeLightSubsystem;
+  public AutoAim(LimeLightSubsystem visionSubsystem, DrivetrainSubsystem drivetrainSubsystem, XboxController controller) {
+        m_visionSubsystem = visionSubsystem;
         m_drivetrainSubsystem = drivetrainSubsystem;
         m_controller = controller;
         addRequirements(drivetrainSubsystem);
@@ -33,13 +34,14 @@ public class AutoAim extends CommandBase{
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Math.abs(m_limeLightSubsystem.getHorizontalOffset()) < endThreshold;
+    // return Math.abs(m_visionSubsystem.getHorizontalOffset()) < endThreshold;
+    return false;
   }
 
   @Override
   public void execute () {
-    m_drivetrainSubsystem.drive(new ChassisSpeeds(0, 0, m_limeLightSubsystem.pidOutput));
-    m_limeLightSubsystem.controllerRumble(m_controller);
+    m_drivetrainSubsystem.drive(new ChassisSpeeds(0, 0, m_visionSubsystem.pidOutput));
+    m_visionSubsystem.controllerRumble(m_controller);
   }
 
   public void end(){
