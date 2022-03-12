@@ -43,16 +43,8 @@ public class SwerveModule implements Loggable{
   
   @Log
   private WPI_TalonFX m_driveMotor;
-   private double drivekP = 0.01;
-   private double drivekI = 0;
-   private double drivekD = 0;
-   private double drivekF = 0;
   @Log
   private WPI_TalonFX m_turningMotor;
-   private double turningkP = 0.00015;
-   private double turningkI = 0;
-   private double turningkD = 0;
-   private double turningkF = .025;
   
   private CANCoder m_cancoder;
 
@@ -69,14 +61,10 @@ void setDrivePIDF( double p,
  double i, 
  double d, 
  double f){
-  drivekP = p;
-  drivekI = i;
-  drivekD = d;
-  drivekF = f;
-  m_driveMotor.config_kP(0, drivekP);
-  m_driveMotor.config_kI(0, drivekI);
-  m_driveMotor.config_kD(0, drivekD);
-  m_driveMotor.config_kF(0, drivekF);
+  m_driveMotor.config_kP(0, p);
+  m_driveMotor.config_kI(0, i);
+  m_driveMotor.config_kD(0, d);
+  m_driveMotor.config_kF(0, f);
 }
 
 
@@ -84,14 +72,10 @@ void setTurningPIDF( double p,
  double i, 
  double d, 
  double f){
-  turningkP = p;
-  turningkI = i;
-  turningkD = d;
-  turningkF = f;
-  m_turningMotor.config_kP(0, turningkP);
-  m_turningMotor.config_kI(0, turningkI);
-  m_turningMotor.config_kD(0, turningkD);
-  m_turningMotor.config_kF(0, turningkF);
+  m_turningMotor.config_kP(0, p);
+  m_turningMotor.config_kI(0, i);
+  m_turningMotor.config_kD(0, d);
+  m_turningMotor.config_kF(0, f);
 }
 
 
@@ -111,6 +95,8 @@ void setTurningPIDF( double p,
       m_cancoder = new CANCoder(cancoderChannel);
       m_driveMotor.configFactoryDefault();
       m_turningMotor.configFactoryDefault();
+      m_driveMotor.enableVoltageCompensation(true);
+      m_turningMotor.enableVoltageCompensation(true);
       m_turningMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 20);
       m_turningMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
       m_cancoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
@@ -125,8 +111,8 @@ void setTurningPIDF( double p,
     
       m_turningMotor.setNeutralMode(NeutralMode.Brake);
       m_driveMotor.setNeutralMode(NeutralMode.Brake);
-    setDrivePIDF(0.00015,0,0,0.048);
-    setTurningPIDF(1,0.0,0,0.048);
+    setDrivePIDF(0.01, 0, 0, 0.048);
+    setTurningPIDF(0.2, 0.0, 0.1, 0.048);
 
     // 50% power to turning - gets 10610 units/100ms
     // 50% power to driving - 10700 units/100ms
