@@ -92,11 +92,11 @@ public class RobotContainer {
   //   ));
 
     // Configure the button bindings
-    configureButtonBindings();
     // SmartDashboard.putData("Hood Up", new RunCommand(() -> m_shooterSubsystem.moveHood(1)));
     // SmartDashboard.putData("Hood Down", new RunCommand(() -> m_shooterSubsystem.moveHood(-1)));
     // SmartDashboard.putData("Run Flywheel", new RunCommand(() -> m_shooterSubsystem.setTargetRPM(m_visionSubsystem.getTargetRPM()), m_shooterSubsystem));
     SmartDashboard.putData("Run Hood", new RunCommand(() -> m_hoodSubsystem.setSetpoint(m_visionSubsystem.getTargetHoodAngle()), m_hoodSubsystem));
+    SmartDashboard.putData("Run Hood", new RunCommand(() -> m_shooterSubsystem.setTargetRPM(m_visionSubsystem.getTargetRPM()), m_shooterSubsystem));
     SmartDashboard.putData("Manual Run Flywheel", new RunCommand(() -> m_shooterSubsystem.setTargetRPM(targetRPM), m_shooterSubsystem));
     SmartDashboard.putData("Manual Run Hood", new RunCommand(() -> m_hoodSubsystem.setSetpoint(hoodTarget), m_hoodSubsystem));
     SmartDashboard.putData("Reset Hood", new ResetHood(m_hoodSubsystem));
@@ -139,9 +139,9 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-    //new Button(m_controller::getBButton)
+    new Button(m_controller::getBButton)
             // No requirements because we don't need to interrupt anything
-    //        .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+           .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
     // new Button(m_controller::getBButton)
     //         // No requirements because we don't need to interrupt anything
     //         .whenPressed(m_drivetrainSubsystem::zeroGyroscope);

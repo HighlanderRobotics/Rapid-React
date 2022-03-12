@@ -9,6 +9,8 @@ import com.kauailabs.navx.frc.AHRS;
 import com.swervedrivespecialties.swervelib.Mk3SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -59,7 +61,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
    * This is a measure of how fast the robot can rotate in place.
    */
   // Here we calculate the theoretical maximum angular velocity. You can also replace this with a measured amount.
-  public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND /
+  public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = ROTATION_SPEED_MULTPILIER * MAX_VELOCITY_METERS_PER_SECOND /
           Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);
 
   private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
@@ -218,12 +220,19 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     lockOut = !lockOut;
   }
 
+  private SwerveModuleState getModuleState(SwerveModule module){
+    return new SwerveModuleState(module.getDriveVelocity(), Rotation2d.fromDegrees(module.getSteerAngle()));
+  }
+
   @Override
   public void periodic() {
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
+    m_odometry.update(getGyroscopeRotation(), 
+    getModuleState(m_frontLeftModule), 
+    getModuleState(m_frontRightModule),
+    getModuleState(m_backLeftModule),
+    getModuleState(m_backRightModule));
     SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
-
-    m_odometry.update(getGyroscopeRotation(), states);
 
     if(!lockOut){
         m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
@@ -240,5 +249,8 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     SmartDashboard.putNumber("heading", getGyroscopeRotation().getDegrees());
 
     m_field.setRobotPose(m_odometry.getPoseMeters());
+
+    SmartDashboard.putNumber("X Pose", m_odometry.getPoseMeters().getX());
+    SmartDashboard.putNumber("Y Pose", m_odometry.getPoseMeters().getY());
   }
 }
