@@ -18,9 +18,9 @@ import frc.robot.commands.RouteOneBall;
 import frc.robot.commands.ShootOneBall;
 import frc.robot.commands.ShootingSequence;
 import frc.robot.subsystems.LimeLightSubsystem;
-import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.RoutingSubsystem;
@@ -49,7 +49,7 @@ public class RobotContainer {
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(new LimeLightSubsystem("limelight-top"), m_limeLightSubsystem);
 
   
-  private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(); 
+  private final SwerveDrive m_swerveDrive = new SwerveDrive(); 
   private ShuffleboardTab tab = Shuffleboard.getTab("Testing");
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
 
@@ -79,11 +79,11 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
-    m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
-            m_drivetrainSubsystem,
-            () -> -modifyAxis(m_controller.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(m_controller.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(m_controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+    m_swerveDrive.setDefaultCommand(new DefaultDriveCommand(
+            m_swerveDrive,
+            () -> -modifyAxis(m_controller.getLeftY()) * SwerveDrive.kMaxSpeed,
+            () -> -modifyAxis(m_controller.getLeftX()) * SwerveDrive.kMaxSpeed,
+            () -> -modifyAxis(m_controller.getRightX()) * SwerveDrive.kMaxAngularSpeed,
             true
     ));
 
@@ -128,7 +128,7 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
     
-    SmartDashboard.putData("Auto Aim", new AutoAim(m_limeLightSubsystem, m_drivetrainSubsystem, m_controller));
+    SmartDashboard.putData("Auto Aim", new AutoAim(m_limeLightSubsystem, m_swerveDrive, m_controller));
   }
 
   /**
@@ -141,7 +141,7 @@ public class RobotContainer {
 
     new Button(m_controller::getBButton)
             // No requirements because we don't need to interrupt anything
-           .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+           .whenPressed(m_swerveDrive::resetOdometry);
     // new Button(m_controller::getBButton)
     //         // No requirements because we don't need to interrupt anything
     //         .whenPressed(m_drivetrainSubsystem::zeroGyroscope);

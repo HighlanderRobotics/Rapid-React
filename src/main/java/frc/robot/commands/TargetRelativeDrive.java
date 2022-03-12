@@ -12,8 +12,8 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.Constants;
-import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.LimeLightSubsystem;
+import frc.robot.subsystems.SwerveDrive;
 import frc.robot.commands.DefaultDriveCommand;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -21,20 +21,20 @@ import frc.robot.commands.DefaultDriveCommand;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class TargetRelativeDrive extends CommandBase {
   LimeLightSubsystem m_limelightSubsystem;
-  DrivetrainSubsystem m_drivetrainSubsystem;
+  SwerveDrive m_swerveDrive;
   XboxController m_controller;
   /** Creates a new TargetRelativeDrive. */
   public TargetRelativeDrive(
       LimeLightSubsystem limeLightSubsystem, 
-      DrivetrainSubsystem drivetrainSubsystem,
+      SwerveDrive swerveDrive,
       DoubleSupplier translationXSupplier,
       DoubleSupplier translationYSupplier,
       boolean fieldRelativeTranslation) {
 
     m_limelightSubsystem = limeLightSubsystem;
-    m_drivetrainSubsystem = drivetrainSubsystem;
-    addRequirements(drivetrainSubsystem);
-    new DefaultDriveCommand(drivetrainSubsystem, translationXSupplier, translationYSupplier, 
+    m_swerveDrive = swerveDrive;
+    addRequirements(swerveDrive);
+    new DefaultDriveCommand(swerveDrive, translationXSupplier, translationYSupplier, 
       () -> m_limelightSubsystem.autoAim(), fieldRelativeTranslation);
 
     // Use addRequirements() here to declare subsystem dependencies.

@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.Constants;
-import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.LimeLightSubsystem;
+import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.VisionSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -19,15 +19,15 @@ import frc.robot.subsystems.VisionSubsystem;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class AutoAim extends CommandBase{
   LimeLightSubsystem m_visionSubsystem;
-  DrivetrainSubsystem m_drivetrainSubsystem;
+  SwerveDrive m_swerveDrive;
   XboxController m_controller;
   double endThreshold = 0.5;
   /** Creates a new AutoAim. */
-  public AutoAim(LimeLightSubsystem visionSubsystem, DrivetrainSubsystem drivetrainSubsystem, XboxController controller) {
+  public AutoAim(LimeLightSubsystem visionSubsystem, SwerveDrive swerveDrive, XboxController controller) {
         m_visionSubsystem = visionSubsystem;
-        m_drivetrainSubsystem = drivetrainSubsystem;
+        m_swerveDrive = swerveDrive;
         m_controller = controller;
-        addRequirements(drivetrainSubsystem);
+        addRequirements(swerveDrive);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -40,11 +40,11 @@ public class AutoAim extends CommandBase{
 
   @Override
   public void execute () {
-    m_drivetrainSubsystem.drive(new ChassisSpeeds(0, 0, m_visionSubsystem.pidOutput));
+    m_swerveDrive.drive(0, 0, m_visionSubsystem.pidOutput, false);
     m_visionSubsystem.controllerRumble(m_controller);
   }
 
   public void end(){
-    m_drivetrainSubsystem.drive(new ChassisSpeeds(0,0,0));
+    m_swerveDrive.drive(0,0,0, false);
   }
 }
