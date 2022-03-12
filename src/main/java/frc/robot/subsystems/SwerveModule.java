@@ -140,12 +140,16 @@ void setTurningPIDF( double p,
    * @return The current state of the module.
    */
   public SwerveModuleState getState() {
-    return new SwerveModuleState(m_driveMotor.getSelectedSensorVelocity()
+    return new SwerveModuleState(getDriveVelocity()
     , getAngle());
   }
 
   public Rotation2d getAngle() {
     return new Rotation2d((2*Math.PI/(2048*kTurningRatio))*(m_turningMotor.getSelectedSensorPosition()%(2048*kTurningRatio)));
+  }
+
+  public double getDriveVelocity(){
+    return m_driveMotor.getSelectedSensorVelocity()/2048 * 2 * kWheelRadius * Math.PI* 10;
   }
 
   public double inputAngle;

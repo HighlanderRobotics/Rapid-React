@@ -35,10 +35,10 @@ public class SwerveDrive extends SubsystemBase implements Loggable{
   public static final double kMaxSpeed = 4.0; // 3 meters per second
   public static final double kMaxAngularSpeed = Math.PI; // 1/2 rotation per second
 
-  private final Translation2d m_frontLeftLocation = new Translation2d(0.404, 0.404);
-  private final Translation2d m_frontRightLocation = new Translation2d(0.404, -0.404);
-  private final Translation2d m_backLeftLocation = new Translation2d(-0.404, 0.404);
-  private final Translation2d m_backRightLocation = new Translation2d(-0.404, -0.404);
+  private final Translation2d m_frontLeftLocation = new Translation2d(0.22, 0.22);
+  private final Translation2d m_frontRightLocation = new Translation2d(0.22, -0.22);
+  private final Translation2d m_backLeftLocation = new Translation2d(-0.22, 0.22);
+  private final Translation2d m_backRightLocation = new Translation2d(-0.22, -0.22);
 
   private final SwerveModule m_frontLeft = new SwerveModule(
     Constants.FRONT_LEFT_MODULE_DRIVE_MOTOR, 
@@ -65,7 +65,7 @@ public class SwerveDrive extends SubsystemBase implements Loggable{
 
   //@Log public static final ADIS16448_IMU m_gyro = new ADIS16448_IMU();
   @Log public static final AHRS m_imu = new AHRS(Port.kUSB);
-  public static Pose2d m_pose = new Pose2d(5.0, 13.5, new Rotation2d());
+  public static Pose2d m_pose = new Pose2d(0.0, 0.0, new Rotation2d());
   private final Field2d m_field = new Field2d();
 
   private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
@@ -102,8 +102,8 @@ public class SwerveDrive extends SubsystemBase implements Loggable{
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
     var swerveModuleStates = m_kinematics.toSwerveModuleStates(
         fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
-            xSpeed, ySpeed, rot, getAngle())
-            : new ChassisSpeeds(xSpeed, ySpeed, rot)
+            xSpeed, ySpeed, -rot, getAngle())
+            : new ChassisSpeeds(xSpeed, ySpeed, -rot)
     );
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
     m_frontLeft.setDesiredState(swerveModuleStates[0]);
@@ -130,6 +130,10 @@ public class SwerveDrive extends SubsystemBase implements Loggable{
   public void resetOdometry() {
     m_odometry.resetPosition(new Pose2d(), getAngle());
   }
+
+  public void resetGyro(){
+    m_imu.reset();
+  }
   
   @Override
   public void periodic() {
@@ -137,5 +141,7 @@ public class SwerveDrive extends SubsystemBase implements Loggable{
     updateOdometry();
     m_field.setRobotPose(m_odometry.getPoseMeters());
     SmartDashboard.putNumber("IMU angle",m_imu.getAngle());
+    SmartDashboard.putNumber("Getting X", m_odometry.getPoseMeters().getX());
+    SmartDashboard.putNumber("Getting Y", m_odometry.getPoseMeters().getY());
   }
 }
