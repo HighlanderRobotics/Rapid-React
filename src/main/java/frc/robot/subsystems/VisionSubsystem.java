@@ -13,7 +13,7 @@ import io.github.oblarg.oblog.annotations.Log;
 
 public class VisionSubsystem extends SubsystemBase implements Loggable {
   final LimeLightSubsystem upperLimeLight;
-  final LimeLightSubsystem lowerLimeLight;
+  public final LimeLightSubsystem lowerLimeLight;
 
   @Log
   private boolean usingLowerLimeLight = false;
