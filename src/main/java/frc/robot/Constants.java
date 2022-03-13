@@ -67,4 +67,8 @@ public final class Constants {
     public static final int INTAKE_SOLENOID_BACKWARD = 1;
     public static final int LOWER_BEAMBREAK = 4;
     public static final int UPPER_BEAMBREAK = 5;
+
+    public static final int CLIMBER_ANGLE_MOTOR = 16;
+    public static final int CLIMBER_EXTENSION_MOTOR = 15;
+    public static final int CLIMBER_LIMIT_SWITCH = 1;
 }

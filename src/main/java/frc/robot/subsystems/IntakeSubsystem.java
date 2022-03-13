@@ -32,6 +32,14 @@ public class IntakeSubsystem extends SubsystemBase {
   public void toggleIntake(){
     intakeSolenoid.toggle();
   }
+
+  public void extend(){
+    intakeSolenoid.set(kForward);
+  }
+
+  public void retract(){
+    intakeSolenoid.set(kReverse);
+  }
   
   @Override
   public void periodic() {
