@@ -98,8 +98,8 @@ public class RobotContainer {
     // SmartDashboard.putData("Hood Up", new RunCommand(() -> m_shooterSubsystem.moveHood(1)));
     // SmartDashboard.putData("Hood Down", new RunCommand(() -> m_shooterSubsystem.moveHood(-1)));
     // SmartDashboard.putData("Run Flywheel", new RunCommand(() -> m_shooterSubsystem.setTargetRPM(m_visionSubsystem.getTargetRPM()), m_shooterSubsystem));
-    SmartDashboard.putData("Aim", new RunCommand(() -> m_hoodSubsystem.setSetpoint(hoodTarget), m_hoodSubsystem));
-    SmartDashboard.putData("Aim", new RunCommand(() -> m_shooterSubsystem.setTargetRPM(targetRPM), m_shooterSubsystem));
+    SmartDashboard.putData("Aim", new RunCommand(() -> m_hoodSubsystem.setSetpoint(m_visionSubsystem.getTargetHoodAngle()), m_hoodSubsystem));
+    SmartDashboard.putData("Aim", new RunCommand(() -> m_shooterSubsystem.setTargetRPM(m_visionSubsystem.getTargetRPM()), m_shooterSubsystem));
     SmartDashboard.putData("Manual Run Flywheel", new RunCommand(() -> m_shooterSubsystem.setTargetRPM(targetRPM), m_shooterSubsystem));
     SmartDashboard.putData("Manual Run Hood", new RunCommand(() -> m_hoodSubsystem.setSetpoint(hoodTarget), m_hoodSubsystem));
     SmartDashboard.putData("Reset Hood", new ResetHood(m_hoodSubsystem));
