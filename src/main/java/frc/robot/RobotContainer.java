@@ -15,11 +15,14 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.ResetClimberAngle;
 import frc.robot.commands.ResetHood;
+import frc.robot.commands.RetractClimber;
 import frc.robot.commands.RouteOneBall;
 import frc.robot.commands.ShootOneBall;
 import frc.robot.commands.ShootingSequence;
 import frc.robot.subsystems.LimeLightSubsystem;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -50,7 +53,7 @@ public class RobotContainer {
   private final HoodSubsystem m_hoodSubsystem = new HoodSubsystem();
   private final LimeLightSubsystem m_limeLightSubsystem = new LimeLightSubsystem("limelight-bottom");
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(new LimeLightSubsystem("limelight-top"), m_limeLightSubsystem);
-
+  private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
   
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(); 
   private ShuffleboardTab tab = Shuffleboard.getTab("Testing");
@@ -103,6 +106,9 @@ public class RobotContainer {
     SmartDashboard.putData("Manual Run Flywheel", new RunCommand(() -> m_shooterSubsystem.setTargetRPM(targetRPM), m_shooterSubsystem));
     SmartDashboard.putData("Manual Run Hood", new RunCommand(() -> m_hoodSubsystem.setSetpoint(hoodTarget), m_hoodSubsystem));
     SmartDashboard.putData("Reset Hood", new ResetHood(m_hoodSubsystem));
+    SmartDashboard.putData("Reset Climber", new ResetClimberAngle(m_climberSubsystem));
+    SmartDashboard.putData("Retract Climber", new RetractClimber(m_climberSubsystem));
+    SmartDashboard.putData("Reset Distance of Climber", new InstantCommand(() -> m_climberSubsystem.extensionMotor.setSelectedSensorPosition(0)));
     SmartDashboard.putData("Shoot one ball", new ShootOneBall(m_routingSubsystem));
     SmartDashboard.putData("Route one ball", new RouteOneBall(m_routingSubsystem));
     SmartDashboard.putData("Run Routing for Shooting", new RunCommand(() -> {m_routingSubsystem.setOuterFeederRPM(700); m_routingSubsystem.setInnerFeederRPM(500);}, m_routingSubsystem));
