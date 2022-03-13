@@ -145,10 +145,10 @@ public class RobotContainer {
     // new Button(m_controller::getBButton)
     //         // No requirements because we don't need to interrupt anything
     //         .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
-    // new Button(m_controller::getAButton)
-    //         .whenPressed(new RunCommand(() -> m_intakeSubsystem.setIntakeRPM(1000)));
-    // new Button(m_controller::getXButton)
-    //         .whenPressed(new RunCommand(() -> m_intakeSubsystem.toggleIntake()));
+    new Button(m_controller::getYButton)
+            .whenPressed(new RunCommand(() -> m_intakeSubsystem.setIntakeRPM(1000)));
+    new Button(m_controller::getXButton)
+            .whenPressed(new RunCommand(() -> m_intakeSubsystem.toggleIntake()));
   
   }
 

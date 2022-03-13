@@ -16,13 +16,13 @@ import frc.robot.components.Falcon;
 
 public class IntakeSubsystem extends SubsystemBase {
 
-  // DoubleSolenoid intakeSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, Constants.INTAKE_SOLENOID_FORWARD, Constants.INTAKE_SOLENOID_BACKWARD);
+  DoubleSolenoid intakeSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, Constants.INTAKE_SOLENOID_FORWARD, Constants.INTAKE_SOLENOID_BACKWARD);
   public final WPI_TalonFX intakeMotor; 
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem() {
     intakeMotor = new WPI_TalonFX(Constants.INTAKE_MOTOR);
     intakeMotor.config_kP(0, 0.15, 20);
-    // intakeSolenoid.set(kReverse);
+    intakeSolenoid.set(kReverse);
   }
 
   public void setIntakeRPM(double rpm){
@@ -30,7 +30,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void toggleIntake(){
-    // intakeSolenoid.toggle();
+    intakeSolenoid.toggle();
   }
   
   @Override
