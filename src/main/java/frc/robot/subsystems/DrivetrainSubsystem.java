@@ -182,7 +182,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 //     m_pigeon.setFusedHeading(0.0);
 
     // FIXME Uncomment if you are using a NavX
-   m_navx.zeroYaw();
+   m_navx.reset();
   }
 
   public Rotation2d getGyroscopeRotation() {

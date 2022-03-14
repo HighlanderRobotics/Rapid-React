@@ -85,11 +85,12 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
-    m_drivetrainSubsystem.setDefaultCommand(new PIDHeadingDriveCommand(
+    m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
             m_drivetrainSubsystem,
             () -> -modifyAxis(m_controller.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
             () -> -modifyAxis(m_controller.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(m_controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
+            () -> -modifyAxis(m_controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+            true
     ));
 
   //  SmartDashboard.putData("Auto Aim", new AutoAim(m_limelightsubststem, m_drivetrainSubsystem, m_controller));
