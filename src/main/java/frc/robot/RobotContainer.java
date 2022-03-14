@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -144,19 +145,29 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-    new Button(m_controller::getBButton)
-            // No requirements because we don't need to interrupt anything
-           .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
     // new Button(m_controller::getBButton)
     //         // No requirements because we don't need to interrupt anything
-    //         .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+    //        .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+    new Button(m_controller::getBButton)
+            // No requirements because we don't need to interrupt anything
+            .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+    // new Button(m_controller::getAButton)
+    //         .whenPressed(new ParallelCommandGroup(
+    //           new AutoAim(m_visionSubsystem.lowerLimeLight, m_drivetrainSubsystem, m_controller),
+    //           new RunCommand(() -> m_hoodSubsystem.setSetpoint(m_visionSubsystem.getTargetHoodAngle(), m_hoodSubsystem),
+    //           new RunCommand(() -> m_shooterSubsystem.setTargetRPM(m_visionSubsystem.getTargetRPM()), m_shooterSubsystem),
+    //           new SequentialCommandGroup(new WaitCommand(3), new ShootingSequence(m_routingSubsystem)
+    //           )));
+
+
     new Button(m_controller::getYButton)
             .whenPressed(new RunCommand(() -> m_intakeSubsystem.setIntakeRPM(1000)));
     new Button(m_controller::getXButton)
             .whenPressed(new RunCommand(() -> m_intakeSubsystem.toggleIntake()));
-  
+    new Button(m_controller::getRightBumper)
+            .whileHeld(new RunCommand(() -> {m_shooterSubsystem.setTargetRPM(1000); m_routingSubsystem.setInnerFeederRPM(500);}));
     new Button(m_controller::getLeftBumper)
-            .whenActive(new RunCommand(() -> {m_intakeSubsystem.extend(); m_intakeSubsystem.setIntakeRPM(1000);}, m_intakeSubsystem));
+            .whileHeld(new RunCommand(() -> {m_intakeSubsystem.extend(); m_intakeSubsystem.setIntakeRPM(2000);}, m_intakeSubsystem));
   }
 
   /**
