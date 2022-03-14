@@ -22,7 +22,7 @@ public class RetractClimber extends CommandBase {
   // Move the hood down (is this a good power?)
   @Override
   public void execute() {
-    climber.extensionMotor.set(TalonFXControlMode.PercentOutput, -0.05);
+    climber.extensionMotor.set(TalonFXControlMode.PercentOutput, -0.02);
   }
 
   // Stop the motor at the end (even though the default command should take over)
