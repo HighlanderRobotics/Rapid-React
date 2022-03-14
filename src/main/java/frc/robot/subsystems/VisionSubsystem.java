@@ -77,6 +77,9 @@ public class VisionSubsystem extends SubsystemBase implements Loggable {
     }
   }
 
+  public double pidOutput(){
+    return lowerLimeLight.pidOutput;
+  }
 
 
   @Override
