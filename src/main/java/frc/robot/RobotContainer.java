@@ -20,7 +20,7 @@ import frc.robot.commands.PIDHeadingDriveCommand;
 import frc.robot.commands.ResetHood;
 import frc.robot.commands.RouteOneBall;
 import frc.robot.commands.ShootOneBall;
-import frc.robot.commands.ShootingSequence;
+import frc.robot.commands.ShootTwoBalls;
 import frc.robot.subsystems.LimeLightSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
@@ -108,7 +108,7 @@ public class RobotContainer {
     SmartDashboard.putData("Shoot one ball", new ShootOneBall(m_routingSubsystem));
     SmartDashboard.putData("Route one ball", new RouteOneBall(m_routingSubsystem));
     SmartDashboard.putData("Run Routing for Shooting", new RunCommand(() -> {m_routingSubsystem.setOuterFeederRPM(700); m_routingSubsystem.setInnerFeederRPM(500);}, m_routingSubsystem));
-    SmartDashboard.putData("Shooting sequence", new ShootingSequence(m_routingSubsystem));
+    SmartDashboard.putData("Shoot two balls", new ShootTwoBalls(m_routingSubsystem));
     SmartDashboard.putData("Extend Intake", new RunCommand(() -> m_intakeSubsystem.extend(), m_intakeSubsystem));
     SmartDashboard.putData("Reject Balls", new RunCommand(() -> {m_routingSubsystem.setOuterFeederRPM(-700); m_routingSubsystem.setInnerFeederRPM(-500);}, m_routingSubsystem));
     SmartDashboard.putData("Shoot", 
@@ -134,7 +134,7 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
     
-    SmartDashboard.putData("Auto Aim", new AutoAim(m_limeLightSubsystem, m_drivetrainSubsystem, m_controller));
+    SmartDashboard.putData("Auto Aim", new AutoAim(m_visionSubsystem, m_drivetrainSubsystem));
   }
 
   /**
