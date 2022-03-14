@@ -136,7 +136,7 @@ public class RobotContainer {
     new Button(m_controller::getXButton)
             .whenPressed(new RunCommand(() -> m_intakeSubsystem.toggleIntake()));
     new Button(m_controller::getRightBumper)
-            .whileHeld(new RunCommand(() -> {m_shooterSubsystem.setTargetRPM(1000); m_routingSubsystem.setInnerFeederRPM(500);}));
+            .whileHeld(new RunCommand(() -> {m_shooterSubsystem.setTargetRPM(2000); m_routingSubsystem.setInnerFeederRPM(500);}));
     new Button(m_controller::getLeftBumper)
             .whileHeld(new RunCommand(() -> {m_intakeSubsystem.extend(); m_intakeSubsystem.setIntakeRPM(2000);}, m_intakeSubsystem));
   }
