@@ -16,7 +16,6 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class PIDHeadingDriveCommand extends PIDCommand {
   DrivetrainSubsystem drivetrainSubsystem;
-  DoubleSupplier rotation;
   
   // Creates a new PIDHeadingDriveCommand.
   public PIDHeadingDriveCommand(DrivetrainSubsystem drivetrainSubsystem, 
@@ -29,11 +28,10 @@ public class PIDHeadingDriveCommand extends PIDCommand {
         // This should return the measurement
         () -> drivetrainSubsystem.getGyroscopeRotation().getDegrees(),
         // This should return the setpoint (can also be a constant)
-        () -> 0,
+        rotationSupplier,
         // This uses the output
         output -> new DefaultDriveCommand(drivetrainSubsystem, translationXSupplier, translationYSupplier, () -> output, true)
         );
-        rotation = rotationSupplier;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drivetrainSubsystem);
     // Configure additional PID options by calling `getController` here.
@@ -41,7 +39,6 @@ public class PIDHeadingDriveCommand extends PIDCommand {
 
   @Override
   public void execute() {
-    m_setpoint = rotation;
   }
 
   
