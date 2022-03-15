@@ -34,7 +34,7 @@ public class ShootingSequence extends ParallelCommandGroup {
       new SequentialCommandGroup(
         new ParallelCommandGroup(
           new AutoAim(visionSubsystem, drivetrainSubsystem),
-          new WaitUntilCommand(shooterSubsystem::isRPMInRange)
+          new WaitCommand(0.5)
         ),
         new InstantCommand(drivetrainSubsystem::lock),
         new ShootTwoBalls(routingSubsystem)

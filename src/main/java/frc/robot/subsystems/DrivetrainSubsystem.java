@@ -93,6 +93,8 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 
   private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
+  private double yawOffset = 0;
+
   @Log
   private final Field2d m_field = new Field2d();
   
@@ -182,7 +184,9 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 //     m_pigeon.setFusedHeading(0.0);
 
     // FIXME Uncomment if you are using a NavX
-   m_navx.reset();
+    System.out.println("reset");
+   m_navx.zeroYaw();
+   yawOffset = getGyroscopeRotation().getDegrees() + yawOffset;
   }
 
   public Rotation2d getGyroscopeRotation() {
@@ -192,8 +196,9 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     // FIXME Uncomment if you are using a NavX
    if (m_navx.isMagnetometerCalibrated()) {
      // We will only get valid fused headings if the magnetometer is calibrated
-     return Rotation2d.fromDegrees(360 - m_navx.getFusedHeading());
+     return Rotation2d.fromDegrees(360 - m_navx.getFusedHeading() - yawOffset);
    }
+
 
    // We have to invert the angle of the NavX so that rotating the robot counter-clockwise makes the angle increase.
    if(m_navx.getYaw()<0){ 

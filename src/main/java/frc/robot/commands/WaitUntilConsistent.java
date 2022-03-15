@@ -11,7 +11,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 public class WaitUntilConsistent extends CommandBase {
 
   private ShooterSubsystem shooter;
-  private Timer timer;
+  private Timer timer = new Timer();
   private double time;
 
   /** Creates a WaitUntilConsistent, which waits until the shooter is consistently at RPM */

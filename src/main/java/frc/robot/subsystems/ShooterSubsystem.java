@@ -74,7 +74,7 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable {
   }
 
   public boolean isRPMInRange(){
-    return (Math.abs(Falcon.ticksToRPM(flywheel.getSelectedSensorVelocity()) - targetRPM)) < 10;
+    return (Math.abs(Falcon.ticksToRPM(flywheel.getSelectedSensorVelocity()) - targetRPM)) < 50;
   }
 
   @Log
