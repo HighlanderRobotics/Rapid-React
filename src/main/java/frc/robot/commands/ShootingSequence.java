@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.RoutingSubsystem;
@@ -30,7 +32,10 @@ public class ShootingSequence extends ParallelCommandGroup {
       new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem),
       new RunCommand(() -> hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()), hoodSubsystem),
       new SequentialCommandGroup(
-        new AutoAim(visionSubsystem, drivetrainSubsystem),
+        new ParallelCommandGroup(
+          new AutoAim(visionSubsystem, drivetrainSubsystem),
+          new WaitCommand(0.5)
+        ),
         new InstantCommand(drivetrainSubsystem::lock),
         new ShootTwoBalls(routingSubsystem)
       )

@@ -52,6 +52,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
    * <p>
    * This is a measure of how fast the robot should be able to drive in a straight line.
    */
+  @Log
   public static final double MAX_VELOCITY_METERS_PER_SECOND = 100.0 / 60.0 *
           SdsModuleConfigurations.MK3_STANDARD.getDriveReduction() *
           SdsModuleConfigurations.MK3_STANDARD.getWheelDiameter() * Math.PI;
@@ -61,6 +62,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
    * This is a measure of how fast the robot can rotate in place.
    */
   // Here we calculate the theoretical maximum angular velocity. You can also replace this with a measured amount.
+  @Log
   public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = ROTATION_SPEED_MULTPILIER * MAX_VELOCITY_METERS_PER_SECOND /
           Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);
 
@@ -92,6 +94,8 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
   private final SwerveModule m_backRightModule;
 
   private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
+
+  private double yawOffset = 0;
 
   @Log
   private final Field2d m_field = new Field2d();
@@ -182,7 +186,9 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 //     m_pigeon.setFusedHeading(0.0);
 
     // FIXME Uncomment if you are using a NavX
+    System.out.println("reset");
    m_navx.zeroYaw();
+   yawOffset = getGyroscopeRotation().getDegrees() + yawOffset;
   }
 
   public Rotation2d getGyroscopeRotation() {
@@ -192,8 +198,9 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     // FIXME Uncomment if you are using a NavX
    if (m_navx.isMagnetometerCalibrated()) {
      // We will only get valid fused headings if the magnetometer is calibrated
-     return Rotation2d.fromDegrees(360 - m_navx.getFusedHeading());
+     return Rotation2d.fromDegrees(360 - m_navx.getFusedHeading() - yawOffset);
    }
+
 
    // We have to invert the angle of the NavX so that rotating the robot counter-clockwise makes the angle increase.
    if(m_navx.getYaw()<0){ 
@@ -221,17 +228,17 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
   }
 
   private SwerveModuleState getModuleState(SwerveModule module){
-    return new SwerveModuleState(module.getDriveVelocity(), Rotation2d.fromDegrees(module.getSteerAngle()));
+    return new SwerveModuleState(module.getDriveVelocity(), Rotation2d.fromDegrees(Math.toDegrees(module.getSteerAngle())));
   }
 
   @Override
   public void periodic() {
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
     m_odometry.update(getGyroscopeRotation(), 
-    getModuleState(m_frontLeftModule), 
-    getModuleState(m_frontRightModule),
-    getModuleState(m_backLeftModule),
-    getModuleState(m_backRightModule));
+      getModuleState(m_frontLeftModule), 
+      getModuleState(m_frontRightModule),
+      getModuleState(m_backLeftModule),
+      getModuleState(m_backRightModule));
     SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
     if(!lockOut){
@@ -249,6 +256,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     SmartDashboard.putNumber("heading", getGyroscopeRotation().getDegrees());
 
     m_field.setRobotPose(m_odometry.getPoseMeters());
+    SmartDashboard.putData("Field", m_field);
 
     SmartDashboard.putNumber("X Pose", m_odometry.getPoseMeters().getX());
     SmartDashboard.putNumber("Y Pose", m_odometry.getPoseMeters().getY());

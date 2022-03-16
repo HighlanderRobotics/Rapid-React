@@ -81,11 +81,12 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
-    m_drivetrainSubsystem.setDefaultCommand(new PIDHeadingDriveCommand(
+    m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
             m_drivetrainSubsystem,
             () -> -modifyAxis(m_controller.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
             () -> -modifyAxis(m_controller.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(m_controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
+            () -> -modifyAxis(m_controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+            true
     ));
 
     SmartDashboard.putData("Aim", new RunCommand(() -> m_hoodSubsystem.setSetpoint(m_visionSubsystem.getTargetHoodAngle()), m_hoodSubsystem));
@@ -135,7 +136,7 @@ public class RobotContainer {
     new Button(m_controller::getXButton)
             .whenPressed(new RunCommand(() -> m_intakeSubsystem.toggleIntake()));
     new Button(m_controller::getRightBumper)
-            .whileHeld(new RunCommand(() -> {m_shooterSubsystem.setTargetRPM(1000); m_routingSubsystem.setInnerFeederRPM(500);}));
+            .whileHeld(new RunCommand(() -> {m_shooterSubsystem.setTargetRPM(2000); m_routingSubsystem.setInnerFeederRPM(500);}));
     new Button(m_controller::getLeftBumper)
             .whileHeld(new RunCommand(() -> {m_intakeSubsystem.extend(); m_intakeSubsystem.setIntakeRPM(2000);}, m_intakeSubsystem));
   }
