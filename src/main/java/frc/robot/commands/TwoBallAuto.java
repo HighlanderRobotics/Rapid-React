@@ -4,15 +4,15 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.RoutingSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -20,25 +20,26 @@ import frc.robot.subsystems.VisionSubsystem;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class ShootingSequence extends ParallelCommandGroup {
-  /** Creates a new ShootingSequence. */
-  public ShootingSequence(HoodSubsystem hoodSubsystem,
-  ShooterSubsystem shooterSubsystem,
-  DrivetrainSubsystem drivetrainSubsystem,
-  VisionSubsystem visionSubsystem,
-  RoutingSubsystem routingSubsystem) {
+public class TwoBallAuto extends ParallelCommandGroup {
+  /** Creates a new TwoBallAuto. */
+  public TwoBallAuto(
+    DrivetrainSubsystem drivetrainSubsystem, 
+    HoodSubsystem hoodSubsystem, 
+    ShooterSubsystem shooterSubsystem, 
+    VisionSubsystem visionSubsystem, 
+    RoutingSubsystem routingSubsystem,
+    IntakeSubsystem intakeSubsystem) {
+    // Add your commands in the addCommands() call, e.g.
     addCommands(
-      new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem),
-      new RunCommand(() -> hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()), hoodSubsystem),
+      new RunCommand(() -> {intakeSubsystem.extend(); intakeSubsystem.setIntakeRPM(3000);}),
       new SequentialCommandGroup(
-        new ParallelCommandGroup(
-          new AutoAim(visionSubsystem, drivetrainSubsystem),
-          new WaitCommand(0.5)
+        new ParallelRaceGroup (
+          new DefaultDriveCommand(drivetrainSubsystem, () -> 0, () -> -0.1, () -> 0, false),
+          new WaitCommand(3),
+          new WaitUntilCommand(() -> routingSubsystem.lowerBeambreak.get())
         ),
-        new InstantCommand(drivetrainSubsystem::lock),
-        new ShootTwoBalls(routingSubsystem)
+        new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem)
       )
     );
   }
 }
-

@@ -130,7 +130,7 @@ public class RobotContainer {
     new Button(m_controller::getBButton)
             .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
     new Button(m_controller::getAButton)
-            .whileHeld(new ShootingSequence(m_hoodSubsystem, m_shooterSubsystem, m_drivetrainSubsystem, m_visionSubsystem, m_routingSubsystem, m_controller));
+            .whileHeld(new ShootingSequence(m_hoodSubsystem, m_shooterSubsystem, m_drivetrainSubsystem, m_visionSubsystem, m_routingSubsystem));
     new Button(m_controller::getYButton)
             .whenPressed(new RunCommand(() -> m_intakeSubsystem.setIntakeRPM(1000)));
     new Button(m_controller::getXButton)
