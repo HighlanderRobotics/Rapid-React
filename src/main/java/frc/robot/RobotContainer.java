@@ -15,7 +15,9 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.AutoAim;
+import frc.robot.commands.BallRejection;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.ExtendIntake;
 import frc.robot.commands.PIDHeadingDriveCommand;
 import frc.robot.commands.ResetHood;
 import frc.robot.commands.RouteOneBall;
@@ -99,7 +101,6 @@ public class RobotContainer {
     SmartDashboard.putData("Run Routing for Shooting", new RunCommand(() -> {m_routingSubsystem.setOuterFeederRPM(700); m_routingSubsystem.setInnerFeederRPM(500);}, m_routingSubsystem));
     SmartDashboard.putData("Shoot two balls", new ShootTwoBalls(m_routingSubsystem));
     SmartDashboard.putData("Extend Intake", new RunCommand(() -> m_intakeSubsystem.extend(), m_intakeSubsystem));
-    SmartDashboard.putData("Reject Balls", new RunCommand(() -> {m_routingSubsystem.setOuterFeederRPM(-700); m_routingSubsystem.setInnerFeederRPM(-500);}, m_routingSubsystem));
     SmartDashboard.putData("Shoot", 
       new ParallelCommandGroup(new SequentialCommandGroup(
         new WaitUntilCommand(m_shooterSubsystem::isRPMInRange), 
@@ -108,6 +109,7 @@ public class RobotContainer {
     SmartDashboard.putData("Run Intake", new RunCommand(() -> m_intakeSubsystem.setIntakeRPM(3000)));
     SmartDashboard.putData("Toggle Intake", new InstantCommand(() -> m_intakeSubsystem.toggleIntake(), m_intakeSubsystem));
     SmartDashboard.putData("Auto Aim", new AutoAim(m_visionSubsystem, m_drivetrainSubsystem));
+    SmartDashboard.putData("Reject Balls", new SequentialCommandGroup(new ExtendIntake(m_intakeSubsystem).withTimeout(0.5), new BallRejection(m_intakeSubsystem, m_routingSubsystem).withTimeout(1.5)));
 
     m_intakeSubsystem.setDefaultCommand(new RunCommand(() -> {m_intakeSubsystem.retract(); m_intakeSubsystem.setIntakeRPM(0);}, m_intakeSubsystem));
     m_shooterSubsystem.setDefaultCommand(new RunCommand(() -> m_shooterSubsystem.setTargetRPM(0), m_shooterSubsystem));
@@ -132,14 +134,15 @@ public class RobotContainer {
     new Button(m_controller::getAButton)
             .whileHeld(new ShootingSequence(m_hoodSubsystem, m_shooterSubsystem, m_drivetrainSubsystem, m_visionSubsystem, m_routingSubsystem, m_controller));
     new Button(m_controller::getYButton)
-            .whenPressed(new RunCommand(() -> m_intakeSubsystem.setIntakeRPM(1000)));
+            .whenPressed(new RunCommand(() -> m_intakeSubsystem.setIntakeRPM(2000)));
     new Button(m_controller::getXButton)
             .whenPressed(new RunCommand(() -> m_intakeSubsystem.toggleIntake()));
     new Button(m_controller::getRightBumper)
             .whileHeld(new RunCommand(() -> {m_shooterSubsystem.setTargetRPM(2000); m_routingSubsystem.setInnerFeederRPM(500);}));
     new Button(m_controller::getLeftBumper)
-            .whileHeld(new RunCommand(() -> {m_intakeSubsystem.extend(); m_intakeSubsystem.setIntakeRPM(2000);}, m_intakeSubsystem));
+            .whileHeld(new RunCommand(() -> {m_intakeSubsystem.extend(); m_intakeSubsystem.setIntakeRPM(3000);}, m_intakeSubsystem));
   }
+
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
