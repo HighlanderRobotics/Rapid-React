@@ -5,11 +5,15 @@
 package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 // import com.ctre.phoenix.sensors.PigeonIMU;
 import com.swervedrivespecialties.swervelib.Mk3SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -17,6 +21,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -25,6 +30,9 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
@@ -34,7 +42,9 @@ import static frc.robot.Constants.*;
 import java.util.function.ToDoubleFunction;
 
 public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
-  boolean lockOut = false;
+  private boolean lockOut = false;
+  private boolean pathRunning = false;
+
   /**
    * The maximum voltage that will be delivered to the drive motors.
    * <p>
@@ -227,6 +237,28 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     lockOut = !lockOut;
   }
 
+  public Command followPathCommand(PathPlannerTrajectory path) {
+    return new SequentialCommandGroup(
+      new InstantCommand(() -> { pathRunning = true; }),
+      new PPSwerveControllerCommand(
+        path,
+        () -> m_odometry.getPoseMeters(),
+        m_kinematics,
+        new PIDController(0.0080395, 0, 0),
+        new PIDController(0.0080395, 0, 0),
+        new ProfiledPIDController(0.003, 0, 0, new Constraints(2, 2)),
+        (SwerveModuleState[] states) -> {
+          m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
+          m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
+          m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
+          m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
+        },
+        this
+      ),
+      new InstantCommand(() -> { pathRunning = false; })
+    );
+  }
+
   private SwerveModuleState getModuleState(SwerveModule module){
     return new SwerveModuleState(module.getDriveVelocity(), Rotation2d.fromDegrees(Math.toDegrees(module.getSteerAngle())));
   }
@@ -238,19 +270,21 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
       getModuleState(m_frontLeftModule), 
       getModuleState(m_frontRightModule),
       getModuleState(m_backLeftModule),
-      getModuleState(m_backRightModule));
+     getModuleState(m_backRightModule));
     SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
-    if(!lockOut){
-        m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
-        m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
-        m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
-        m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
-    } else {
-        m_frontLeftModule.set(0, 45);
-        m_frontRightModule.set(0, -45);
-        m_backLeftModule.set(0, -45);
-        m_backRightModule.set(0, 45);
+    if (!pathRunning) {
+      if(!lockOut){
+          m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
+          m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
+          m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
+          m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
+      } else {
+          m_frontLeftModule.set(0, 45);
+          m_frontRightModule.set(0, -45);
+          m_backLeftModule.set(0, -45);
+          m_backRightModule.set(0, 45);
+      }
     }
 
     SmartDashboard.putNumber("heading", getGyroscopeRotation().getDegrees());
