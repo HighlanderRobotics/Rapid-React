@@ -40,12 +40,12 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
     outerFeeder.setNeutralMode(NeutralMode.Brake);
   }
 
-  @Log
+  
   public double getInnerRPM(){
     return Falcon.ticksToRPM(innerFeeder.getSelectedSensorVelocity());
   }
 
-  @Log
+  
   public double getOuterRPM(){
     return Falcon.ticksToRPM(outerFeeder.getSelectedSensorVelocity());
   }

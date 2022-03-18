@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -31,15 +32,18 @@ public class TwoBallAuto extends ParallelCommandGroup {
     IntakeSubsystem intakeSubsystem) {
     // Add your commands in the addCommands() call, e.g.
     addCommands(
+      new RunCommand(() -> routingSubsystem.runRouting(true)),
       new RunCommand(() -> {intakeSubsystem.extend(); intakeSubsystem.setIntakeRPM(3000);}),
       new SequentialCommandGroup(
+        new WaitCommand (1),
         new ParallelRaceGroup (
-          new DefaultDriveCommand(drivetrainSubsystem, () -> 0, () -> -0.1, () -> 0, false),
-          new WaitCommand(3),
-          new WaitUntilCommand(() -> routingSubsystem.lowerBeambreak.get())
+          new DefaultDriveCommand(drivetrainSubsystem, () -> -0.1 * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND, () -> 0, () -> 0, false),
+          new WaitCommand(3)
+          // new WaitUntilCommand(() -> routingSubsystem.upperBeambreak.get())
         ),
         new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem)
       )
     );
+    addRequirements(drivetrainSubsystem, hoodSubsystem, shooterSubsystem, routingSubsystem, intakeSubsystem);
   }
 }

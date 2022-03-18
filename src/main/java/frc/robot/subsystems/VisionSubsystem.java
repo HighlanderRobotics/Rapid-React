@@ -15,16 +15,16 @@ public class VisionSubsystem extends SubsystemBase implements Loggable {
   final LimeLightSubsystem upperLimeLight;
   public final LimeLightSubsystem lowerLimeLight;
 
-  @Log
+  
   private boolean usingLowerLimeLight = false;
 
   private double feetToTarget = 0.0;
   private double degreesToTarget = 0;
 
   private ShootingLookup lookup;
-  @Log
+  
   private double targetRPM;
-  @Log
+  
   private double targetHoodAngle;
 
   /** Creates a new VisionSubsystem. */

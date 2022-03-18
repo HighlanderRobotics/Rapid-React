@@ -24,6 +24,7 @@ import frc.robot.commands.RouteOneBall;
 import frc.robot.commands.ShootOneBall;
 import frc.robot.commands.ShootTwoBalls;
 import frc.robot.commands.ShootingSequence;
+import frc.robot.commands.TwoBallAuto;
 import frc.robot.subsystems.LimeLightSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
@@ -150,7 +151,8 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new PrintCommand("Running autonomous");
+    // return new PrintCommand("Running autonomous");
+    return new TwoBallAuto(m_drivetrainSubsystem, m_hoodSubsystem, m_shooterSubsystem, m_visionSubsystem, m_routingSubsystem, m_intakeSubsystem);
   }
   
   private static double deadband(double value, double deadband) {

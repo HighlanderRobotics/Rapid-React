@@ -31,7 +31,6 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
     // Other two numbers were found on https://reca.lc/arm based on the assumptions:
     // 1 NEO 550, 5in to CoM, 5lbs; should update this if we have more information
     public final ArmFeedforward feedforward = new ArmFeedforward(0, 0.008, 0.0391);
-    @Log
     double rotations;
     
     public HoodSubsystem()
@@ -78,18 +77,17 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
     }
 
     @Override
-    @Log
     protected double getMeasurement() {
         // 2048 encoder ticks in a rotation
         rotations = angleEncoder.get() / 2048.0;
         //1.47 rotations in the full range - same as around 40 degrees
         return (rotations/1.47) * 40;
     }
-    @Log
+
     public boolean getUpperLimit(){
         return topLimitSwitch.get();
     }
-    @Log
+    
     public boolean getLowerLimit(){
         return bottomLimitSwitch.get();
     }
