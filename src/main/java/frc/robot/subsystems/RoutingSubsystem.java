@@ -11,6 +11,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.components.Falcon;
@@ -58,7 +60,12 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
     outerFeeder.set(TalonFXControlMode.Velocity, Falcon.rpmToTicks(rpm));
   }
 
-  
+  public boolean rejectBall(){
+    if (DriverStation.getAlliance() == Alliance.Blue){
+      return false; //getColor().blue > 1000;
+    }
+    return false; //getColor().red > 1000;
+  }
 
   public void runRouting(boolean intakeOut){
     boolean ballInLower = !lowerBeambreak.get();
