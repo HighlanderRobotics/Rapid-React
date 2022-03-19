@@ -75,5 +75,6 @@ public final class Constants {
     public static final double ksVolts = 4.15;
     // public static final double ksVoltSecondsPerMeter = 0.0006;
     // public static final double kaVoltSecondsSquaredPerMeter = -0.0055;
+    public static final int LED_PORT = 0;
 
 }

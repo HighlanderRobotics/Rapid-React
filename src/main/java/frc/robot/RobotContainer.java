@@ -7,6 +7,8 @@ package frc.robot;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
+import javax.swing.text.DefaultCaret;
+
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 
 import edu.wpi.first.wpilibj.Compressor;
@@ -19,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.BallRejection;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.DefaultLedCommand;
 import frc.robot.commands.ExtendIntake;
 import frc.robot.commands.PIDHeadingDriveCommand;
 import frc.robot.commands.ResetHood;
@@ -65,7 +68,7 @@ public class RobotContainer {
   private final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem(); 
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final RoutingSubsystem routingSubsystem = new RoutingSubsystem();
-  
+  private final LEDSubsystem ledSubsystem = new LEDSubsystem();
 
   @Config
   double hoodTarget = 20.0;
@@ -132,6 +135,7 @@ public class RobotContainer {
         () -> routingSubsystem.rejectBall())
       );
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
+    ledSubsystem.setDefaultCommand(new DefaultLedCommand(ledSubsystem, visionSubsystem, routingSubsystem));
 
     // Configure the button bindings
     configureButtonBindings();
