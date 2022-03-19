@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.components.Falcon;
 import frc.robot.components.LazyTalonFX;
+import frc.robot.components.PicoColorSensor;
+import frc.robot.components.PicoColorSensor.RawColor;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
@@ -25,6 +27,7 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
   public final TalonFX outerFeeder = new LazyTalonFX(Constants.OUTER_FEEDER_MOTOR);
   PIDController innerFeederPID = new PIDController(0.05, 0.0, 0);
   PIDController outerFeederPID = new PIDController(0.05, 0.0, 0);
+  public final PicoColorSensor colorSensor = new PicoColorSensor();
   /** Creates a new RoutingSubsystem. */
   public RoutingSubsystem() {
     innerFeeder.config_kP(0, innerFeederPID.getP());
@@ -75,8 +78,16 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
       setOuterFeederRPM(0);
     }
   }
+
+  public RawColor getColor(){
+    return colorSensor.getRawColor0();
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    RawColor color = getColor();
+    // System.out.println("Red " + (color.red / (color.blue + color.red)));
+    // System.out.println(getColor().red);
   }
 }
