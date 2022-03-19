@@ -244,9 +244,9 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
         path,
         () -> m_odometry.getPoseMeters(),
         m_kinematics,
-        new PIDController(0.0080395, 0, 0),
-        new PIDController(0.0080395, 0, 0),
-        new ProfiledPIDController(0.003, 0, 0, new Constraints(2, 2)),
+        new PIDController(0.1, 0, 0), //was 0.0080395
+        new PIDController(1.4, 0, 0), //coppied from 3175 since they have a similar bot and idk where to get these values
+        new ProfiledPIDController(2.8, 0, 0, new Constraints(2, 2)), //was 0.003
         (SwerveModuleState[] states) -> {
           m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
           m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
@@ -255,7 +255,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
         },
         this
       ),
-      new InstantCommand(() -> { pathRunning = false; })
+      new InstantCommand(() -> { pathRunning = false; m_chassisSpeeds = new ChassisSpeeds(0, 0, 0);})
     );
   }
 
