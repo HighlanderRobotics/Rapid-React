@@ -14,6 +14,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.RoutingSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -29,7 +30,8 @@ public class TwoBallAuto extends ParallelCommandGroup {
     ShooterSubsystem shooterSubsystem, 
     VisionSubsystem visionSubsystem, 
     RoutingSubsystem routingSubsystem,
-    IntakeSubsystem intakeSubsystem) {
+    IntakeSubsystem intakeSubsystem,
+    LEDSubsystem ledSubsystem) {
     // Add your commands in the addCommands() call, e.g.
     addCommands(
       new RunCommand(() -> routingSubsystem.runRouting(true)),
@@ -41,7 +43,7 @@ public class TwoBallAuto extends ParallelCommandGroup {
           new WaitCommand(3)
           // new WaitUntilCommand(() -> routingSubsystem.upperBeambreak.get())
         ),
-        new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem)
+        new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem)
       )
     );
     addRequirements(drivetrainSubsystem, hoodSubsystem, shooterSubsystem, routingSubsystem, intakeSubsystem);

@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -22,6 +23,14 @@ public class LEDSubsystem extends SubsystemBase {
   public void setSolidColor(int h, int s, int v){
     for (int i = 0; i < buffer.getLength(); i ++){
       buffer.setHSV(i, h, s, v);
+    }
+  }
+
+  public void setBlinkingColor(int h, int s, int v, double time){
+    if (DriverStation.getMatchTime() % time > time/2){
+      setSolidColor(h, s, v);
+    } else {
+      setSolidColor(0, 0, 0);
     }
   }
 

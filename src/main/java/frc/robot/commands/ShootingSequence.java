@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import java.rmi.dgc.Lease;
+
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -13,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.RoutingSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -26,16 +29,19 @@ public class ShootingSequence extends ParallelCommandGroup {
   ShooterSubsystem shooterSubsystem,
   DrivetrainSubsystem drivetrainSubsystem,
   VisionSubsystem visionSubsystem,
-  RoutingSubsystem routingSubsystem) {
+  RoutingSubsystem routingSubsystem,
+  LEDSubsystem ledSubsystem) {
     addCommands(
       new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem),
       new RunCommand(() -> hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()), hoodSubsystem),
       new SequentialCommandGroup(
+        new RunCommand(() -> ledSubsystem.setBlinkingColor(300, 100, 100, 0.5), ledSubsystem),
         new ParallelCommandGroup(
           new AutoAim(visionSubsystem, drivetrainSubsystem).withTimeout(2),
           new WaitCommand(0.5)
         ),
         new InstantCommand(drivetrainSubsystem::lock),
+        new RunCommand(() -> ledSubsystem.setBlinkingColor(300, 100, 100, 0.1), ledSubsystem),
         new ShootTwoBalls(routingSubsystem)
       )
     );

@@ -151,7 +151,7 @@ public class RobotContainer {
     new Button(controller::getBButton)
             .whenPressed(drivetrainSubsystem::zeroGyroscope);
     new Button(controller::getAButton)
-            .whileHeld(new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem));
+            .whileHeld(new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem));
     new Button(controller::getYButton)
             .whenPressed(new RunCommand(() -> intakeSubsystem.setIntakeRPM(2000)));
     new Button(controller::getXButton)
@@ -170,7 +170,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // return new PrintCommand("Running autonomous");
-    return new TwoBallAuto(drivetrainSubsystem, hoodSubsystem, shooterSubsystem, visionSubsystem, routingSubsystem, intakeSubsystem);
+    return new TwoBallAuto(drivetrainSubsystem, hoodSubsystem, shooterSubsystem, visionSubsystem, routingSubsystem, intakeSubsystem, ledSubsystem);
   }
   
   private static double deadband(double value, double deadband) {
