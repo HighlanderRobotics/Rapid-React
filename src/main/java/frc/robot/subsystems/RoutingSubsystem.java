@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.components.Falcon;
 import frc.robot.components.LazyTalonFX;
+import frc.robot.components.PicoColorSensor;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
@@ -30,6 +31,7 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
   PIDController outerFeederPID = new PIDController(0.05, 0.0, 0);
   RawColor color = new RawColor(0, 0, 0, 0);
   double saturation = 0;
+  public final PicoColorSensor colorSensor = new PicoColorSensor();
   /** Creates a new RoutingSubsystem. */
   public RoutingSubsystem() {
     innerFeeder.config_kP(0, innerFeederPID.getP());
@@ -85,6 +87,11 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
       setOuterFeederRPM(0);
     }
   }
+
+  public frc.robot.components.PicoColorSensor.RawColor getColor(){
+    return colorSensor.getRawColor0();
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -93,5 +100,8 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
     //saturation = color.red + color.blue + color.green;
 
     
+    // color = getColor();
+    // System.out.println("Red " + (color.red / (color.blue + color.red)));
+    // System.out.println(getColor().red);
   }
 }

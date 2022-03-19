@@ -45,7 +45,7 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable {
     flywheel.setNeutralMode(NeutralMode.Coast);
     // flywheel.configClosedloopRamp(5.0);
     flywheel.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 10, 0.25));
-
+    flywheel.enableVoltageCompensation(true);
     flywheel.selectProfileSlot(0, 0);
     flywheel.config_kP(0, 0.06);
     flywheel.config_kI(0, 0.0);
