@@ -7,7 +7,7 @@ import io.github.oblarg.oblog.annotations.Config.Relay;
 
 public class LimitSwitch implements Loggable {
     
-    final boolean reversed; 
+    final boolean reversed;
     final DigitalInput input;
     public LimitSwitch(int channel, boolean reversed) {
         input = new DigitalInput(channel);

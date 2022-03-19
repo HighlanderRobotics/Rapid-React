@@ -21,14 +21,17 @@ import edu.wpi.first.wpilibj.Servo;
 
 
 public class ClimberSubsystem extends SubsystemBase implements Loggable {
-  private final LazyTalonFX angleMotor;
-  private final LazyTalonFX extensionMotor;
+  public final LazyTalonFX angleMotor;
+  public final LazyTalonFX extensionMotor;
   private final LimitSwitch limitSwitch;
   private final Servo ratchetServo;
+  public double targetDistance = 0;
   /** Creates a new ClimberSubsystem. */
   public ClimberSubsystem() {
     angleMotor = new LazyTalonFX(Constants.CLIMBER_ANGLE_MOTOR);
+    angleMotor.setInverted(true);
     extensionMotor = new LazyTalonFX(Constants.CLIMBER_EXTENSION_MOTOR);
+    extensionMotor.setInverted(true);
     limitSwitch = new LimitSwitch(Constants.CLIMBER_LIMIT_SWITCH, false);
     ratchetServo = new Servo(Constants.CLIMBER_RATCHET_SERVO);
   }
@@ -47,20 +50,22 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
   }
   @Log
   public double getClimberAngle() {
-    double ticks = angleMotor.getSensorCollection().getIntegratedSensorPosition();
-    return Falcon.ticksToDegrees(ticks/110);
+    double ticks = angleMotor.getSelectedSensorPosition();
+    // motor is inverted so this seems necessary
+    return -Falcon.ticksToDegrees(ticks/110);
   }
   @Config
   public void setDistance(double distance) {
-    if(distance<0) {
-      distance=0;
+    // don't let it go below the previous distance
+    if(distance<targetDistance) {
+      distance=targetDistance;
     }
+    targetDistance = distance;
     if(distance>5*12) {
       distance=5*12;
     }
-    //0.1014 is the number of inches per rotation
-    //30 should be the gear ratio
-    double rotations = distance/0.1014*30;
+    //0.1014 is the number of inches per rotation OF THE MOTOR (not of the wheel)
+    double rotations = distance/0.1014;
     double ticks = rotations*2048;
     extensionMotor.set(TalonFXControlMode.Position, ticks);
   
@@ -68,9 +73,9 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
   }
   @Log
   public double getDistance(){
-    double ticks = extensionMotor.getSensorCollection().getIntegratedSensorPosition();
+    double ticks = extensionMotor.getSelectedSensorPosition();
     double rotations= ticks/2048;
-    return rotations / 30 * 0.1014;
+    return -rotations * 0.1014;
   }
   @Log
   public boolean getClimberLimit(){
