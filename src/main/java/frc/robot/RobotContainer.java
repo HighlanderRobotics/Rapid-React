@@ -119,7 +119,11 @@ public class RobotContainer {
     m_hoodSubsystem.enable();
     m_routingSubsystem.setDefaultCommand(
       new ConditionalCommand(
-        new RunCommand(() -> m_routingSubsystem.runRouting(true), m_routingSubsystem),
+        new ConditionalCommand(
+          new RunCommand(() -> m_routingSubsystem.runRouting(true), m_routingSubsystem),
+          new ShootOneBall(m_routingSubsystem).alongWith(new RunCommand(() -> m_hoodSubsystem.setSetpoint(0))),
+          () -> m_routingSubsystem.upperBeambreak.get()
+        ),
         new BallRejection(m_intakeSubsystem, m_routingSubsystem),
         () -> m_routingSubsystem.rejectBall())
       );

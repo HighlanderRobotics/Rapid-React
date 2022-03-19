@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.revrobotics.ColorSensorV3.RawColor;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -27,6 +28,8 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
   public final TalonFX outerFeeder = new LazyTalonFX(Constants.OUTER_FEEDER_MOTOR);
   PIDController innerFeederPID = new PIDController(0.05, 0.0, 0);
   PIDController outerFeederPID = new PIDController(0.05, 0.0, 0);
+  RawColor color = new RawColor(0, 0, 0, 0);
+  double saturation = 0;
   /** Creates a new RoutingSubsystem. */
   public RoutingSubsystem() {
     innerFeeder.config_kP(0, innerFeederPID.getP());
@@ -62,9 +65,9 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
 
   public boolean rejectBall(){
     if (DriverStation.getAlliance() == Alliance.Blue){
-      return false; //getColor().blue > 1000;
+      return false; //color.red / saturation > 0.5 * saturation;
     }
-    return false; //getColor().red > 1000;
+    return false; //color.blue / saturation > 0.5 * saturation;
   }
 
   public void runRouting(boolean intakeOut){
@@ -85,5 +88,10 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    // color = getColor();
+    //saturation = color.red + color.blue + color.green;
+
+    
   }
 }
