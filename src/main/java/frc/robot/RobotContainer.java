@@ -7,6 +7,8 @@ package frc.robot;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
+import com.ctre.phoenix.led.CANdle.LEDStripType;
+
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -31,6 +33,7 @@ import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.RoutingSubsystem;
 import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
@@ -54,14 +57,15 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final XboxController m_controller = new XboxController(0);
-  private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
-  private final HoodSubsystem m_hoodSubsystem = new HoodSubsystem();
-  private final LimeLightSubsystem m_limeLightSubsystem = new LimeLightSubsystem("limelight-bottom");
-  private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(new LimeLightSubsystem("limelight-top"), m_limeLightSubsystem);
-  private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(); 
-  private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
-  private final RoutingSubsystem m_routingSubsystem = new RoutingSubsystem();
+  private final XboxController controller = new XboxController(0);
+  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+  private final HoodSubsystem hoodSubsystem = new HoodSubsystem();
+  private final LimeLightSubsystem limeLightSubsystem = new LimeLightSubsystem("limelight-bottom");
+  private final VisionSubsystem visionSubsystem = new VisionSubsystem(new LimeLightSubsystem("limelight-top"), limeLightSubsystem);
+  private final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem(); 
+  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+  private final RoutingSubsystem routingSubsystem = new RoutingSubsystem();
+  
 
   @Config
   double hoodTarget = 20.0;
@@ -85,49 +89,49 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
-    m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
-            m_drivetrainSubsystem,
-            () -> -modifyAxis(m_controller.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(m_controller.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(m_controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+    drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
+            drivetrainSubsystem,
+            () -> -modifyAxis(controller.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+            () -> -modifyAxis(controller.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+            () -> -modifyAxis(controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
             true
     ));
 
-    SmartDashboard.putData("Aim", new RunCommand(() -> m_hoodSubsystem.setSetpoint(m_visionSubsystem.getTargetHoodAngle()), m_hoodSubsystem));
-    SmartDashboard.putData("Aim", new RunCommand(() -> m_shooterSubsystem.setTargetRPM(m_visionSubsystem.getTargetRPM()), m_shooterSubsystem));
-    SmartDashboard.putData("Manual Run Flywheel", new RunCommand(() -> m_shooterSubsystem.setTargetRPM(targetRPM), m_shooterSubsystem));
-    SmartDashboard.putData("Manual Run Hood", new RunCommand(() -> m_hoodSubsystem.setSetpoint(hoodTarget), m_hoodSubsystem));
-    SmartDashboard.putData("Reset Hood", new ResetHood(m_hoodSubsystem));
-    SmartDashboard.putData("Shoot one ball", new ShootOneBall(m_routingSubsystem));
-    SmartDashboard.putData("Route one ball", new RouteOneBall(m_routingSubsystem));
-    SmartDashboard.putData("Run Routing for Shooting", new RunCommand(() -> {m_routingSubsystem.setOuterFeederRPM(700); m_routingSubsystem.setInnerFeederRPM(500);}, m_routingSubsystem));
-    SmartDashboard.putData("Shoot two balls", new ShootTwoBalls(m_routingSubsystem));
-    SmartDashboard.putData("Extend Intake", new RunCommand(() -> m_intakeSubsystem.extend(), m_intakeSubsystem));
+    SmartDashboard.putData("Aim", new RunCommand(() -> hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()), hoodSubsystem));
+    SmartDashboard.putData("Aim", new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem));
+    SmartDashboard.putData("Manual Run Flywheel", new RunCommand(() -> shooterSubsystem.setTargetRPM(targetRPM), shooterSubsystem));
+    SmartDashboard.putData("Manual Run Hood", new RunCommand(() -> hoodSubsystem.setSetpoint(hoodTarget), hoodSubsystem));
+    SmartDashboard.putData("Reset Hood", new ResetHood(hoodSubsystem));
+    SmartDashboard.putData("Shoot one ball", new ShootOneBall(routingSubsystem));
+    SmartDashboard.putData("Route one ball", new RouteOneBall(routingSubsystem));
+    SmartDashboard.putData("Run Routing for Shooting", new RunCommand(() -> {routingSubsystem.setOuterFeederRPM(700); routingSubsystem.setInnerFeederRPM(500);}, routingSubsystem));
+    SmartDashboard.putData("Shoot two balls", new ShootTwoBalls(routingSubsystem));
+    SmartDashboard.putData("Extend Intake", new RunCommand(() -> intakeSubsystem.extend(), intakeSubsystem));
     SmartDashboard.putData("Shoot", 
       new ParallelCommandGroup(new SequentialCommandGroup(
-        new WaitUntilCommand(m_shooterSubsystem::isRPMInRange), 
-        new RunCommand(() -> {m_routingSubsystem.setOuterFeederRPM(500); m_routingSubsystem.setInnerFeederRPM(1000);}, m_routingSubsystem)), 
-        new RunCommand(() -> m_shooterSubsystem.setTargetRPM(targetRPM), m_shooterSubsystem)));
-    SmartDashboard.putData("Run Intake", new RunCommand(() -> m_intakeSubsystem.setIntakeRPM(3000)));
-    SmartDashboard.putData("Toggle Intake", new InstantCommand(() -> m_intakeSubsystem.toggleIntake(), m_intakeSubsystem));
-    SmartDashboard.putData("Auto Aim", new AutoAim(m_visionSubsystem, m_drivetrainSubsystem));
-    SmartDashboard.putData("Reject Balls", new SequentialCommandGroup(new ExtendIntake(m_intakeSubsystem).withTimeout(0.5), new BallRejection(m_intakeSubsystem, m_routingSubsystem).withTimeout(1.5)));
+        new WaitUntilCommand(shooterSubsystem::isRPMInRange), 
+        new RunCommand(() -> {routingSubsystem.setOuterFeederRPM(500); routingSubsystem.setInnerFeederRPM(1000);}, routingSubsystem)), 
+        new RunCommand(() -> shooterSubsystem.setTargetRPM(targetRPM), shooterSubsystem)));
+    SmartDashboard.putData("Run Intake", new RunCommand(() -> intakeSubsystem.setIntakeRPM(3000)));
+    SmartDashboard.putData("Toggle Intake", new InstantCommand(() -> intakeSubsystem.toggleIntake(), intakeSubsystem));
+    SmartDashboard.putData("Auto Aim", new AutoAim(visionSubsystem, drivetrainSubsystem));
+    SmartDashboard.putData("Reject Balls", new SequentialCommandGroup(new ExtendIntake(intakeSubsystem).withTimeout(0.5), new BallRejection(intakeSubsystem, routingSubsystem).withTimeout(1.5)));
 
-    m_intakeSubsystem.setDefaultCommand(new RunCommand(() -> {m_intakeSubsystem.retract(); m_intakeSubsystem.setIntakeRPM(0);}, m_intakeSubsystem));
-    m_shooterSubsystem.setDefaultCommand(new RunCommand(() -> m_shooterSubsystem.setTargetRPM(0), m_shooterSubsystem));
-    m_hoodSubsystem.setDefaultCommand(new RunCommand(() -> m_hoodSubsystem.setSetpoint(hoodTarget), m_hoodSubsystem));
-    m_hoodSubsystem.enable();
-    m_routingSubsystem.setDefaultCommand(
+    intakeSubsystem.setDefaultCommand(new RunCommand(() -> {intakeSubsystem.retract(); intakeSubsystem.setIntakeRPM(0);}, intakeSubsystem));
+    shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
+    hoodSubsystem.setDefaultCommand(new RunCommand(() -> hoodSubsystem.setSetpoint(hoodTarget), hoodSubsystem));
+    hoodSubsystem.enable();
+    routingSubsystem.setDefaultCommand(
       new ConditionalCommand(
         new ConditionalCommand(
-          new RunCommand(() -> m_routingSubsystem.runRouting(true), m_routingSubsystem),
-          new ShootOneBall(m_routingSubsystem).alongWith(new RunCommand(() -> m_hoodSubsystem.setSetpoint(0))),
-          () -> m_routingSubsystem.upperBeambreak.get()
+          new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem),
+          new ShootOneBall(routingSubsystem).alongWith(new RunCommand(() -> hoodSubsystem.setSetpoint(0))),
+          () -> routingSubsystem.upperBeambreak.get()
         ),
-        new BallRejection(m_intakeSubsystem, m_routingSubsystem),
-        () -> m_routingSubsystem.rejectBall())
+        new BallRejection(intakeSubsystem, routingSubsystem),
+        () -> routingSubsystem.rejectBall())
       );
-    m_shooterSubsystem.setDefaultCommand(new RunCommand(() -> m_shooterSubsystem.setTargetRPM(0), m_shooterSubsystem));
+    shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -140,18 +144,18 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    new Button(m_controller::getBButton)
-            .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
-    new Button(m_controller::getAButton)
-            .whileHeld(new ShootingSequence(m_hoodSubsystem, m_shooterSubsystem, m_drivetrainSubsystem, m_visionSubsystem, m_routingSubsystem));
-    new Button(m_controller::getYButton)
-            .whenPressed(new RunCommand(() -> m_intakeSubsystem.setIntakeRPM(2000)));
-    new Button(m_controller::getXButton)
-            .whenPressed(new RunCommand(() -> m_intakeSubsystem.toggleIntake()));
-    new Button(m_controller::getRightBumper)
-            .whileHeld(new RunCommand(() -> {m_shooterSubsystem.setTargetRPM(2000); m_routingSubsystem.setInnerFeederRPM(500);}));
-    new Button(m_controller::getLeftBumper)
-            .whileHeld(new RunCommand(() -> {m_intakeSubsystem.extend(); m_intakeSubsystem.setIntakeRPM(3000);}, m_intakeSubsystem));
+    new Button(controller::getBButton)
+            .whenPressed(drivetrainSubsystem::zeroGyroscope);
+    new Button(controller::getAButton)
+            .whileHeld(new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem));
+    new Button(controller::getYButton)
+            .whenPressed(new RunCommand(() -> intakeSubsystem.setIntakeRPM(2000)));
+    new Button(controller::getXButton)
+            .whenPressed(new RunCommand(() -> intakeSubsystem.toggleIntake()));
+    new Button(controller::getRightBumper)
+            .whileHeld(new RunCommand(() -> {shooterSubsystem.setTargetRPM(2000); routingSubsystem.setInnerFeederRPM(500);}));
+    new Button(controller::getLeftBumper)
+            .whileHeld(new RunCommand(() -> {intakeSubsystem.extend(); intakeSubsystem.setIntakeRPM(3000);}, intakeSubsystem));
   }
 
 
@@ -162,7 +166,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // return new PrintCommand("Running autonomous");
-    return new TwoBallAuto(m_drivetrainSubsystem, m_hoodSubsystem, m_shooterSubsystem, m_visionSubsystem, m_routingSubsystem, m_intakeSubsystem);
+    return new TwoBallAuto(drivetrainSubsystem, hoodSubsystem, shooterSubsystem, visionSubsystem, routingSubsystem, intakeSubsystem);
   }
   
   private static double deadband(double value, double deadband) {
