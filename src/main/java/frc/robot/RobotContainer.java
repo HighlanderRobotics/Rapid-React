@@ -106,7 +106,7 @@ public class RobotContainer {
     SmartDashboard.putData("Shoot one ball", new ShootOneBall(m_routingSubsystem));
     SmartDashboard.putData("Route one ball", new RouteOneBall(m_routingSubsystem));
     SmartDashboard.putData("Run Routing for Shooting", new RunCommand(() -> {m_routingSubsystem.setOuterFeederRPM(700); m_routingSubsystem.setInnerFeederRPM(500);}, m_routingSubsystem));
-    SmartDashboard.putData("Shooting sequence", new ShootingSequence(m_routingSubsystem));
+    // SmartDashboard.putData("Shooting sequence", new ShootingSequence(m_routingSubsystem));
     SmartDashboard.putData("Extend Intake", new RunCommand(() -> m_intakeSubsystem.extend(), m_intakeSubsystem));
     SmartDashboard.putData("Reject Balls", new RunCommand(() -> {m_routingSubsystem.setOuterFeederRPM(-700); m_routingSubsystem.setInnerFeederRPM(-500);}, m_routingSubsystem));
     SmartDashboard.putData("Shoot", 
@@ -116,6 +116,7 @@ public class RobotContainer {
     
     // SmartDashboard.putData("Lock Drivetrain", new InstantCommand(() -> m_drivetrainSubsystem.toggleLock()));
     SmartDashboard.putData("Run Intake", new RunCommand(() -> m_intakeSubsystem.setIntakeRPM(3000)));
+    // SmartDashboard.putData("Ratchet to 0", new RunCommand(() -> m_climberSubsystem.setServo(0), m_climberSubsystem));
     m_intakeSubsystem.setDefaultCommand(new RunCommand(() -> {m_intakeSubsystem.retract(); m_intakeSubsystem.setIntakeRPM(0);}, m_intakeSubsystem));
     m_shooterSubsystem.setDefaultCommand(new RunCommand(() -> m_shooterSubsystem.setTargetRPM(0), m_shooterSubsystem));
     m_hoodSubsystem.setDefaultCommand(new RunCommand(() -> m_hoodSubsystem.setSetpoint(hoodTarget), m_hoodSubsystem));

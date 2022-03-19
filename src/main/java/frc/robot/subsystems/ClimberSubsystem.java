@@ -17,17 +17,20 @@ import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.Servo;
 
 
 public class ClimberSubsystem extends SubsystemBase implements Loggable {
   private final LazyTalonFX angleMotor;
   private final LazyTalonFX extensionMotor;
   private final LimitSwitch limitSwitch;
+  private final Servo ratchetServo;
   /** Creates a new ClimberSubsystem. */
   public ClimberSubsystem() {
     angleMotor = new LazyTalonFX(Constants.CLIMBER_ANGLE_MOTOR);
     extensionMotor = new LazyTalonFX(Constants.CLIMBER_EXTENSION_MOTOR);
     limitSwitch = new LimitSwitch(Constants.CLIMBER_LIMIT_SWITCH, false);
+    ratchetServo = new Servo(Constants.CLIMBER_RATCHET_SERVO);
   }
 
   @Config
@@ -72,6 +75,10 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
   @Log
   public boolean getClimberLimit(){
       return limitSwitch.get();
+  }
+
+  public void setRatchetServo(double position){
+    ratchetServo.set(position);
   }
 
   @Override
