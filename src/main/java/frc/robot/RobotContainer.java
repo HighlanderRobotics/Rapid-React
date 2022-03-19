@@ -20,6 +20,7 @@ import frc.robot.commands.RouteOneBall;
 import frc.robot.commands.ShootOneBall;
 import frc.robot.commands.ShootingSequence;
 import frc.robot.subsystems.LimeLightSubsystem;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -50,7 +51,7 @@ public class RobotContainer {
   private final HoodSubsystem m_hoodSubsystem = new HoodSubsystem();
   private final LimeLightSubsystem m_limeLightSubsystem = new LimeLightSubsystem("limelight-bottom");
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(new LimeLightSubsystem("limelight-top"), m_limeLightSubsystem);
-
+  private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
   
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(); 
   private ShuffleboardTab tab = Shuffleboard.getTab("Testing");
@@ -116,7 +117,7 @@ public class RobotContainer {
     
     // SmartDashboard.putData("Lock Drivetrain", new InstantCommand(() -> m_drivetrainSubsystem.toggleLock()));
     SmartDashboard.putData("Run Intake", new RunCommand(() -> m_intakeSubsystem.setIntakeRPM(3000)));
-    // SmartDashboard.putData("Ratchet to 0", new RunCommand(() -> m_climberSubsystem.setServo(0), m_climberSubsystem));
+    SmartDashboard.putData("Ratchet to 0", new RunCommand(() -> m_climberSubsystem.setRatchetServo(0), m_climberSubsystem));
     m_intakeSubsystem.setDefaultCommand(new RunCommand(() -> {m_intakeSubsystem.retract(); m_intakeSubsystem.setIntakeRPM(0);}, m_intakeSubsystem));
     m_shooterSubsystem.setDefaultCommand(new RunCommand(() -> m_shooterSubsystem.setTargetRPM(0), m_shooterSubsystem));
     m_hoodSubsystem.setDefaultCommand(new RunCommand(() -> m_hoodSubsystem.setSetpoint(hoodTarget), m_hoodSubsystem));
