@@ -9,6 +9,7 @@ import java.rmi.dgc.Lease;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -35,10 +36,11 @@ public class ShootingSequence extends ParallelCommandGroup {
       new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem),
       new RunCommand(() -> hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()), hoodSubsystem),
       new SequentialCommandGroup(
-        new RunCommand(() -> ledSubsystem.rainbow(3), ledSubsystem),
         new ParallelCommandGroup(
           new AutoAim(visionSubsystem, drivetrainSubsystem).withTimeout(2),
-          new WaitCommand(0.5)
+          new ParallelDeadlineGroup(
+          new WaitCommand(0.5),
+          new RunCommand(() -> ledSubsystem.rainbow(3), ledSubsystem))
         ),
         new InstantCommand(drivetrainSubsystem::lock),
         new ShootTwoBalls(routingSubsystem)
