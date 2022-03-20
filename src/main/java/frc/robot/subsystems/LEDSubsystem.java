@@ -37,6 +37,16 @@ public class LEDSubsystem extends SubsystemBase {
     }
   }
 
+  public void setAlternating(int h, int s, int v) {
+    for (int i = 0; i < buffer.getLength(); i++) {
+      if (i % 2 == 0) {
+        buffer.setHSV(i, h, s, v);
+      } else {
+        buffer.setHSV(i, 0, 0, 0);
+      }
+    }
+  }
+
   public void setBackColor(int h, int s, int v){
     for (int i = 17; i < 35; i ++){
       buffer.setHSV(i, h, s, v);
