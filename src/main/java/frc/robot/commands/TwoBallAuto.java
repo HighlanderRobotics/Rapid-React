@@ -34,15 +34,16 @@ public class TwoBallAuto extends ParallelCommandGroup {
     LEDSubsystem ledSubsystem) {
     // Add your commands in the addCommands() call, e.g.
     addCommands(
-      new RunCommand(() -> routingSubsystem.runRouting(true)),
-      new RunCommand(() -> {intakeSubsystem.extend(); intakeSubsystem.setIntakeRPM(3000);}),
+      new RunCommand(() -> {intakeSubsystem.extend(); intakeSubsystem.setIntakeRPM(3000);}, intakeSubsystem),
       new SequentialCommandGroup(
         new WaitCommand (1),
         new ParallelRaceGroup (
           new DefaultDriveCommand(drivetrainSubsystem, () -> -0.1 * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND, () -> 0, () -> 0, false),
-          new WaitCommand(3)
-          // new WaitUntilCommand(() -> routingSubsystem.upperBeambreak.get())
+          new WaitCommand(3),
+          new WaitUntilCommand(() -> routingSubsystem.lowerBeambreak.get()),
+          new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem)
         ),
+        new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem).withTimeout(.25),
         new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem)
       )
     );

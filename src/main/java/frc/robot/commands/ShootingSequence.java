@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -37,14 +38,15 @@ public class ShootingSequence extends ParallelCommandGroup {
       new RunCommand(() -> hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()), hoodSubsystem),
       new SequentialCommandGroup(
         new ParallelCommandGroup(
-          new AutoAim(visionSubsystem, drivetrainSubsystem).withTimeout(2),
+          new AutoAim(visionSubsystem, drivetrainSubsystem).withTimeout(1),
           new ParallelDeadlineGroup(
           new WaitCommand(0.5),
           new RunCommand(() -> ledSubsystem.rainbow(3), ledSubsystem))
         ),
         new InstantCommand(drivetrainSubsystem::lock),
+        new PrintCommand("Shooting two"),
         new ShootTwoBalls(routingSubsystem)
-        .alongWith(new RunCommand(() -> ledSubsystem.rainbow(10), ledSubsystem))
+        .alongWith(new RunCommand(() -> ledSubsystem.rainbow(6), ledSubsystem))
       )
     );
   }

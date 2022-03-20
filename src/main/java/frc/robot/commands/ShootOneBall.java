@@ -22,7 +22,8 @@ public class ShootOneBall extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    routingSubsystem.setInnerFeederRPM(500);
+    routingSubsystem.setInnerFeederRPM(800);
+    routingSubsystem.setOuterFeederRPM(400);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -33,11 +34,12 @@ public class ShootOneBall extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     routingSubsystem.setInnerFeederRPM(0);
+    routingSubsystem.setOuterFeederRPM(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return routingSubsystem.upperBeambreak.get();
+    return !routingSubsystem.upperBeambreak.get();
   }
 }

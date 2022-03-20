@@ -19,12 +19,13 @@ import frc.robot.Constants;
 import frc.robot.components.Falcon;
 import frc.robot.components.LazyTalonFX;
 import frc.robot.components.PicoColorSensor;
+import frc.robot.components.ReversibleDigitalInput;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
 public class RoutingSubsystem extends SubsystemBase implements Loggable {
-  public DigitalInput lowerBeambreak = new DigitalInput(Constants.LOWER_BEAMBREAK);
-  public DigitalInput upperBeambreak = new DigitalInput(Constants.UPPER_BEAMBREAK);
+  public ReversibleDigitalInput lowerBeambreak = new ReversibleDigitalInput(Constants.LOWER_BEAMBREAK, true);
+  public ReversibleDigitalInput upperBeambreak = new ReversibleDigitalInput(Constants.UPPER_BEAMBREAK, true);
   public final TalonFX innerFeeder = new LazyTalonFX(Constants.INNER_FEEDER_MOTOR);
   public final TalonFX outerFeeder = new LazyTalonFX(Constants.OUTER_FEEDER_MOTOR);
   PIDController innerFeederPID = new PIDController(0.05, 0.0, 0);
@@ -73,8 +74,8 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
   }
 
   public void runRouting(boolean intakeOut){
-    boolean ballInLower = !lowerBeambreak.get();
-    boolean ballInUpper = !upperBeambreak.get();
+    boolean ballInLower = lowerBeambreak.get();
+    boolean ballInUpper = upperBeambreak.get();
     if(!ballInUpper){
       setInnerFeederRPM(1000);
     } else {
