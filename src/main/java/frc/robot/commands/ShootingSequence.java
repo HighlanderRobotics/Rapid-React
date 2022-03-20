@@ -41,8 +41,8 @@ public class ShootingSequence extends ParallelCommandGroup {
           new WaitCommand(0.5)
         ),
         new InstantCommand(drivetrainSubsystem::lock),
-        new RunCommand(() -> ledSubsystem.rainbow(10), ledSubsystem),
         new ShootTwoBalls(routingSubsystem)
+        .alongWith(new RunCommand(() -> ledSubsystem.rainbow(10), ledSubsystem))
       )
     );
   }
