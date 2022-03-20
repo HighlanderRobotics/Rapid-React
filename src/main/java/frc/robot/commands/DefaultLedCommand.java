@@ -27,7 +27,9 @@ public class DefaultLedCommand extends CommandBase {
     if (visionSubsystem.lowerLimeLight.isPointingAtTarget){
       if (routingSubsystem.upperBeambreak.get() && routingSubsystem.lowerBeambreak.get()){
         ledSubsystem.setSolidColor(85, 255, 255);
-      } else {
+      } else if (routingSubsystem.upperBeambreak.get() && !routingSubsystem.lowerBeambreak.get()){
+        ledSubsystem.setFrontColor(85, 255, 255);
+      } else {}
         ledSubsystem.setSolidColor(42, 255, 255);
       }
     } else {

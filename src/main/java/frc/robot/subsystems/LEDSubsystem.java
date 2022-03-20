@@ -28,6 +28,24 @@ public class LEDSubsystem extends SubsystemBase {
     }
   }
 
+  public void setFrontColor(int h, int s, int v){
+    for (int i = 0; i < 17; i ++){
+      buffer.setHSV(i, h, s, v);
+    }
+    for (int i = 35; i < 35+17; i ++){
+      buffer.setHSV(i, h, s, v);
+    }
+  }
+
+  public void setBackColor(int h, int s, int v){
+    for (int i = 17; i < 35; i ++){
+      buffer.setHSV(i, h, s, v);
+    }
+    for (int i = 35 + 17; i < buffer.getLength(); i ++){
+      buffer.setHSV(i, h, s, v);
+    }
+  }
+
   public void setBlinkingColor(int h, int s, int v, double time){
     if (DriverStation.getMatchTime() % time > time/2){
       setSolidColor(h, s, v);
