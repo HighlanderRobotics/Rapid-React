@@ -17,6 +17,7 @@ import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.Servo;
 
 
 public class ClimberSubsystem extends SubsystemBase implements Loggable {
@@ -24,13 +25,28 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
   public final LazyTalonFX extensionMotor;
   private final LimitSwitch limitSwitch;
   public double targetDistance = 0;
+  private final Servo ratchet;
   /** Creates a new ClimberSubsystem. */
   public ClimberSubsystem() {
     angleMotor = new LazyTalonFX(Constants.CLIMBER_ANGLE_MOTOR);
     angleMotor.setInverted(true);
+    angleMotor.configMotionCruiseVelocity(Falcon.rpmToTicks(60));
+    angleMotor.configMotionAcceleration(Falcon.rpmToTicks(60));
     extensionMotor = new LazyTalonFX(Constants.CLIMBER_EXTENSION_MOTOR);
     extensionMotor.setInverted(true);
+    extensionMotor.setSelectedSensorPosition(0);
     limitSwitch = new LimitSwitch(Constants.CLIMBER_LIMIT_SWITCH, false);
+    ratchet = new Servo(Constants.CLIMBER_RATCHET_SERVO);
+  }
+
+  public void lockRatchet()
+  {
+    ratchet.set(1);
+  }
+
+  public void unlockRatchet()
+  {
+    ratchet.set(0);
   }
 
   @Config
@@ -43,7 +59,7 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
     }
     //110 should be the gear ratio
     double ticks = Falcon.degreesToTicks(angle) * 110;
-    angleMotor.set(TalonFXControlMode.Position, ticks);
+    angleMotor.set(TalonFXControlMode.MotionMagic, ticks);
   }
   @Log
   public double getClimberAngle() {
@@ -51,8 +67,18 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
     // motor is inverted so this seems necessary
     return -Falcon.ticksToDegrees(ticks/110);
   }
+
+  public static double inchesToTicks(double inches) {
+    return inches / 0.1014 * 2048;
+  }
+
+  public static double ticksToInches(double ticks) {
+    return ticks / 2048 * 0.1014;
+  }
+
   @Config
   public void setDistance(double distance) {
+    unlockRatchet();
     // don't let it go below the previous distance
     if(distance<targetDistance) {
       distance=targetDistance;
@@ -62,17 +88,13 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
       distance=5*12;
     }
     //0.1014 is the number of inches per rotation OF THE MOTOR (not of the wheel)
-    double rotations = distance/0.1014;
-    double ticks = rotations*2048;
+    double ticks = inchesToTicks(distance);
     extensionMotor.set(TalonFXControlMode.Position, ticks);
-  
-
   }
   @Log
   public double getDistance(){
     double ticks = extensionMotor.getSelectedSensorPosition();
-    double rotations= ticks/2048;
-    return -rotations * 0.1014;
+    return -ticksToInches(ticks);
   }
   @Log
   public boolean getClimberLimit(){
