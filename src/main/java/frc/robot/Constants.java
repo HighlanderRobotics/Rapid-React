@@ -62,6 +62,7 @@ public final class Constants {
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 7; // FIXME Set back right steer motor ID
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 23; // FIXME Set back right steer encoder ID
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(107 + 180); // FIXME Measure and set back right steer offset
+    
     public static final int INTAKE_MOTOR = 18;
     public static final int INTAKE_SOLENOID_FORWARD = 0;
     public static final int INTAKE_SOLENOID_BACKWARD = 1;
@@ -75,6 +76,5 @@ public final class Constants {
     public static final double ksVolts = 4.15;
     // public static final double ksVoltSecondsPerMeter = 0.0006;
     // public static final double kaVoltSecondsSquaredPerMeter = -0.0055;
-    public static final int LED_PORT = 0;
-
+    public static final int LED_PORT = 8;
 }

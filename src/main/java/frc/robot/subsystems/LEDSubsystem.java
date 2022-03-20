@@ -16,8 +16,9 @@ public class LEDSubsystem extends SubsystemBase {
   /** Creates a new LEDSubsystem. */
   public LEDSubsystem() {
     led = new AddressableLED(Constants.LED_PORT);
-    buffer = new AddressableLEDBuffer(34);
+    buffer = new AddressableLEDBuffer(70);
     led.setLength(buffer.getLength());
+    led.start();
   }
 
   public void setSolidColor(int h, int s, int v){

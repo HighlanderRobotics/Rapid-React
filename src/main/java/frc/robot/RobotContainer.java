@@ -124,16 +124,16 @@ public class RobotContainer {
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
     hoodSubsystem.setDefaultCommand(new RunCommand(() -> hoodSubsystem.setSetpoint(hoodTarget), hoodSubsystem));
     hoodSubsystem.enable();
-    routingSubsystem.setDefaultCommand(
-      new ConditionalCommand(
-        new ConditionalCommand(
-          new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem),
-          new ShootOneBall(routingSubsystem).alongWith(new RunCommand(() -> hoodSubsystem.setSetpoint(0))),
-          () -> routingSubsystem.upperBeambreak.get()
-        ),
-        new BallRejection(intakeSubsystem, routingSubsystem),
-        () -> routingSubsystem.rejectBall())
-      );
+    // routingSubsystem.setDefaultCommand(
+    //   new ConditionalCommand(
+    //     new ConditionalCommand(
+    //       new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem),
+    //       new ShootOneBall(routingSubsystem).alongWith(new RunCommand(() -> hoodSubsystem.setSetpoint(0))),
+    //       () -> routingSubsystem.upperBeambreak.get()
+    //     ),
+    //     new BallRejection(intakeSubsystem, routingSubsystem),
+    //     () -> routingSubsystem.rejectBall())
+    //   );
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
     ledSubsystem.setDefaultCommand(new DefaultLedCommand(ledSubsystem, visionSubsystem, routingSubsystem));
 
