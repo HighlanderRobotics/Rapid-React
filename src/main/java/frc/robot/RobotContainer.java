@@ -118,22 +118,25 @@ public class RobotContainer {
     SmartDashboard.putData("Run Intake", new RunCommand(() -> intakeSubsystem.setIntakeRPM(3000)));
     SmartDashboard.putData("Toggle Intake", new InstantCommand(() -> intakeSubsystem.toggleIntake(), intakeSubsystem));
     SmartDashboard.putData("Auto Aim", new AutoAim(visionSubsystem, drivetrainSubsystem));
-    SmartDashboard.putData("Reject Balls", new SequentialCommandGroup(new ExtendIntake(intakeSubsystem).withTimeout(0.5), new BallRejection(intakeSubsystem, routingSubsystem).withTimeout(1.5)));
+    SmartDashboard.putData("Reject Balls", new SequentialCommandGroup( new ExtendIntake(intakeSubsystem), new ConditionalCommand(
+      new BallRejection(intakeSubsystem, routingSubsystem).withTimeout(0.5), 
+      new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem), 
+      () -> routingSubsystem.shouldRejectBall())));
 
     intakeSubsystem.setDefaultCommand(new RunCommand(() -> {intakeSubsystem.retract(); intakeSubsystem.setIntakeRPM(0);}, intakeSubsystem));
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
     hoodSubsystem.setDefaultCommand(new RunCommand(() -> hoodSubsystem.setSetpoint(hoodTarget), hoodSubsystem));
     hoodSubsystem.enable();
-    // routingSubsystem.setDefaultCommand(
-    //   new ConditionalCommand(
-    //     new ConditionalCommand(
-    //       new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem),
-    //       new ShootOneBall(routingSubsystem).alongWith(new RunCommand(() -> hoodSubsystem.setSetpoint(0))),
-    //       () -> routingSubsystem.upperBeambreak.get()
-    //     ),
-    //     new BallRejection(intakeSubsystem, routingSubsystem),
-    //     () -> routingSubsystem.rejectBall())
-    //   );
+    routingSubsystem.setDefaultCommand(new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem));
+      // new ConditionalCommand(
+      //   new ConditionalCommand(
+      //     new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem),
+      //     new ShootOneBall(routingSubsystem).alongWith(new RunCommand(() -> hoodSubsystem.setSetpoint(0))),
+      //     () -> routingSubsystem.upperBeambreak.get()
+      //   ),
+      //   new BallRejection(intakeSubsystem, routingSubsystem),
+      //   () -> routingSubsystem.rejectBall())
+      // );
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
     ledSubsystem.setDefaultCommand(new DefaultLedCommand(ledSubsystem, visionSubsystem, routingSubsystem));
 
