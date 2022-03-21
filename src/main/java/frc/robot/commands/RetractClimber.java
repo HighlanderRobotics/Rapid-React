@@ -6,37 +6,35 @@ package frc.robot.commands;
 
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.ClimberSubsystem;
-import frc.robot.subsystems.HoodSubsystem;
 
-public class RetractClimber extends CommandBase {
+public class RetractClimber extends SequentialCommandGroup {
   final ClimberSubsystem climber;
 
-  /** Command to reset the hood to the back limit switch, calibrating the encoder */
+  // locks ratchet and retracts the climber, lifting the robot off the ground
   public RetractClimber(ClimberSubsystem climber) {
     this.climber = climber;
     addRequirements(climber);
+
+    addCommands(
+      new InstantCommand(() -> climber.lockRatchet()).withTimeout(0.5),
+      new InstantCommand(() -> climber.extensionMotor.set(TalonFXControlMode.PercentOutput, -0.02))
+    );
   }
 
-  // Move the hood down (is this a good power?)
-  @Override
-  public void execute() {
-    climber.extensionMotor.set(TalonFXControlMode.PercentOutput, -0.02);
-  }
-
-  // Stop the motor at the end (even though the default command should take over)
-  // and make sure the encoder resets (even though periodic should do it)
+  // Stop the motor at the end (ratchet should hold it up)
   @Override
   public void end(boolean interrupted) {
     climber.extensionMotor.set(TalonFXControlMode.PercentOutput, 0);
-    climber.targetDistance = 1;
-    climber.setDistance(1);
+    // probably doesn't do anything but who knows
+    super.end(interrupted);
   }
 
-  // Stop when the limit switch is hit
+  // Stop if it's all the way in, but it should be cancelled first
   @Override
   public boolean isFinished() {
-    return climber.getDistance() < 1.0;
+    return climber.getDistance() <= 0.1;
   }
 }
