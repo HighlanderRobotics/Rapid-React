@@ -39,14 +39,12 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
     ratchet = new Servo(Constants.CLIMBER_RATCHET_SERVO);
   }
 
-  public void lockRatchet()
-  {
-    ratchet.set(1);
+  public void lockRatchet() {
+    ratchet.set(0);
   }
 
-  public void unlockRatchet()
-  {
-    ratchet.set(0);
+  public void unlockRatchet() {
+    ratchet.set(1);
   }
 
   @Config
