@@ -77,30 +77,11 @@ public class RobotContainer {
   double hoodTarget = 20.0;
   @Config
   double targetRPM = 500.0;
+  //oblog setters
   @Config
   public void setHoodTarget(double newTarget) {
     hoodTarget = newTarget;
   }
-
-  public void setTargetRPM(double newTarget) {
-      targetRPM = newTarget;
-  }
-  // private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
-  // private final HoodSubsystem m_hoodSubsystem = new HoodSubsystem();
-  
-  private ShuffleboardTab tab = Shuffleboard.getTab("Testing");
-
-  // private final RoutingSubsystem m_routingSubsystem = new RoutingSubsystem();
-
-
-
-  private double rpm = 500.0;
-  private double feederRPM = 500;
-
-  // @Log
-  // Command flywheelCommand = new RunCommand(() -> m_shooterSubsystem.setTargetRPM(rpm), m_shooterSubsystem);
-
-  // setter for oblog
   @Config
   public void setRPM(double newRPM) {
     targetRPM = newRPM;
