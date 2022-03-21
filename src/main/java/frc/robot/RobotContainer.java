@@ -127,16 +127,16 @@ public class RobotContainer {
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
     hoodSubsystem.setDefaultCommand(new RunCommand(() -> hoodSubsystem.setSetpoint(hoodTarget), hoodSubsystem));
     hoodSubsystem.enable();
-    routingSubsystem.setDefaultCommand(new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem));
-      // new ConditionalCommand(
-      //   new ConditionalCommand(
-      //     new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem),
-      //     new ShootOneBall(routingSubsystem).alongWith(new RunCommand(() -> hoodSubsystem.setSetpoint(0))),
-      //     () -> routingSubsystem.upperBeambreak.get()
-      //   ),
-      //   new BallRejection(intakeSubsystem, routingSubsystem),
-      //   () -> routingSubsystem.rejectBall())
-      // );
+    routingSubsystem.setDefaultCommand(//new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem));
+      new ConditionalCommand(
+        new ConditionalCommand(
+          new BallRejection(intakeSubsystem, routingSubsystem).withTimeout(1),
+          new ShootOneBall(routingSubsystem).alongWith(new RunCommand(() -> hoodSubsystem.setSetpoint(0))),
+          () -> routingSubsystem.upperBeambreak.get()
+        ),
+        new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem),
+        () -> routingSubsystem.shouldRejectBall())
+      );
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
     ledSubsystem.setDefaultCommand(new DefaultLedCommand(ledSubsystem, visionSubsystem, routingSubsystem));
 
@@ -153,13 +153,13 @@ public class RobotContainer {
   private void configureButtonBindings() {
     new Button(controller::getBButton)
             .whenPressed(drivetrainSubsystem::zeroGyroscope);
-    new Button(controller::getAButton)
+    new Button(controller::getRightBumper)
             .whileHeld(new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem));
     new Button(controller::getYButton)
             .whenPressed(new RunCommand(() -> intakeSubsystem.setIntakeRPM(2000)));
     new Button(controller::getXButton)
-            .whenPressed(new RunCommand(() -> intakeSubsystem.toggleIntake()));
-    new Button(controller::getRightBumper)
+            .whenPressed(new BallRejection(intakeSubsystem, routingSubsystem));
+    new Button(controller::getAButton)
             .whileHeld(new RunCommand(() -> {shooterSubsystem.setTargetRPM(2000); routingSubsystem.setInnerFeederRPM(500);}));
     new Button(controller::getLeftBumper)
             .whileHeld(new RunCommand(() -> {intakeSubsystem.extend(); intakeSubsystem.setIntakeRPM(3000);}, intakeSubsystem));
