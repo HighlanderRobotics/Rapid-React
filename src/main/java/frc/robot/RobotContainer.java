@@ -4,18 +4,9 @@
 
 package frc.robot;
 
-import java.lang.ModuleLayer.Controller;
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-
-import javax.swing.text.DefaultCaret;
-
-import com.ctre.phoenix.led.CANdle.LEDStripType;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -24,10 +15,8 @@ import frc.robot.commands.AutoAim;
 import frc.robot.commands.BallRejection;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.ExtendClimber;
-import frc.robot.commands.ResetClimberAngle;
 import frc.robot.commands.DefaultLedCommand;
 import frc.robot.commands.ExtendIntake;
-import frc.robot.commands.PIDHeadingDriveCommand;
 import frc.robot.commands.ResetHood;
 import frc.robot.commands.RetractClimber;
 import frc.robot.commands.RouteOneBall;
@@ -45,18 +34,14 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.RoutingSubsystem;
 import io.github.oblarg.oblog.annotations.Config;
-import io.github.oblarg.oblog.annotations.Log;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -104,7 +89,7 @@ public class RobotContainer {
             drivetrainSubsystem,
             () -> -modifyAxis(strafeLimiter.calculate(-controller.getLeftX())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
             () -> -modifyAxis(forwardLimiter.calculate(controller.getLeftY())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+            () -> -modifyTurnAxis(controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
             true
     ));
 
@@ -115,6 +100,8 @@ public class RobotContainer {
     SmartDashboard.putData("Reset Hood", new ResetHood(hoodSubsystem));
     SmartDashboard.putData("Shoot one ball", new ShootOneBall(routingSubsystem));
     SmartDashboard.putData("Route one ball", new RouteOneBall(routingSubsystem));
+    SmartDashboard.putData("lock ratchet", new InstantCommand(() -> climberSubsystem.lockRatchet()));
+    SmartDashboard.putData("unlock ratchet", new InstantCommand(() -> climberSubsystem.unlockRatchet()));
     SmartDashboard.putData("Run Routing for Shooting", new RunCommand(() -> {routingSubsystem.setOuterFeederRPM(700); routingSubsystem.setInnerFeederRPM(500);}, routingSubsystem));
     SmartDashboard.putData("Shoot two balls", new ShootTwoBalls(routingSubsystem));
     SmartDashboard.putData("Extend Intake", new RunCommand(() -> intakeSubsystem.extend(), intakeSubsystem));
@@ -147,6 +134,8 @@ public class RobotContainer {
       );
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
     ledSubsystem.setDefaultCommand(new DefaultLedCommand(ledSubsystem, visionSubsystem, routingSubsystem));
+    
+    climberSubsystem.setDefaultCommand(new RunCommand(() -> {climberSubsystem.retractIfLocked(-operator.getRightTriggerAxis() * 0.3);}, climberSubsystem));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -184,7 +173,7 @@ public class RobotContainer {
   
 
     new Button(operator::getAButton)
-      .toggleWhenPressed(new ExtendClimber(climberSubsystem, 36, 20.5));
+      .toggleWhenPressed(new ExtendClimber(climberSubsystem, ledSubsystem, 36, 20.5));
     new Button(operator::getBButton)
       .whenActive(new RetractClimber(climberSubsystem));
     new Button(operator::getLeftBumper)
@@ -223,6 +212,26 @@ public class RobotContainer {
     // Square the axis
     value = Math.copySign(value * value * value, value);
 
-    return value;
+    // slow it down if the climber is out
+    if (!ClimberSubsystem.extendedAndLocked) {
+      return value;
+    } else {
+      return value * 0.2;
+    }
+  }
+
+  // modify turn separately so it can be tuned easily if necessary
+  private static double modifyTurnAxis(double value) {
+    // Deadband
+    value = deadband(value, 0.05);
+
+    // Square the axis
+    value = Math.copySign(value * value, value);
+
+    if (!ClimberSubsystem.extendedAndLocked) {
+      return value;
+    } else {
+      return value * 0.2;
+    }
   }
 }
