@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.lang.ModuleLayer.Controller;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -130,8 +131,8 @@ public class RobotContainer {
       () -> routingSubsystem.shouldRejectBall())));
 
     intakeSubsystem.setDefaultCommand(new RunCommand(() -> {intakeSubsystem.retract(); intakeSubsystem.setIntakeRPM(0);}, intakeSubsystem));
-    shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
-    hoodSubsystem.setDefaultCommand(new RunCommand(() -> hoodSubsystem.setSetpoint(hoodTarget), hoodSubsystem));
+    shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem));
+    hoodSubsystem.setDefaultCommand(new RunCommand(() -> hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()), hoodSubsystem));
     hoodSubsystem.enable();
     routingSubsystem.setDefaultCommand(
       // new ConditionalCommand(
@@ -159,24 +160,36 @@ public class RobotContainer {
   private void configureButtonBindings() {
     new Button(controller::getBButton)
             .whenPressed(drivetrainSubsystem::zeroGyroscope);
-    new Button(controller::getRightBumper)
+    new Button(controller::getAButton)
             .whileHeld(new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem));
     new Button(controller::getYButton)
-            .whenPressed(new RunCommand(() -> intakeSubsystem.setIntakeRPM(2000)));
+            .whileHeld(
+              new RunCommand(() -> {
+                intakeSubsystem.extend();
+                intakeSubsystem.setIntakeRPM(-2000);
+                routingSubsystem.setInnerFeederRPM(-1000);
+                routingSubsystem.setOuterFeederRPM(-2000);
+                shooterSubsystem.setTargetRPM(-1000);
+              }, intakeSubsystem, routingSubsystem, shooterSubsystem));
     new Button(controller::getXButton)
             .whenPressed(new BallRejection(intakeSubsystem, routingSubsystem));
-    new Button(controller::getAButton)
+    new Button(controller::getRightBumper)
             .whileHeld(new RunCommand(() -> {shooterSubsystem.setTargetRPM(2000); routingSubsystem.setInnerFeederRPM(500);}));
     new Button(controller::getLeftBumper)
             .whileHeld(new RunCommand(() -> {intakeSubsystem.extend(); intakeSubsystem.setIntakeRPM(3000);}, intakeSubsystem));
+    new Button(controller::getStartButton)
+            .whenPressed(new ResetHood(hoodSubsystem));
 
   
 
     new Button(operator::getAButton)
       .toggleWhenPressed(new ExtendClimber(climberSubsystem, 36, 20.5));
-
     new Button(operator::getBButton)
       .whenActive(new RetractClimber(climberSubsystem));
+    new Button(operator::getLeftBumper)
+      .whenPressed(new InstantCommand(() -> climberSubsystem.decreaseAngle(0.5)));
+    new Button(operator::getRightBumper)
+      .whenPressed(new InstantCommand(() -> climberSubsystem.increaseAngle(0.5)));
   }
 
 

@@ -30,8 +30,8 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
   public ClimberSubsystem() {
     angleMotor = new LazyTalonFX(Constants.CLIMBER_ANGLE_MOTOR);
     angleMotor.setInverted(true);
-    angleMotor.configMotionCruiseVelocity(Falcon.rpmToTicks(60));
-    angleMotor.configMotionAcceleration(Falcon.rpmToTicks(60));
+    angleMotor.configMotionCruiseVelocity(Falcon.rpmToTicks(200));
+    angleMotor.configMotionAcceleration(Falcon.rpmToTicks(100));
     extensionMotor = new LazyTalonFX(Constants.CLIMBER_EXTENSION_MOTOR);
     extensionMotor.setInverted(true);
     extensionMotor.setSelectedSensorPosition(0);
@@ -49,16 +49,25 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
 
   @Config
   public void setClimberAngle(double angle){
-    if(angle<0) {
-      angle=0;
+    if(angle < 0) {
+      angle = 0;
     }
-    if(angle>62) {
-      angle=62;
+    if(angle > 62) {
+      angle = 62;
     }
     //110 should be the gear ratio
     double ticks = Falcon.degreesToTicks(angle) * 110;
     angleMotor.set(TalonFXControlMode.MotionMagic, ticks);
   }
+
+  public void increaseAngle(double amount){
+    setClimberAngle(getClimberAngle() + amount);
+  }
+
+  public void decreaseAngle(double amount){
+    setClimberAngle(getClimberAngle() - amount);
+  }
+
   @Log
   public double getClimberAngle() {
     double ticks = angleMotor.getSelectedSensorPosition();
@@ -82,8 +91,8 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
       distance=targetDistance;
     }
     targetDistance = distance;
-    if(distance>5*12) {
-      distance=5*12;
+    if(distance > 5 * 12) {
+      distance = 5 * 12;
     }
     //0.1014 is the number of inches per rotation OF THE MOTOR (not of the wheel)
     double ticks = inchesToTicks(distance);
