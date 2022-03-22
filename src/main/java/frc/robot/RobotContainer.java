@@ -148,7 +148,7 @@ public class RobotContainer {
     ledSubsystem.setDefaultCommand(new DefaultLedCommand(ledSubsystem, visionSubsystem, routingSubsystem));
 
     
-    climberSubsystem.setDefaultCommand(new RunCommand(() -> climberSubsystem.retractIfLocked(-controller.getRightTriggerAxis())));
+    climberSubsystem.setDefaultCommand(new RunCommand(() -> climberSubsystem.retractIfLocked(-controller.getRightTriggerAxis() * 0.3)));
 
     // Configure the button bindings
     configureButtonBindings();
