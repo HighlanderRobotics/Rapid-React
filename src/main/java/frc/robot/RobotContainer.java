@@ -120,7 +120,7 @@ public class RobotContainer {
 
     intakeSubsystem.setDefaultCommand(new RunCommand(() -> {intakeSubsystem.retract(); intakeSubsystem.setIntakeRPM(0);}, intakeSubsystem));
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem));
-    hoodSubsystem.setDefaultCommand(new RunCommand(() -> hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()), hoodSubsystem));
+    //hoodSubsystem.setDefaultCommand(new RunCommand(() -> hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()), hoodSubsystem));
     hoodSubsystem.enable();
     routingSubsystem.setDefaultCommand(
       // new ConditionalCommand(
@@ -135,7 +135,7 @@ public class RobotContainer {
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
     ledSubsystem.setDefaultCommand(new DefaultLedCommand(ledSubsystem, visionSubsystem, routingSubsystem));
     
-    climberSubsystem.setDefaultCommand(new RunCommand(() -> {climberSubsystem.retractIfLocked(-operator.getRightTriggerAxis() * 0.3);}, climberSubsystem));
+    climberSubsystem.setDefaultCommand(new RunCommand(() -> {climberSubsystem.retractIfLocked(-operator.getRightTriggerAxis() * 0.6);}, climberSubsystem));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -206,17 +206,22 @@ public class RobotContainer {
   }
 
   private static double modifyAxis(double value) {
-    // Deadband
-    value = deadband(value, 0.05);
 
-    // Square the axis
-    value = Math.copySign(value * value * value, value);
 
     // slow it down if the climber is out
     if (!ClimberSubsystem.extendedAndLocked) {
+      // Deadband
+      value = deadband(value, 0.05);
+
+      // Square the axis
+      value = Math.copySign(value * value, value);
       return value;
     } else {
-      return value * 0.2;
+      value = deadband(value, 0.1);
+      if (value != 0.0) {
+        return Math.copySign(0.07, value);
+      }
+      return 0.0;
     }
   }
 

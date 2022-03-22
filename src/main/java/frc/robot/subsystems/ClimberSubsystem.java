@@ -30,8 +30,8 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
   public ClimberSubsystem() {
     angleMotor = new LazyTalonFX(Constants.CLIMBER_ANGLE_MOTOR);
     angleMotor.setInverted(true);
-    angleMotor.configMotionCruiseVelocity(Falcon.rpmToTicks(200));
-    angleMotor.configMotionAcceleration(Falcon.rpmToTicks(100));
+    angleMotor.configMotionCruiseVelocity(Falcon.rpmToTicks(400));
+    angleMotor.configMotionAcceleration(Falcon.rpmToTicks(400));
     extensionMotor = new LazyTalonFX(Constants.CLIMBER_EXTENSION_MOTOR);
     extensionMotor.setInverted(true);
     extensionMotor.setSelectedSensorPosition(0);

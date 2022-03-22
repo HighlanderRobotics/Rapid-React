@@ -28,11 +28,12 @@ public class DefaultLedCommand extends CommandBase {
     // climber indicator
     if (ClimberSubsystem.extendedAndLocked) {
       if (ClimberSubsystem.startedRetracting) {
-        // ready to retract; turn green
-        ledSubsystem.setSolidColor(60, 255, 255);
-      } else {
         // started climbing; run the RGB!
         ledSubsystem.rainbow(2);
+      } else {
+        // ready to retract; turn green
+        ledSubsystem.setSolidColor(60, 255, 255);
+        
       }
     } else {
       // otherwise show shoowing indicator with red/green for target lock
