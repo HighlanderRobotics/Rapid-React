@@ -185,7 +185,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     // FIXME Uncomment if you are using a NavX
     System.out.println("reset");
    m_navx.zeroYaw();
-   yawOffset = getGyroscopeRotation().getDegrees() + yawOffset;
+   yawOffset = getGyroscopeRotation().getDegrees() + yawOffset - 90;
   }
 
   public Rotation2d getGyroscopeRotation() {
