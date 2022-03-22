@@ -11,6 +11,8 @@ import frc.robot.subsystems.ShooterSubsystem;
 public class ShootOneBall extends CommandBase {
 
   RoutingSubsystem routingSubsystem;
+  // has the ball been detected yet
+  boolean ballSeen = false;
 
   /** Creates a new ShootWithPause. */
   public ShootOneBall(RoutingSubsystem routingSubsystem) {
@@ -28,7 +30,11 @@ public class ShootOneBall extends CommandBase {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    if (routingSubsystem.upperBeambreak.get()) {
+      ballSeen = true;
+    }
+  }
 
   // Called once the command ends or is interrupted.
   @Override
@@ -40,6 +46,6 @@ public class ShootOneBall extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return !routingSubsystem.upperBeambreak.get();
+    return (!routingSubsystem.upperBeambreak.get() && ballSeen);
   }
 }
