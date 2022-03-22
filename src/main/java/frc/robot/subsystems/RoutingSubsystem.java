@@ -65,11 +65,16 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
     outerFeeder.set(TalonFXControlMode.Velocity, Falcon.rpmToTicks(rpm));
   }
 
-  public boolean rejectBall(){
-    if (DriverStation.getAlliance() == Alliance.Blue){
-      return false; //color.red / saturation > 0.5 * saturation;
+  public boolean shouldRejectBall(){
+    if(lowerBeambreak.get()){
+      if (DriverStation.getAlliance() == DriverStation.Alliance.Red){
+        return (getColor().blue > getColor().red);
+      }
+      if (DriverStation.getAlliance() == DriverStation.Alliance.Blue){
+        return (getColor().red > getColor().blue);
+      }
     }
-    return false; //color.blue / saturation > 0.5 * saturation;
+    return false;
   }
 
   public void runRouting(boolean intakeOut){
