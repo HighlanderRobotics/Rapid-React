@@ -28,13 +28,13 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable {
   
   public final TalonFX flywheel;
 
-  @Log
+  
   private double targetRPM;
 
   @Config
   private double currentDistance;
 
-  @Log
+  
   private double testAngle;
 
   private ShootingLookup lookup;
@@ -45,7 +45,7 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable {
     flywheel.setNeutralMode(NeutralMode.Coast);
     // flywheel.configClosedloopRamp(5.0);
     flywheel.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 10, 0.25));
-
+    flywheel.enableVoltageCompensation(true);
     flywheel.selectProfileSlot(0, 0);
     flywheel.config_kP(0, 0.06);
     flywheel.config_kI(0, 0.0);
@@ -74,10 +74,10 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable {
   }
 
   public boolean isRPMInRange(){
-    return (Math.abs(Falcon.ticksToRPM(flywheel.getSelectedSensorVelocity()) - targetRPM)) < 200;
+    return (Math.abs(Falcon.ticksToRPM(flywheel.getSelectedSensorVelocity()) - targetRPM)) < 50;
   }
 
-  @Log
+  
   public double currentRPM() {
     return Falcon.ticksToRPM(flywheel.getSelectedSensorVelocity());
   }

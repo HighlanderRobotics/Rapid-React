@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.components.Falcon;
 import frc.robot.components.LazyTalonFX;
-import frc.robot.components.LimitSwitch;
+import frc.robot.components.ReversibleDigitalInput;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.Servo;
 public class ClimberSubsystem extends SubsystemBase implements Loggable {
   public final LazyTalonFX angleMotor;
   public final LazyTalonFX extensionMotor;
-  private final LimitSwitch limitSwitch;
+  private final ReversibleDigitalInput limitSwitch;
   public double targetDistance = 0;
   private final Servo ratchet;
   /** Creates a new ClimberSubsystem. */
@@ -35,7 +35,7 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
     extensionMotor = new LazyTalonFX(Constants.CLIMBER_EXTENSION_MOTOR);
     extensionMotor.setInverted(true);
     extensionMotor.setSelectedSensorPosition(0);
-    limitSwitch = new LimitSwitch(Constants.CLIMBER_LIMIT_SWITCH, false);
+    limitSwitch = new ReversibleDigitalInput(Constants.CLIMBER_LIMIT_SWITCH, false);
     ratchet = new Servo(Constants.CLIMBER_RATCHET_SERVO);
   }
 

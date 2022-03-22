@@ -18,15 +18,13 @@ import frc.robot.subsystems.VisionSubsystem;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class AutoAim extends CommandBase{
-  LimeLightSubsystem m_visionSubsystem;
+  VisionSubsystem m_visionSubsystem;
   DrivetrainSubsystem m_drivetrainSubsystem;
-  XboxController m_controller;
   double endThreshold = 0.5;
   /** Creates a new AutoAim. */
-  public AutoAim(LimeLightSubsystem visionSubsystem, DrivetrainSubsystem drivetrainSubsystem, XboxController controller) {
+  public AutoAim(VisionSubsystem visionSubsystem, DrivetrainSubsystem drivetrainSubsystem) {
         m_visionSubsystem = visionSubsystem;
         m_drivetrainSubsystem = drivetrainSubsystem;
-        m_controller = controller;
         addRequirements(drivetrainSubsystem);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -34,14 +32,13 @@ public class AutoAim extends CommandBase{
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // return Math.abs(m_visionSubsystem.getHorizontalOffset()) < endThreshold;
-    return false;
+    return Math.abs(m_visionSubsystem.getAngleToTarget()) < endThreshold;
+    // return false;
   }
 
   @Override
   public void execute () {
-    m_drivetrainSubsystem.drive(new ChassisSpeeds(0, 0, m_visionSubsystem.pidOutput));
-    m_visionSubsystem.controllerRumble(m_controller);
+    m_drivetrainSubsystem.drive(new ChassisSpeeds(0, 0, m_visionSubsystem.pidOutput()));
   }
 
   public void end(){
