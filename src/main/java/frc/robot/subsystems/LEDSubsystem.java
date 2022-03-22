@@ -18,7 +18,7 @@ public class LEDSubsystem extends SubsystemBase {
   public LEDSubsystem() {
     led = new AddressableLED(Constants.LED_PORT);
     // 70 leds / 2 leds per index
-    buffer = new AddressableLEDBuffer(70);
+    buffer = new AddressableLEDBuffer(35);
     led.setLength(buffer.getLength());
     led.start();
   }
@@ -42,9 +42,9 @@ public class LEDSubsystem extends SubsystemBase {
   public void setSymmetrical(int i, int h, int s, int v) {
     if (i > 18) {i = 18;}
     if (i < 0)  {i = 0;}
-    buffer.setHSV(35 + i, h, s, v);
+    buffer.setHSV(i, h, s, v);
     // for i=18 this sets it twice since it's (probably) on both sides, which is inefficient but fine
-    buffer.setHSV(69 - i, h, s, v);
+    buffer.setHSV(34 - i, h, s, v);
   }
 
   // set a ratio of the lights on to indicate progress like climber extension
