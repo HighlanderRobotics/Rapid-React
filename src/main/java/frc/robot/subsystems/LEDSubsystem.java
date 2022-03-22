@@ -45,6 +45,26 @@ public class LEDSubsystem extends SubsystemBase {
     buffer.setHSV(buffer.getLength() - i, h, s, v);
   }
 
+  // set a ratio of the lights on to indicate progress like climber extension
+  public void setProgress(double ratio, boolean reverse, int h, int s, int v) {
+    if (ratio < 0.0) {
+      ratio = 0.0;
+    }
+
+    if (ratio > 1.0) {
+      ratio = 1.0;
+    }
+
+    int numLights = (int)Math.round(19.0 * ratio);
+    for (int i = 0; i < numLights; i++) {
+      if (!reverse) {
+        setSymmetrical(i, h, s, v);
+      } else {
+        setSymmetrical(18 - i, h, s, v);
+      }
+    }
+  }
+
   public void setSolidColor(int h, int s, int v){
     for (int i = 0; i < buffer.getLength(); i ++){
       buffer.setHSV(i, h, s, v);

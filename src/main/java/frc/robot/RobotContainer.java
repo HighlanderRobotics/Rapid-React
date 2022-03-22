@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.sql.ClientInfoStatus;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -102,7 +103,7 @@ public class RobotContainer {
             drivetrainSubsystem,
             () -> -modifyAxis(limiter.calculate(controller.getLeftX())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
             () -> -modifyAxis(limiter.calculate(controller.getLeftY())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+            () -> -modifyTurnAxis(controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
             true
     ));
 
@@ -146,6 +147,9 @@ public class RobotContainer {
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
     ledSubsystem.setDefaultCommand(new DefaultLedCommand(ledSubsystem, visionSubsystem, routingSubsystem));
 
+    
+    climberSubsystem.setDefaultCommand(new RunCommand(() -> climberSubsystem.retractIfLocked(-controller.getRightTriggerAxis())));
+
     // Configure the button bindings
     configureButtonBindings();
     }
@@ -173,10 +177,8 @@ public class RobotContainer {
   
 
     new Button(operator::getAButton)
-      .toggleWhenPressed(new ExtendClimber(climberSubsystem, 36, 20.5));
+      .toggleWhenPressed(new ExtendClimber(climberSubsystem, ledSubsystem, 36, 20.5));
 
-    new Button(operator::getBButton)
-      .whenActive(new RetractClimber(climberSubsystem));
   }
 
 
@@ -209,6 +211,26 @@ public class RobotContainer {
     // Square the axis
     value = Math.copySign(value * value, value);
 
-    return value;
+    // slow it down if the climber is out
+    if (!ClimberSubsystem.extendedAndLocked) {
+      return value;
+    } else {
+      return value * 0.2;
+    }
+  }
+
+  // modify turn separately so it can be tuned easily if necessary
+  private static double modifyTurnAxis(double value) {
+    // Deadband
+    value = deadband(value, 0.05);
+
+    // Square the axis
+    value = Math.copySign(value * value, value);
+
+    if (!ClimberSubsystem.extendedAndLocked) {
+      return value;
+    } else {
+      return value * 0.2;
+    }
   }
 }
