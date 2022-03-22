@@ -79,8 +79,8 @@ public class RobotContainer {
   private final LEDSubsystem ledSubsystem = new LEDSubsystem();
   private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
 
-  private final SlewRateLimiter forwardLimiter = new SlewRateLimiter(3);
-  private final SlewRateLimiter strafeLimiter = new SlewRateLimiter(3);
+  private final SlewRateLimiter forwardLimiter = new SlewRateLimiter(3.5);
+  private final SlewRateLimiter strafeLimiter = new SlewRateLimiter(3.5);
 
   @Config
   double hoodTarget = 20.0;
@@ -160,13 +160,13 @@ public class RobotContainer {
   private void configureButtonBindings() {
     new Button(controller::getBButton)
             .whenPressed(drivetrainSubsystem::zeroGyroscope);
-    new Button(controller::getRightBumper)
+    new Button(controller::getAButton)
             .whileHeld(new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem));
     new Button(controller::getYButton)
             .whenPressed(new RunCommand(() -> intakeSubsystem.setIntakeRPM(2000)));
     new Button(controller::getXButton)
             .whenPressed(new BallRejection(intakeSubsystem, routingSubsystem));
-    new Button(controller::getAButton)
+    new Button(controller::getRightBumper)
             .whileHeld(new RunCommand(() -> {shooterSubsystem.setTargetRPM(2000); routingSubsystem.setInnerFeederRPM(500);}));
     new Button(controller::getLeftBumper)
             .whileHeld(new RunCommand(() -> {intakeSubsystem.extend(); intakeSubsystem.setIntakeRPM(3000);}, intakeSubsystem));
@@ -208,7 +208,7 @@ public class RobotContainer {
     value = deadband(value, 0.05);
 
     // Square the axis
-    value = Math.copySign(value * value, value);
+    value = Math.copySign(value * value * value, value);
 
     return value;
   }
