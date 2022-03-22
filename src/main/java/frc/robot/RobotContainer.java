@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.lang.ModuleLayer.Controller;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -130,8 +131,8 @@ public class RobotContainer {
       () -> routingSubsystem.shouldRejectBall())));
 
     intakeSubsystem.setDefaultCommand(new RunCommand(() -> {intakeSubsystem.retract(); intakeSubsystem.setIntakeRPM(0);}, intakeSubsystem));
-    shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
-    hoodSubsystem.setDefaultCommand(new RunCommand(() -> hoodSubsystem.setSetpoint(hoodTarget), hoodSubsystem));
+    shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem));
+    hoodSubsystem.setDefaultCommand(new RunCommand(() -> hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()), hoodSubsystem));
     hoodSubsystem.enable();
     routingSubsystem.setDefaultCommand(
       // new ConditionalCommand(
@@ -174,7 +175,6 @@ public class RobotContainer {
 
     new Button(operator::getAButton)
       .toggleWhenPressed(new ExtendClimber(climberSubsystem, 36, 20.5));
-
     new Button(operator::getBButton)
       .whenActive(new RetractClimber(climberSubsystem));
   }
