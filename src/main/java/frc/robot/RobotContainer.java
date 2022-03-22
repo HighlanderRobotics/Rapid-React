@@ -79,8 +79,8 @@ public class RobotContainer {
   private final LEDSubsystem ledSubsystem = new LEDSubsystem();
   private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
 
-  private final SlewRateLimiter forwardLimiter = new SlewRateLimiter(2);
-  private final SlewRateLimiter strafeLimiter = new SlewRateLimiter(2);
+  private final SlewRateLimiter forwardLimiter = new SlewRateLimiter(3);
+  private final SlewRateLimiter strafeLimiter = new SlewRateLimiter(3);
 
   @Config
   double hoodTarget = 20.0;
@@ -101,7 +101,7 @@ public class RobotContainer {
 
     drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
             drivetrainSubsystem,
-            () -> -modifyAxis(strafeLimiter.calculate(controller.getLeftX())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+            () -> -modifyAxis(strafeLimiter.calculate(-controller.getLeftX())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
             () -> -modifyAxis(forwardLimiter.calculate(controller.getLeftY())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
             () -> -modifyAxis(controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
             true
