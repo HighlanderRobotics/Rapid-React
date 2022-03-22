@@ -24,14 +24,26 @@ public class DefaultLedCommand extends CommandBase {
 
   @Override
   public void execute() {
-    if (visionSubsystem.lowerLimeLight.isPointingAtTarget){
-      if (routingSubsystem.upperBeambreak.get() && routingSubsystem.lowerBeambreak.get()){
+    boolean target = visionSubsystem.lowerLimeLight.isPointingAtTarget;
+    if (!routingSubsystem.upperBeambreak.get()) {
+      if (target) {
+        ledSubsystem.setAlternating(85, 255, 255);
+      } else {
+        ledSubsystem.setAlternating(0, 255, 255);
+      }
+    } else if (routingSubsystem.upperBeambreak.get() && !routingSubsystem.lowerBeambreak.get()) {
+      if (target) {
+        ledSubsystem.setFrontColor(85, 255, 255);
+      } else {
+        ledSubsystem.setFrontColor(0, 255, 255);
+      }
+      ledSubsystem.setBackColor(0, 0, 0);
+    } else {
+      if (target) {
         ledSubsystem.setSolidColor(85, 255, 255);
       } else {
-        ledSubsystem.setSolidColor(42, 255, 255);
+        ledSubsystem.setSolidColor(0, 255, 255);
       }
-    } else {
-      ledSubsystem.setSolidColor(0, 255, 255);
     }
   }
 }

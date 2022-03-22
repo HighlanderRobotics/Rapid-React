@@ -11,6 +11,7 @@ import javax.swing.text.DefaultCaret;
 
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -70,36 +71,17 @@ public class RobotContainer {
   private final RoutingSubsystem routingSubsystem = new RoutingSubsystem();
   private final LEDSubsystem ledSubsystem = new LEDSubsystem();
 
+  private final SlewRateLimiter limiter = new SlewRateLimiter(1);
+
   @Config
   double hoodTarget = 20.0;
   @Config
   double targetRPM = 500.0;
+  //oblog setters
   @Config
   public void setHoodTarget(double newTarget) {
     hoodTarget = newTarget;
   }
-
-  public void setTargetRPM(double newTarget) {
-      targetRPM = newTarget;
-  }
-  // private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
-  // private final HoodSubsystem m_hoodSubsystem = new HoodSubsystem();
-  
-  private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(); 
-  private ShuffleboardTab tab = Shuffleboard.getTab("Testing");
-  private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
-
-  // private final RoutingSubsystem m_routingSubsystem = new RoutingSubsystem();
-
-
-
-  private double rpm = 500.0;
-  private double feederRPM = 500;
-
-  // @Log
-  // Command flywheelCommand = new RunCommand(() -> m_shooterSubsystem.setTargetRPM(rpm), m_shooterSubsystem);
-
-  // setter for oblog
   @Config
   public void setRPM(double newRPM) {
     targetRPM = newRPM;
@@ -110,8 +92,8 @@ public class RobotContainer {
 
     drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
             drivetrainSubsystem,
-            () -> -modifyAxis(controller.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(controller.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+            () -> -modifyAxis(limiter.calculate(controller.getLeftX())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+            () -> -modifyAxis(limiter.calculate(controller.getLeftY())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
             () -> -modifyAxis(controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
             true
     ));
@@ -143,15 +125,15 @@ public class RobotContainer {
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
     hoodSubsystem.setDefaultCommand(new RunCommand(() -> hoodSubsystem.setSetpoint(hoodTarget), hoodSubsystem));
     hoodSubsystem.enable();
-    routingSubsystem.setDefaultCommand(//new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem));
-      new ConditionalCommand(
-        new ConditionalCommand(
-          new BallRejection(intakeSubsystem, routingSubsystem).withTimeout(1),
-          new ShootOneBall(routingSubsystem).alongWith(new RunCommand(() -> hoodSubsystem.setSetpoint(0))),
-          () -> routingSubsystem.upperBeambreak.get()
-        ),
-        new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem),
-        () -> routingSubsystem.shouldRejectBall())
+    routingSubsystem.setDefaultCommand(
+      // new ConditionalCommand(
+      //   new ConditionalCommand(
+          new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem)
+        //   new ShootOneBall(routingSubsystem).alongWith(new RunCommand(() -> hoodSubsystem.setSetpoint(0))),
+        //   () -> routingSubsystem.upperBeambreak.get()
+        // ),
+        // new BallRejection(intakeSubsystem, routingSubsystem),
+        // () -> routingSubsystem.rejectBall())
       );
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
     ledSubsystem.setDefaultCommand(new DefaultLedCommand(ledSubsystem, visionSubsystem, routingSubsystem));
@@ -179,6 +161,7 @@ public class RobotContainer {
             .whileHeld(new RunCommand(() -> {shooterSubsystem.setTargetRPM(2000); routingSubsystem.setInnerFeederRPM(500);}));
     new Button(controller::getLeftBumper)
             .whileHeld(new RunCommand(() -> {intakeSubsystem.extend(); intakeSubsystem.setIntakeRPM(3000);}, intakeSubsystem));
+
   }
 
 

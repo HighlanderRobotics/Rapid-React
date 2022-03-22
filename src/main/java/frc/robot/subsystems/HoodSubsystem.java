@@ -9,7 +9,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import frc.robot.Constants;
-import frc.robot.components.LimitSwitch;
+import frc.robot.components.ReversibleDigitalInput;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
@@ -23,8 +23,8 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
     /** Creates a new ExampleSubsystem. */
     public final CANSparkMax hood;
     public final Encoder angleEncoder;
-    public final LimitSwitch topLimitSwitch;
-    public final LimitSwitch bottomLimitSwitch;
+    public final ReversibleDigitalInput topLimitSwitch;
+    public final ReversibleDigitalInput bottomLimitSwitch;
     
     // Feedforward for the hood
     // Static is set to 0, since I assume we don't need any static power added to the motor
@@ -40,8 +40,8 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
         hood.setIdleMode(IdleMode.kBrake);
         // Last argument reverses direction
         angleEncoder = new Encoder(Constants.HOOD_ENCODER_A, Constants.HOOD_ENCODER_B, true);
-        topLimitSwitch = new LimitSwitch(Constants.HOOD_LIMIT_SWITCH_TOP, true);
-        bottomLimitSwitch = new LimitSwitch(Constants.HOOD_LIMIT_SWITCH_BOTTOM, true);
+        topLimitSwitch = new ReversibleDigitalInput(Constants.HOOD_LIMIT_SWITCH_TOP, true);
+        bottomLimitSwitch = new ReversibleDigitalInput(Constants.HOOD_LIMIT_SWITCH_BOTTOM, true);
     }
 
     @Override
