@@ -72,6 +72,7 @@ public final class Constants {
     public static final int CLIMBER_ANGLE_MOTOR = 16;
     public static final int CLIMBER_EXTENSION_MOTOR = 15;
     public static final int CLIMBER_LIMIT_SWITCH = 1;
+    public static final int CLIMBER_RATCHET_SERVO = 9;
 
     public static final double ksVolts = 4.15;
     // public static final double ksVoltSecondsPerMeter = 0.0006;

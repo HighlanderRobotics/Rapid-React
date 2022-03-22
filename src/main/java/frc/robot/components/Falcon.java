@@ -13,4 +13,12 @@ public class Falcon {
     public static double ticksToRPM(double ticks){
         return (ticks * 600) / 2048;
     }
+
+    public static double ticksToDegrees(double ticks) {
+        return (ticks / 2048) * 360;
+    }
+
+    public static double degreesToTicks(double degrees) {
+        return (degrees / 360) * 2048;
+    }
 }

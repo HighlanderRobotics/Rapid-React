@@ -7,7 +7,7 @@ import io.github.oblarg.oblog.annotations.Config.Relay;
 
 public class ReversibleDigitalInput implements Loggable {
     
-    final boolean reversed; 
+    final boolean reversed;
     final DigitalInput input;
     public ReversibleDigitalInput(int channel, boolean reversed) {
         input = new DigitalInput(channel);
