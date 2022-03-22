@@ -7,7 +7,9 @@ package frc.robot.commands;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 
 public class RetractClimber extends SequentialCommandGroup {
@@ -19,8 +21,9 @@ public class RetractClimber extends SequentialCommandGroup {
     addRequirements(climber);
 
     addCommands(
-      new InstantCommand(() -> climber.lockRatchet()).withTimeout(0.5),
-      new InstantCommand(() -> climber.extensionMotor.set(TalonFXControlMode.PercentOutput, -0.02))
+      new InstantCommand(() -> climber.lockRatchet()),
+      new WaitCommand(0.5),
+      new RunCommand(() -> climber.extensionMotor.set(TalonFXControlMode.PercentOutput, -0.2))
     );
   }
 
@@ -35,6 +38,6 @@ public class RetractClimber extends SequentialCommandGroup {
   // Stop if it's all the way in, but it should be cancelled first
   @Override
   public boolean isFinished() {
-    return climber.getDistance() <= 0.1;
+    return climber.getDistance() >= -0.1;
   }
 }

@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.ExtendClimber;
 import frc.robot.commands.ResetClimberAngle;
 import frc.robot.commands.ResetHood;
 import frc.robot.commands.RetractClimber;
@@ -49,6 +50,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final XboxController m_controller = new XboxController(0);
+  private final XboxController m_operator = new XboxController(1);
+
   private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
   private final HoodSubsystem m_hoodSubsystem = new HoodSubsystem();
   private final LimeLightSubsystem m_limeLightSubsystem = new LimeLightSubsystem("limelight-bottom");
@@ -127,6 +130,8 @@ public class RobotContainer {
     m_shooterSubsystem.setDefaultCommand(new RunCommand(() -> m_shooterSubsystem.setTargetRPM(0), m_shooterSubsystem));
     m_hoodSubsystem.setDefaultCommand(new RunCommand(() -> m_hoodSubsystem.setSetpoint(hoodTarget), m_hoodSubsystem));
     m_hoodSubsystem.enable();
+    SmartDashboard.putData("Extend Climber", new ExtendClimber(m_climberSubsystem, 36, 20.5));
+    SmartDashboard.putData("Retract Climber", new RetractClimber(m_climberSubsystem));
     
     //m_routingSubsystem.setDefaultCommand(new RunCommand(() -> m_routingSubsystem.runRouting(true), m_routingSubsystem));
 
@@ -156,6 +161,7 @@ public class RobotContainer {
     // new Button(m_controller::getBButton)
     //         // No requirements because we don't need to interrupt anything
     //         .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+
     new Button(m_controller::getYButton)
             .whenPressed(new RunCommand(() -> m_intakeSubsystem.setIntakeRPM(1000)));
     new Button(m_controller::getXButton)
@@ -163,6 +169,12 @@ public class RobotContainer {
   
     new Button(m_controller::getLeftBumper)
             .whenActive(new RunCommand(() -> {m_intakeSubsystem.extend(); m_intakeSubsystem.setIntakeRPM(1000);}, m_intakeSubsystem));
+
+    new Button(m_operator::getAButton)
+      .toggleWhenPressed(new ExtendClimber(m_climberSubsystem, 36, 20.5));
+
+    new Button(m_operator::getBButton)
+      .whenActive(new RetractClimber(m_climberSubsystem));
   }
 
   /**

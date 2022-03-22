@@ -40,11 +40,11 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
   }
 
   public void lockRatchet() {
-    ratchet.set(0);
+    ratchet.set(0.1);
   }
 
   public void unlockRatchet() {
-    ratchet.set(1);
+    ratchet.set(0.3);
   }
 
   @Config

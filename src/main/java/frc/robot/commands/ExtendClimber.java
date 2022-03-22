@@ -8,6 +8,8 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.PerpetualCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 
 public class ExtendClimber extends SequentialCommandGroup {
@@ -24,10 +26,10 @@ public class ExtendClimber extends SequentialCommandGroup {
         new InstantCommand(() -> climber.unlockRatchet()).withTimeout(0.5),
         new ResetClimberAngle(climber)
       ),
-      new InstantCommand(() -> climber.setClimberAngle(degrees))
-        .withInterrupt(() -> Math.abs(climber.getClimberAngle() - degrees) < 1.0),
-      new InstantCommand(() -> climber.setDistance(feet))
-        .withInterrupt(() -> Math.abs(climber.getDistance() - feet) < 0.1)
+      new RunCommand(() -> climber.setClimberAngle(degrees))
+        .withInterrupt(() -> Math.abs(climber.getClimberAngle() + degrees) < 1.0),
+      new RunCommand(() -> climber.setDistance(feet))
+        .withInterrupt(() -> Math.abs(climber.getDistance() + feet) < 0.5)
     );
   }
 
