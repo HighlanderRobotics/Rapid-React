@@ -40,9 +40,10 @@ public class LEDSubsystem extends SubsystemBase {
   this will set the LED on both sides given the index i (0-18) from the bottom
   */
   public void setSymmetrical(int i, int h, int s, int v) {
+    if (i > 18) {i = 18;}
     buffer.setHSV(i, h, s, v);
     // for i=18 this sets it twice since it's (probably) on both sides, which is inefficient but fine
-    buffer.setHSV(buffer.getLength() - i, h, s, v);
+    buffer.setHSV(34 - i, h, s, v);
   }
 
   // set a ratio of the lights on to indicate progress like climber extension

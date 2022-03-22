@@ -43,6 +43,7 @@ public class DefaultLedCommand extends CommandBase {
         if (target) {
           ledSubsystem.setAlternating(85, 255, 255);
         } else {
+          // crash here?
           ledSubsystem.setAlternating(0, 255, 255);
         }
       // one ball

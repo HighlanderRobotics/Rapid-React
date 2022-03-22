@@ -114,6 +114,8 @@ public class RobotContainer {
     SmartDashboard.putData("Reset Hood", new ResetHood(hoodSubsystem));
     SmartDashboard.putData("Shoot one ball", new ShootOneBall(routingSubsystem));
     SmartDashboard.putData("Route one ball", new RouteOneBall(routingSubsystem));
+    SmartDashboard.putData("lock ratchet", new InstantCommand(() -> climberSubsystem.lockRatchet()));
+    SmartDashboard.putData("unlock ratchet", new InstantCommand(() -> climberSubsystem.unlockRatchet()));
     SmartDashboard.putData("Run Routing for Shooting", new RunCommand(() -> {routingSubsystem.setOuterFeederRPM(700); routingSubsystem.setInnerFeederRPM(500);}, routingSubsystem));
     SmartDashboard.putData("Shoot two balls", new ShootTwoBalls(routingSubsystem));
     SmartDashboard.putData("Extend Intake", new RunCommand(() -> intakeSubsystem.extend(), intakeSubsystem));
@@ -146,9 +148,8 @@ public class RobotContainer {
       );
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
     ledSubsystem.setDefaultCommand(new DefaultLedCommand(ledSubsystem, visionSubsystem, routingSubsystem));
-
     
-    climberSubsystem.setDefaultCommand(new RunCommand(() -> climberSubsystem.retractIfLocked(-controller.getRightTriggerAxis() * 0.3)));
+    climberSubsystem.setDefaultCommand(new RunCommand(() -> {climberSubsystem.retractIfLocked(-operator.getRightTriggerAxis() * 0.3);}, climberSubsystem));
 
     // Configure the button bindings
     configureButtonBindings();
