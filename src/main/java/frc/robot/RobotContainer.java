@@ -22,16 +22,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.BallRejection;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.ExtendClimber;
+import frc.robot.commands.ResetClimberAngle;
 import frc.robot.commands.DefaultLedCommand;
 import frc.robot.commands.ExtendIntake;
 import frc.robot.commands.PIDHeadingDriveCommand;
 import frc.robot.commands.ResetHood;
+import frc.robot.commands.RetractClimber;
 import frc.robot.commands.RouteOneBall;
 import frc.robot.commands.ShootOneBall;
 import frc.robot.commands.ShootTwoBalls;
 import frc.robot.commands.ShootingSequence;
 import frc.robot.commands.TwoBallAuto;
 import frc.robot.subsystems.LimeLightSubsystem;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -62,14 +66,18 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final XboxController controller = new XboxController(0);
+  private final XboxController operator = new XboxController(1);
+  
+  private final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem(); 
+  private ShuffleboardTab tab = Shuffleboard.getTab("Testing");
+  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   private final HoodSubsystem hoodSubsystem = new HoodSubsystem();
   private final LimeLightSubsystem limeLightSubsystem = new LimeLightSubsystem("limelight-bottom");
   private final VisionSubsystem visionSubsystem = new VisionSubsystem(new LimeLightSubsystem("limelight-top"), limeLightSubsystem);
-  private final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem(); 
-  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final RoutingSubsystem routingSubsystem = new RoutingSubsystem();
   private final LEDSubsystem ledSubsystem = new LEDSubsystem();
+  private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
 
   private final SlewRateLimiter forwardLimiter = new SlewRateLimiter(2);
   private final SlewRateLimiter strafeLimiter = new SlewRateLimiter(2);
@@ -117,7 +125,10 @@ public class RobotContainer {
     SmartDashboard.putData("Run Intake", new RunCommand(() -> intakeSubsystem.setIntakeRPM(3000)));
     SmartDashboard.putData("Toggle Intake", new InstantCommand(() -> intakeSubsystem.toggleIntake(), intakeSubsystem));
     SmartDashboard.putData("Auto Aim", new AutoAim(visionSubsystem, drivetrainSubsystem));
-    SmartDashboard.putData("Reject Balls", new SequentialCommandGroup(new ExtendIntake(intakeSubsystem).withTimeout(0.5), new BallRejection(intakeSubsystem, routingSubsystem).withTimeout(1.5)));
+    SmartDashboard.putData("Reject Balls", new SequentialCommandGroup( new ExtendIntake(intakeSubsystem), new ConditionalCommand(
+      new BallRejection(intakeSubsystem, routingSubsystem).withTimeout(0.5), 
+      new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem), 
+      () -> routingSubsystem.shouldRejectBall())));
 
     intakeSubsystem.setDefaultCommand(new RunCommand(() -> {intakeSubsystem.retract(); intakeSubsystem.setIntakeRPM(0);}, intakeSubsystem));
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
@@ -149,17 +160,24 @@ public class RobotContainer {
   private void configureButtonBindings() {
     new Button(controller::getBButton)
             .whenPressed(drivetrainSubsystem::zeroGyroscope);
-    new Button(controller::getAButton)
+    new Button(controller::getRightBumper)
             .whileHeld(new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem));
     new Button(controller::getYButton)
             .whenPressed(new RunCommand(() -> intakeSubsystem.setIntakeRPM(2000)));
     new Button(controller::getXButton)
-            .whenPressed(new RunCommand(() -> intakeSubsystem.toggleIntake()));
-    new Button(controller::getRightBumper)
+            .whenPressed(new BallRejection(intakeSubsystem, routingSubsystem));
+    new Button(controller::getAButton)
             .whileHeld(new RunCommand(() -> {shooterSubsystem.setTargetRPM(2000); routingSubsystem.setInnerFeederRPM(500);}));
     new Button(controller::getLeftBumper)
             .whileHeld(new RunCommand(() -> {intakeSubsystem.extend(); intakeSubsystem.setIntakeRPM(3000);}, intakeSubsystem));
 
+  
+
+    new Button(operator::getAButton)
+      .toggleWhenPressed(new ExtendClimber(climberSubsystem, 36, 20.5));
+
+    new Button(operator::getBButton)
+      .whenActive(new RetractClimber(climberSubsystem));
   }
 
 

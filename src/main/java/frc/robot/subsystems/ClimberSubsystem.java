@@ -4,26 +4,106 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.components.Falcon;
 import frc.robot.components.LazyTalonFX;
 import frc.robot.components.ReversibleDigitalInput;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Config;
+import io.github.oblarg.oblog.annotations.Log;
+import edu.wpi.first.wpilibj2.command.PIDSubsystem;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.Servo;
 
-public class ClimberSubsystem extends SubsystemBase {
-  private final LazyTalonFX angleMotor;
-  private final LazyTalonFX extensionMotor;
+
+public class ClimberSubsystem extends SubsystemBase implements Loggable {
+  public final LazyTalonFX angleMotor;
+  public final LazyTalonFX extensionMotor;
   private final ReversibleDigitalInput limitSwitch;
+  public double targetDistance = 0;
+  private final Servo ratchet;
   /** Creates a new ClimberSubsystem. */
   public ClimberSubsystem() {
     angleMotor = new LazyTalonFX(Constants.CLIMBER_ANGLE_MOTOR);
+    angleMotor.setInverted(true);
+    angleMotor.configMotionCruiseVelocity(Falcon.rpmToTicks(60));
+    angleMotor.configMotionAcceleration(Falcon.rpmToTicks(60));
     extensionMotor = new LazyTalonFX(Constants.CLIMBER_EXTENSION_MOTOR);
+    extensionMotor.setInverted(true);
+    extensionMotor.setSelectedSensorPosition(0);
     limitSwitch = new ReversibleDigitalInput(Constants.CLIMBER_LIMIT_SWITCH, false);
+    ratchet = new Servo(Constants.CLIMBER_RATCHET_SERVO);
+  }
+
+  public void lockRatchet() {
+    ratchet.set(0.1);
+  }
+
+  public void unlockRatchet() {
+    ratchet.set(0.3);
+  }
+
+  @Config
+  public void setClimberAngle(double angle){
+    if(angle<0) {
+      angle=0;
+    }
+    if(angle>62) {
+      angle=62;
+    }
+    //110 should be the gear ratio
+    double ticks = Falcon.degreesToTicks(angle) * 110;
+    angleMotor.set(TalonFXControlMode.MotionMagic, ticks);
+  }
+  @Log
+  public double getClimberAngle() {
+    double ticks = angleMotor.getSelectedSensorPosition();
+    // motor is inverted so this seems necessary
+    return -Falcon.ticksToDegrees(ticks/110);
+  }
+
+  public static double inchesToTicks(double inches) {
+    return inches / 0.1014 * 2048;
+  }
+
+  public static double ticksToInches(double ticks) {
+    return ticks / 2048 * 0.1014;
+  }
+
+  @Config
+  public void setDistance(double distance) {
+    unlockRatchet();
+    // don't let it go below the previous distance
+    if(distance<targetDistance) {
+      distance=targetDistance;
+    }
+    targetDistance = distance;
+    if(distance>5*12) {
+      distance=5*12;
+    }
+    //0.1014 is the number of inches per rotation OF THE MOTOR (not of the wheel)
+    double ticks = inchesToTicks(distance);
+    extensionMotor.set(TalonFXControlMode.Position, ticks);
+  }
+  @Log
+  public double getDistance(){
+    double ticks = extensionMotor.getSelectedSensorPosition();
+    return -ticksToInches(ticks);
+  }
+  @Log
+  public boolean getClimberLimit(){
+      return limitSwitch.get();
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    if(getClimberLimit()) {
+      angleMotor.getSensorCollection().setIntegratedSensorPosition(0, 100); 
+    }
   }
 }
