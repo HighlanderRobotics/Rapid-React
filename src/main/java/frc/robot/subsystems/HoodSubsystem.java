@@ -98,10 +98,12 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
         if (topLimitSwitch.get()) {
             // don't want this to mess up the top limit; what should we do when the top limit is hit?
             //topLimit = angleEncoder.getDistance();
+            
         }
         if (bottomLimitSwitch.get()){
             // bottom position should be 0
            angleEncoder.reset();
         }
+
     }
 }

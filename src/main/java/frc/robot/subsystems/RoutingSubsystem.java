@@ -94,6 +94,16 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
     }
   }
 
+  @Log
+  public double getRed() {
+    return getColor().red;
+  }
+
+  @Log
+  public double getBlue() {
+    return getColor().blue;
+  }
+
   public frc.robot.components.PicoColorSensor.RawColor getColor(){
     return colorSensor.getRawColor0();
   }
@@ -108,6 +118,8 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
     
     // color = getColor();
     // System.out.println("Red " + (color.red / (color.blue + color.red)));
-    // System.out.println(getColor().red);
+    //System.out.println();
+    //System.out.println(getColor().red);
+    //System.out.println(getColor().blue);
   }
 }

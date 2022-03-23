@@ -16,6 +16,7 @@ import frc.robot.commands.BallRejection;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.ExtendClimber;
 import frc.robot.commands.DefaultLedCommand;
+import frc.robot.commands.DefaultRoutingCommand;
 import frc.robot.commands.ExtendIntake;
 import frc.robot.commands.ResetHood;
 import frc.robot.commands.RetractClimber;
@@ -120,18 +121,9 @@ public class RobotContainer {
 
     intakeSubsystem.setDefaultCommand(new RunCommand(() -> {intakeSubsystem.retract(); intakeSubsystem.setIntakeRPM(0);}, intakeSubsystem));
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem));
-    //hoodSubsystem.setDefaultCommand(new RunCommand(() -> hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()), hoodSubsystem));
+    hoodSubsystem.setDefaultCommand(new RunCommand(() -> hoodSubsystem.setSetpoint(0), hoodSubsystem));
     hoodSubsystem.enable();
-    routingSubsystem.setDefaultCommand(
-      // new ConditionalCommand(
-      //   new ConditionalCommand(
-          new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem)
-        //   new ShootOneBall(routingSubsystem).alongWith(new RunCommand(() -> hoodSubsystem.setSetpoint(0))),
-        //   () -> routingSubsystem.upperBeambreak.get()
-        // ),
-        // new BallRejection(intakeSubsystem, routingSubsystem),
-        // () -> routingSubsystem.rejectBall())
-      );
+    routingSubsystem.setDefaultCommand(new DefaultRoutingCommand(routingSubsystem, intakeSubsystem, hoodSubsystem, shooterSubsystem));
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
     ledSubsystem.setDefaultCommand(new DefaultLedCommand(ledSubsystem, visionSubsystem, routingSubsystem));
     
