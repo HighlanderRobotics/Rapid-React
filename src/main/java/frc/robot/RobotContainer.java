@@ -123,11 +123,12 @@ public class RobotContainer {
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem));
     hoodSubsystem.setDefaultCommand(new RunCommand(() -> hoodSubsystem.setSetpoint(0), hoodSubsystem));
     hoodSubsystem.enable();
-    routingSubsystem.setDefaultCommand(new DefaultRoutingCommand(routingSubsystem, intakeSubsystem, hoodSubsystem, shooterSubsystem));
+    // routingSubsystem.setDefaultCommand(new DefaultRoutingCommand(routingSubsystem, intakeSubsystem, hoodSubsystem, shooterSubsystem));
+    routingSubsystem.setDefaultCommand(new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem));
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
     ledSubsystem.setDefaultCommand(new DefaultLedCommand(ledSubsystem, visionSubsystem, routingSubsystem));
     
-    climberSubsystem.setDefaultCommand(new RunCommand(() -> {climberSubsystem.retractIfLocked(-operator.getRightTriggerAxis() * 0.6);}, climberSubsystem));
+    climberSubsystem.setDefaultCommand(new RunCommand(() -> {climberSubsystem.retractIfLocked(-controller.getRightTriggerAxis() * 0.6);}, climberSubsystem));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -165,13 +166,15 @@ public class RobotContainer {
   
 
     new Button(operator::getAButton)
-      .toggleWhenPressed(new ExtendClimber(climberSubsystem, ledSubsystem, 36, 20.5));
+      .toggleWhenPressed(new ExtendClimber(climberSubsystem, ledSubsystem, 36, 22.0));
     new Button(operator::getBButton)
       .whenActive(new RetractClimber(climberSubsystem));
     new Button(operator::getLeftBumper)
       .whenPressed(new InstantCommand(() -> climberSubsystem.decreaseAngle(0.5)));
     new Button(operator::getRightBumper)
       .whenPressed(new InstantCommand(() -> climberSubsystem.increaseAngle(0.5)));
+    new Button(operator::getStartButton)
+      .whenPressed(new InstantCommand(() -> climberSubsystem.extendedAndLocked = false));
   }
 
 
