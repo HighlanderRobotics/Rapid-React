@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
@@ -33,7 +34,6 @@ public class DefaultLedCommand extends CommandBase {
       } else {
         // ready to retract; turn green
         ledSubsystem.setSolidColor(60, 255, 255);
-        
       }
     } else {
       // otherwise show shoowing indicator with red/green for target lock
@@ -62,6 +62,12 @@ public class DefaultLedCommand extends CommandBase {
         } else {
           ledSubsystem.setSolidColor(0, 255, 255);
         }
+      }
+
+      double time = DriverStation.getMatchTime();
+      // flash purple every half second during the last 20 seconds
+      if (time < 20.0 && time % 0.5 > 0.25) {
+        ledSubsystem.setSolidColor(155, 255, 255); 
       }
     }
   }
