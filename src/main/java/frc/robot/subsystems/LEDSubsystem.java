@@ -40,11 +40,11 @@ public class LEDSubsystem extends SubsystemBase {
   this will set the LED on both sides given the index i (0-18) from the bottom
   */
   public void setSymmetrical(int i, int h, int s, int v) {
-    if (i > 18) {i = 18;}
+    if (i > 34) {i = 34;}
     if (i < 0)  {i = 0;}
     buffer.setHSV(i, h, s, v);
     // for i=18 this sets it twice since it's (probably) on both sides, which is inefficient but fine
-    buffer.setHSV(34 - i, h, s, v);
+    buffer.setHSV(69 - i, h, s, v);
   }
 
   // set a ratio of the lights on to indicate progress like climber extension
@@ -74,19 +74,19 @@ public class LEDSubsystem extends SubsystemBase {
   }
 
   public void setFrontColor(int h, int s, int v){
-    for (int i = 8; i <= 18; i++) {
+    for (int i = 18; i <= 34; i++) {
       setSymmetrical(i, h, s, v);
     }
   }
 
   public void setBackColor(int h, int s, int v){
-    for (int i = 0; i <= 8; i ++){
+    for (int i = 0; i <= 17; i ++){
       setSymmetrical(i, h, s, v);
     }
   }
 
   public void setAlternating(int h, int s, int v) {
-    for (int i = 0; i <= 18; i++) {
+    for (int i = 0; i <= 34; i++) {
       if (i % 2 == 0) {
         setSymmetrical(i, h, s, v);
       } else {
@@ -105,7 +105,7 @@ public class LEDSubsystem extends SubsystemBase {
 
   public void rainbow(int increaseAmount) {
     // For every pixel
-    for (int i = 0; i <= 18; i++) {
+    for (int i = 0; i <= 34; i++) {
       // Calculate hue from 0 to 180 (it wraps around)
       // the constant 2 is how much the hue changes; increase it to "compress" the rainbow more
       final int hue = (rainbowFirstPixelHue + (i * 2)) % 180;
