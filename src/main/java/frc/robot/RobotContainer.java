@@ -166,7 +166,7 @@ public class RobotContainer {
   
 
     new Button(operator::getAButton)
-      .toggleWhenPressed(new ExtendClimber(climberSubsystem, ledSubsystem, 36, 22.0));
+      .toggleWhenPressed(new ExtendClimber(climberSubsystem, ledSubsystem, 38, 19.0));
     new Button(operator::getBButton)
       .whenActive(new RetractClimber(climberSubsystem));
     new Button(operator::getLeftBumper)
