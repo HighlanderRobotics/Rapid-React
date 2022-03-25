@@ -19,7 +19,9 @@ public class ShootTwoBalls extends SequentialCommandGroup {
     addRequirements(routingSubsystem);
     // Add your commands in the addCommands() call, e.g.
     addCommands(new ShootOneBall(routingSubsystem),
-                new ParallelDeadlineGroup(new WaitCommand(0.4), new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem)),
-                new ShootOneBall(routingSubsystem));
+                new ParallelDeadlineGroup(new WaitCommand(0.5), new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem)),
+                new RunCommand(() -> {
+                  routingSubsystem.setInnerFeederRPM(800);
+                  routingSubsystem.setOuterFeederRPM(400);}, routingSubsystem));
   }
 }
