@@ -34,15 +34,18 @@ public class ShootingSequence extends ParallelCommandGroup {
   RoutingSubsystem routingSubsystem,
   LEDSubsystem ledSubsystem) {
     addCommands(
-      new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem),
+      new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM() + 25), shooterSubsystem),
       new RunCommand(() -> hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()), hoodSubsystem),
       new SequentialCommandGroup(
+        new PrintCommand(String.valueOf(System.currentTimeMillis())),
         new ParallelCommandGroup(
           new AutoAim(visionSubsystem, drivetrainSubsystem).withTimeout(2.0),
+          new WaitCommand(0.8),
           new ParallelDeadlineGroup(
-            new WaitCommand(0.5),
+            new WaitCommand(0.8),
             new RunCommand(() -> ledSubsystem.rainbow(3), ledSubsystem))
         ),
+        new PrintCommand(String.valueOf(System.currentTimeMillis())),
         new InstantCommand(drivetrainSubsystem::lock),
         new PrintCommand("Shooting two"),
         new ShootTwoBalls(routingSubsystem)
