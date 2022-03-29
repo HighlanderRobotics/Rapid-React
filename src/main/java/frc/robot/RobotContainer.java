@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.BallRejection;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.DefaultFlywheelCommand;
 import frc.robot.commands.ExtendClimber;
 import frc.robot.commands.DefaultLedCommand;
 import frc.robot.commands.DefaultRoutingCommand;
@@ -125,7 +126,7 @@ public class RobotContainer {
     hoodSubsystem.enable();
     // routingSubsystem.setDefaultCommand(new DefaultRoutingCommand(routingSubsystem, intakeSubsystem, hoodSubsystem, shooterSubsystem));
     routingSubsystem.setDefaultCommand(new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem));
-    shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
+    shooterSubsystem.setDefaultCommand(new DefaultFlywheelCommand(shooterSubsystem, routingSubsystem, visionSubsystem));
     ledSubsystem.setDefaultCommand(new DefaultLedCommand(ledSubsystem, visionSubsystem, routingSubsystem));
     
     climberSubsystem.setDefaultCommand(new RunCommand(() -> {climberSubsystem.retractIfLocked(-controller.getRightTriggerAxis() * 0.6);}, climberSubsystem));
