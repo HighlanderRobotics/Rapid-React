@@ -15,6 +15,7 @@ import frc.robot.commands.AutoAim;
 import frc.robot.commands.BallRejection;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.DefaultFlywheelCommand;
+import frc.robot.commands.DefaultIntakeCommand;
 import frc.robot.commands.ExtendClimber;
 import frc.robot.commands.DefaultLedCommand;
 import frc.robot.commands.DefaultRoutingCommand;
@@ -120,7 +121,7 @@ public class RobotContainer {
       new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem), 
       () -> routingSubsystem.shouldRejectBall())));
 
-    intakeSubsystem.setDefaultCommand(new RunCommand(() -> {intakeSubsystem.retract(); intakeSubsystem.setIntakeRPM(0);}, intakeSubsystem));
+    intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(intakeSubsystem));
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem));
     hoodSubsystem.setDefaultCommand(new RunCommand(() -> hoodSubsystem.setSetpoint(0), hoodSubsystem));
     hoodSubsystem.enable();
