@@ -104,7 +104,7 @@ public class RobotContainer {
     SmartDashboard.putData("lock ratchet", new InstantCommand(() -> climberSubsystem.lockRatchet()));
     SmartDashboard.putData("unlock ratchet", new InstantCommand(() -> climberSubsystem.unlockRatchet()));
     SmartDashboard.putData("Run Routing for Shooting", new RunCommand(() -> {routingSubsystem.setOuterFeederRPM(700); routingSubsystem.setInnerFeederRPM(500);}, routingSubsystem));
-    SmartDashboard.putData("Shoot two balls", new ShootTwoBalls(routingSubsystem));
+    SmartDashboard.putData("Shoot two balls", new ShootTwoBalls(routingSubsystem, shooterSubsystem));
     SmartDashboard.putData("Extend Intake", new RunCommand(() -> intakeSubsystem.extend(), intakeSubsystem));
     SmartDashboard.putData("Shoot", 
       new ParallelCommandGroup(new SequentialCommandGroup(

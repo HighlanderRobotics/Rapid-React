@@ -25,6 +25,8 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
     public final Encoder angleEncoder;
     public final ReversibleDigitalInput topLimitSwitch;
     public final ReversibleDigitalInput bottomLimitSwitch;
+    // keep track of it to figure out when it's hit
+    private double currentSetpoint;
     
     // Feedforward for the hood
     // Static is set to 0, since I assume we don't need any static power added to the motor
@@ -65,7 +67,6 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
     public double bottomLimit = 0;
 
     @Override
-    @Config
     public void setSetpoint(double setpoint) {
         if (setpoint < bottomLimit) {
             setpoint = bottomLimit;
@@ -73,6 +74,7 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
         if(setpoint > topLimit) {
             setpoint = topLimit;
         }
+        currentSetpoint = setpoint;
         super.setSetpoint(setpoint);
     }
 
@@ -82,6 +84,11 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
         rotations = angleEncoder.get() / 2048.0;
         //1.47 rotations in the full range - same as around 40 degrees
         return (rotations/1.47) * 40;
+    }
+
+    @Log
+    public boolean atTargetAngle() {
+        return Math.abs(currentSetpoint - getMeasurement()) < 5.0;
     }
 
     public boolean getUpperLimit(){

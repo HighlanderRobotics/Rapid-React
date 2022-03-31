@@ -1,6 +1,6 @@
 {
   "SysId": {
-    "Analysis Type": "Drivetrain",
+    "Analysis Type": "General Mechanism",
     "AnalyzerJSONLocation": "C:\\Users\\Admin\\Desktop\\Rapid-React\\paths\\feedforward",
     "NetworkTables Settings": {
       "serverTeam": "8033"
