@@ -34,17 +34,24 @@ public class ShootingSequence extends ParallelCommandGroup {
   RoutingSubsystem routingSubsystem,
   LEDSubsystem ledSubsystem) {
     addCommands(
-      new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem),
+      new AutoAim(visionSubsystem, drivetrainSubsystem),
+      new WaitCommand(0.1)
+      .andThen(new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem)),
       new RunCommand(() -> hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()), hoodSubsystem),
       new SequentialCommandGroup(
         new ParallelCommandGroup(
-          new AutoAim(visionSubsystem, drivetrainSubsystem),
-          new WaitUntilCommand(shooterSubsystem::isRPMInRange),
+          new WaitUntilCommand(visionSubsystem::pointingAtTarget)
+            .andThen(new PrintCommand("autoaim done")),
+          new WaitUntilCommand(shooterSubsystem::isRPMInRange)
+            .andThen(new PrintCommand("RPM done")),
           new WaitUntilCommand(hoodSubsystem::atTargetAngle)
+            .andThen(new PrintCommand("hood done"))
         )
+        .deadlineWith(new RunCommand(() -> routingSubsystem.setInnerFeederRPM(-1000), routingSubsystem).withTimeout(0.2)
+          .andThen(new RunCommand(() -> routingSubsystem.setInnerFeederRPM(0), routingSubsystem)))
         .withTimeout(2.0)
         .raceWith(new RunCommand(() -> ledSubsystem.rainbow(3), ledSubsystem)),
-        new InstantCommand(drivetrainSubsystem::lock),
+        //new InstantCommand(drivetrainSubsystem::lock),
         new ShootTwoBalls(routingSubsystem, shooterSubsystem)
           .alongWith(new RunCommand(() -> ledSubsystem.rainbow(6), ledSubsystem))
       )

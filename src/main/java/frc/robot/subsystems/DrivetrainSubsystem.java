@@ -250,12 +250,12 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
         m_backRightModule.set(0, 45);
     }
 
-    SmartDashboard.putNumber("heading", getGyroscopeRotation().getDegrees());
+    //SmartDashboard.putNumber("heading", getGyroscopeRotation().getDegrees());
 
     // m_field.setRobotPose(m_odometry.getPoseMeters());
-    SmartDashboard.putData("Field", m_field);
+    //SmartDashboard.putData("Field", m_field);
 
-    SmartDashboard.putNumber("X Pose", m_odometry.getPoseMeters().getX());
-    SmartDashboard.putNumber("Y Pose", m_odometry.getPoseMeters().getY());
+    //SmartDashboard.putNumber("X Pose", m_odometry.getPoseMeters().getX());
+    //SmartDashboard.putNumber("Y Pose", m_odometry.getPoseMeters().getY());
   }
 }

@@ -22,6 +22,7 @@ public class ShootTwoBalls extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     addCommands(new ShootOneBall(routingSubsystem),
                 new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem).withInterrupt(shooter::isRPMInRange).withTimeout(2.0),
+                new WaitCommand(0.1),
                 new RunCommand(() -> {
                   routingSubsystem.setInnerFeederRPM(800);
                   routingSubsystem.setOuterFeederRPM(400);}, routingSubsystem));

@@ -81,6 +81,9 @@ public class VisionSubsystem extends SubsystemBase implements Loggable {
     return lowerLimeLight.pidOutput;
   }
 
+  public boolean pointingAtTarget() {
+    return Math.abs(lowerLimeLight.getHorizontalOffset()) < 2.0;
+  }
 
   @Override
   public void periodic() {

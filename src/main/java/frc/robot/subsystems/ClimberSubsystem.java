@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.Servo;
 public class ClimberSubsystem extends SubsystemBase implements Loggable {
   public final LazyTalonFX angleMotor;
   public final LazyTalonFX extensionMotor;
+  private boolean lastLimit = false;
   private final ReversibleDigitalInput limitSwitch;
   public double targetDistance = 0;
   private final Servo ratchet;
@@ -128,8 +129,11 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if(getClimberLimit()) {
-      angleMotor.getSensorCollection().setIntegratedSensorPosition(0, 100); 
+    if(getClimberLimit() && !lastLimit) {
+      angleMotor.getSensorCollection().setIntegratedSensorPosition(0, 100);
+      lastLimit = true;
+    } else if (!getClimberLimit() && lastLimit) {
+      lastLimit = false;
     }
   }
 }

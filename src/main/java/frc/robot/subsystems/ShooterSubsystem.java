@@ -51,6 +51,7 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable {
   /** Creates a new ExampleSubsystem. */
   public ShooterSubsystem() {
     flywheel = new LazyTalonFX(Constants.FLYWHEEL_MOTOR);
+    flywheel.configFactoryDefault();
     flywheel.setNeutralMode(NeutralMode.Coast);
     // flywheel.configClosedloopRamp(5.0);
     flywheel.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 10, 0.25));
@@ -73,8 +74,8 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable {
     kalmanFilter.predict(u, .01);
     kalmanFilter.correct(u, VecBuilder.fill(flywheel.getSelectedSensorVelocity()));
     // disable this to speed stuff up!!
-    SmartDashboard.putNumber("filter output", kalmanFilter.getXhat(0));
-    SmartDashboard.putNumber("RPM error", getRPMError());
+    //SmartDashboard.putNumber("filter output", kalmanFilter.getXhat(0));
+    //SmartDashboard.putNumber("RPM error", getRPMError());
 
   }
 
@@ -98,7 +99,7 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable {
   }
 
   public boolean isRPMInRange() {
-    return getRPMError() < 50;
+    return getRPMError() < 10;
   }
 
   
