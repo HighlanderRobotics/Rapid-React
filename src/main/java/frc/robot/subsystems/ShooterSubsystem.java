@@ -12,7 +12,14 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.KalmanFilter;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.system.LinearSystem;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,38 +35,50 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable {
   
   public final TalonFX flywheel;
 
-  @Log
-  private double targetRPM;
+  private double targetRPM = 0;
 
   @Config
   private double currentDistance;
 
-  @Log
+  
   private double testAngle;
 
   private ShootingLookup lookup;
+
+  public final KalmanFilter<N1, N1, N1> kalmanFilter;
+  private final LinearSystem<N1, N1, N1> flywheelSystem;
  
   /** Creates a new ExampleSubsystem. */
   public ShooterSubsystem() {
     flywheel = new LazyTalonFX(Constants.FLYWHEEL_MOTOR);
+    flywheel.configFactoryDefault();
     flywheel.setNeutralMode(NeutralMode.Coast);
     // flywheel.configClosedloopRamp(5.0);
     flywheel.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 10, 0.25));
-
+    // flywheel.configVoltageCompSaturation(12.5);
+    // flywheel.enableVoltageCompensation(true);
     flywheel.selectProfileSlot(0, 0);
-    flywheel.config_kP(0, 0.06);
+    flywheel.config_kP(0, 0.4);
     flywheel.config_kI(0, 0.0);
     flywheel.config_kD(0, 1.0);
     flywheel.config_kF(0, 0.058);
-
-
-    
-
+        //found with sys ID. 
+    flywheelSystem = LinearSystemId.identifyVelocitySystem(0.11571, 0.011953);
+    kalmanFilter = new KalmanFilter<>(Nat.N1(), Nat.N1(), flywheelSystem, VecBuilder.fill(3.0), VecBuilder.fill(0.01),.02);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    Matrix<N1,N1> u = VecBuilder.fill(flywheel.getMotorOutputVoltage());
+    kalmanFilter.predict(u, .01);
+    kalmanFilter.correct(u, VecBuilder.fill(flywheel.getSelectedSensorVelocity()));
+    // disable this to speed stuff up!!
+    //SmartDashboard.putNumber("filter output", kalmanFilter.getXhat(0));
+    // SmartDashboard.putNumber("RPM error", getRPMError());
+    // SmartDashboard.putNumber("Unfiltered RPM error", getUnfilteredRPMError());
+    // SmartDashboard.putBoolean("RPM in range", isRPMInRange());
+
   }
 
   public void setTargetRPM(double rpm){
@@ -73,12 +92,25 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable {
     // This method will be called once per scheduler run during simulation
   }
 
-  public boolean isRPMInRange(){
-    return (Math.abs(Falcon.ticksToRPM(flywheel.getSelectedSensorVelocity()) - targetRPM)) < 50;
+  public double getFilteredRPM() {
+    return Falcon.ticksToRPM(kalmanFilter.getXhat(0));
   }
 
-  @Log
+  public double getRPMError() {
+    return Math.abs(getFilteredRPM() - targetRPM);
+  }
+
+  public double getUnfilteredRPMError() {
+    return Math.abs(Falcon.ticksToRPM(flywheel.getSelectedSensorVelocity()) - targetRPM);
+  }
+
+  public boolean isRPMInRange() {
+    return getRPMError() < 10 && getUnfilteredRPMError() < 10;
+  }
+
+  
   public double currentRPM() {
     return Falcon.ticksToRPM(flywheel.getSelectedSensorVelocity());
   }
+
 }

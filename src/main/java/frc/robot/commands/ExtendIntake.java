@@ -5,25 +5,22 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.RoutingSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 
-public class RouteOneBall extends CommandBase {
-
-  RoutingSubsystem routingSubsystem;
-
-  /** Creates a new ShootWithPause. */
-  public RouteOneBall(RoutingSubsystem routingSubsystem) {
-    this.routingSubsystem = routingSubsystem;
+public class ExtendIntake extends CommandBase {
+  /** Creates a new ExtendIntake. */
+  IntakeSubsystem intakeSubsystem;
+  public ExtendIntake(IntakeSubsystem intakeSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(routingSubsystem);
+    this.intakeSubsystem = intakeSubsystem;
+    addRequirements(intakeSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    routingSubsystem.setInnerFeederRPM(500);
-    routingSubsystem.setOuterFeederRPM(500);
+    intakeSubsystem.setIntakeRPM(2000);
+    intakeSubsystem.extend();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -32,14 +29,11 @@ public class RouteOneBall extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    routingSubsystem.setInnerFeederRPM(0);
-    routingSubsystem.setOuterFeederRPM(0);
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return routingSubsystem.upperBeambreak.get();
+    return false;
   }
 }

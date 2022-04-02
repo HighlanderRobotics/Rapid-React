@@ -15,16 +15,16 @@ public class VisionSubsystem extends SubsystemBase implements Loggable {
   final LimeLightSubsystem upperLimeLight;
   public final LimeLightSubsystem lowerLimeLight;
 
-  @Log
+  
   private boolean usingLowerLimeLight = false;
 
   private double feetToTarget = 0.0;
   private double degreesToTarget = 0;
 
   private ShootingLookup lookup;
-  @Log
+  
   private double targetRPM;
-  @Log
+  
   private double targetHoodAngle;
 
   /** Creates a new VisionSubsystem. */
@@ -40,12 +40,12 @@ public class VisionSubsystem extends SubsystemBase implements Loggable {
     lookup.insert(6.0, new Pair<>(2500.0, 8.0));
     lookup.insert(8.0, new Pair<>(2650.0, 13.0));
     lookup.insert(10.0, new Pair<>(2800.0, 18.0)); // old values -> 3000/23 sometimes goes over? Better with Vaughn's hood drivetrain tape
-    lookup.insert(12.0, new Pair<>(2900.0, 18.0));
-    lookup.insert(14.0, new Pair<>(3000.0, 19.0));
+    lookup.insert(12.0, new Pair<>(2950.0, 18.0));
+    lookup.insert(14.0, new Pair<>(3050.0, 19.0));
     // lookup.insert(15.0, new Pair<>(3350.0, 27.0));//old values // 3350/27 kind of worked but not sure yet... 3300/25 was ok too?
-    lookup.insert(16.0, new Pair<>(3500.0, 25.0));
-    lookup.insert(18.0, new Pair<>(3900.0, 29.0));
-    lookup.insert(20.0, new Pair<>(4100.0, 32.2));
+    lookup.insert(16.0, new Pair<>(3550.0, 25.0));
+    lookup.insert(18.0, new Pair<>(3950.0, 29.0));
+    lookup.insert(20.0, new Pair<>(4150.0, 32.2));
   }
 
   @Config
@@ -81,6 +81,9 @@ public class VisionSubsystem extends SubsystemBase implements Loggable {
     return lowerLimeLight.pidOutput;
   }
 
+  public boolean pointingAtTarget() {
+    return Math.abs(lowerLimeLight.getHorizontalOffset()) < 3.0;
+  }
 
   @Override
   public void periodic() {

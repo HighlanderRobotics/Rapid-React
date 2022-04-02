@@ -16,7 +16,7 @@ import edu.wpi.first.math.controller.PIDController;
  */
 public final class Constants {
 
-    public static final PIDController AUTOAIM_PID_CONTROLLER = new PIDController(0.003, 0, 0);
+    public static final PIDController AUTOAIM_PID_CONTROLLER = new PIDController(0.007, 0.0, -0.0001); //(0.004, 0.0, -0.00004)
     /**
      * The left-to-right distance between the drivetrain wheels
      *
@@ -64,6 +64,7 @@ public final class Constants {
 
     public static final int HOOD_LIMIT_SWITCH_TOP = 3;
     public static final int HOOD_LIMIT_SWITCH_BOTTOM = 2;
+    
     public static final int INTAKE_MOTOR = 18;
     public static final int INTAKE_SOLENOID_FORWARD = 0;
     public static final int INTAKE_SOLENOID_BACKWARD = 1;
@@ -73,9 +74,10 @@ public final class Constants {
     public static final int CLIMBER_ANGLE_MOTOR = 16;
     public static final int CLIMBER_EXTENSION_MOTOR = 15;
     public static final int CLIMBER_LIMIT_SWITCH = 1;
+    public static final int CLIMBER_RATCHET_SERVO = 9;
 
     public static final double ksVolts = 4.15;
-    public static final double ksVoltSecondsPerMeter = 0.0006;
-    public static final double kaVoltSecondsSquaredPerMeter = -0.0055;
-
+    // public static final double ksVoltSecondsPerMeter = 0.0006;
+    // public static final double kaVoltSecondsSquaredPerMeter = -0.0055;
+    public static final int LED_PORT = 8;
 }
