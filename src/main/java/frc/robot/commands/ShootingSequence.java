@@ -44,7 +44,7 @@ public class ShootingSequence extends ParallelCommandGroup {
   LEDSubsystem ledSubsystem) {
     addCommands(
       new AutoAim(visionSubsystem, drivetrainSubsystem),
-      new WaitCommand(0.1)
+      new WaitCommand(0.15)
       .andThen(new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem)),
       new RunCommand(() -> hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()), hoodSubsystem),
       new SequentialCommandGroup(

@@ -113,11 +113,11 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
     verticalOffset = NetworkTableInstance.getDefault().getTable(tableName).getEntry("ty").getDouble(0.0);
     double area = NetworkTableInstance.getDefault().getTable(tableName).getEntry("ta").getDouble(0.0);
     isPointingAtTarget = NetworkTableInstance.getDefault().getTable(tableName).getEntry("tv").getDouble(0.0) == 1;
-    SmartDashboard.putNumber("limelightX", horizontalOffset);
-    SmartDashboard.putNumber("limelightY", verticalOffset);
-    SmartDashboard.putNumber("limelightArea", area);
-    SmartDashboard.putBoolean("is limelight detecting target", isPointingAtTarget);
-    SmartDashboard.putNumber("PID output", pidOutput);
+    //SmartDashboard.putNumber("limelightX", horizontalOffset);
+    //SmartDashboard.putNumber("limelightY", verticalOffset);
+    //SmartDashboard.putNumber("limelightArea", area);
+    //SmartDashboard.putBoolean("is limelight detecting target", isPointingAtTarget);
+    //SmartDashboard.putNumber("PID output", pidOutput);
     pidOutput = autoAim();
     
   }

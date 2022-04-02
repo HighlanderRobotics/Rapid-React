@@ -75,9 +75,9 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable {
     kalmanFilter.correct(u, VecBuilder.fill(flywheel.getSelectedSensorVelocity()));
     // disable this to speed stuff up!!
     //SmartDashboard.putNumber("filter output", kalmanFilter.getXhat(0));
-    SmartDashboard.putNumber("RPM error", getRPMError());
-    SmartDashboard.putNumber("Unfiltered RPM error", getUnfilteredRPMError());
-    SmartDashboard.putBoolean("RPM in range", isRPMInRange());
+    // SmartDashboard.putNumber("RPM error", getRPMError());
+    // SmartDashboard.putNumber("Unfiltered RPM error", getUnfilteredRPMError());
+    // SmartDashboard.putBoolean("RPM in range", isRPMInRange());
 
   }
 
