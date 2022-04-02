@@ -188,14 +188,18 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
    * Sets the gyroscope angle to zero. This can be used to set the direction the robot is currently facing to the
    * 'forwards' direction.
    */
-  public void zeroGyroscope() {
+  public void resetGyroscope(double value) {
     // FIXME Remove if you are using a Pigeon
 //     m_pigeon.setFusedHeading(0.0);
 
     // FIXME Uncomment if you are using a NavX
-    System.out.println("reset");
+   System.out.println("reset");
    m_navx.zeroYaw();
-   yawOffset = getGyroscopeRotation().getDegrees() + yawOffset - 90;
+   yawOffset = getGyroscopeRotation().getDegrees() + yawOffset - 90 + value;
+  }
+
+  public void zeroGyroscope(){
+    resetGyroscope(0);
   }
 
   public Rotation2d getGyroscopeRotation() {
@@ -237,15 +241,15 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
   public Command followPathCommand(PathPlannerTrajectory path) {
     return new SequentialCommandGroup(
       new InstantCommand(() -> m_odometry.resetPosition(path.getInitialPose(), new Rotation2d())),
-      new InstantCommand(() -> zeroGyroscope()),
+      new InstantCommand(() -> resetGyroscope(0)),
       new InstantCommand(() -> pathRunning = true),
       new PPSwerveControllerCommand(
         path,
         () -> m_odometry.getPoseMeters(),
         m_kinematics,
-        new PIDController(0.1, 0, 0), //was 0.0080395
-        new PIDController(1.4, 0, 0), //coppied from 3175 since they have a similar bot and idk where to get these values
-        new ProfiledPIDController(2.8, 0, 0, new Constraints(2, 2)), //was 0.003
+        new PIDController(0.08, 0, 0), //was 0.0080395
+        new PIDController(0.08, 0, 0), //coppied from 3175 since they have a similar bot and idk where to get these values
+        new ProfiledPIDController(0.03, 0, 0, new Constraints(2, 2)), //was 0.003
         (SwerveModuleState[] states) -> {
           m_chassisSpeeds = m_kinematics.toChassisSpeeds(states);
         },

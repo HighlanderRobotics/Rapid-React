@@ -125,7 +125,7 @@ public class RobotContainer {
     hoodSubsystem.enable();
     //m_routingSubsystem.setDefaultCommand(new RunCommand(() -> m_routingSubsystem.runRouting(true), m_routingSubsystem));
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
-
+    ledSubsystem.setDefaultCommand(new DefaultLedCommand(ledSubsystem, visionSubsystem, routingSubsystem));
     // Configure the button bindings
     configureButtonBindings();
     }
@@ -138,7 +138,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     new Button(controller::getRightStickButton)
-            .whenPressed(drivetrainSubsystem::zeroGyroscope);
+            .whenPressed(new InstantCommand(() -> drivetrainSubsystem.resetGyroscope(0)));
     new Button(controller::getAButton)
             .whileHeld(new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem));
     new Button(controller::getYButton)
@@ -180,7 +180,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    PathPlannerTrajectory path = PathPlanner.loadPath("Robot Test", 0.01, 1.0);
+    PathPlannerTrajectory path = PathPlanner.loadPath("Hub Scale Test", 0.1, 0.1);
     return drivetrainSubsystem.followPathCommand(path);
   }
   
