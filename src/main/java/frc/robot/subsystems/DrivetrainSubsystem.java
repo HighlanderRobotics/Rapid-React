@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.swervedrivespecialties.swervelib.Mk3ModuleConfiguration;
 // import com.ctre.phoenix.sensors.PigeonIMU;
 import com.swervedrivespecialties.swervelib.Mk3SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
@@ -96,12 +97,16 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
   private double yawOffset = 0;
 
   private final Field2d m_field = new Field2d();
+
+  private Mk3ModuleConfiguration config;
   
 
   public DrivetrainSubsystem() {
     ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
     SmartDashboard.putNumber("Heading", 0);
     SmartDashboard.putData("Field", m_field);
+
+    config.setDriveCurrentLimit(60);
     // There are 4 methods you can call to create your swerve modules.
     // The method you use depends on what motors you are using.
     //
@@ -127,6 +132,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
             tab.getLayout("Front Left Module", BuiltInLayouts.kList)
                     .withSize(2, 4)
                     .withPosition(0, 0),
+            config,
             // This can either be STANDARD or FAST depending on your gear configuration
             Mk3SwerveModuleHelper.GearRatio.STANDARD,
             // This is the ID of the drive motor
@@ -144,6 +150,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
             tab.getLayout("Front Right Module", BuiltInLayouts.kList)
                     .withSize(2, 4)
                     .withPosition(2, 0),
+            config,
             Mk3SwerveModuleHelper.GearRatio.STANDARD,
             FRONT_RIGHT_MODULE_DRIVE_MOTOR,
             FRONT_RIGHT_MODULE_STEER_MOTOR,
@@ -155,6 +162,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
             tab.getLayout("Back Left Module", BuiltInLayouts.kList)
                     .withSize(2, 4)
                     .withPosition(4, 0),
+            config,
             Mk3SwerveModuleHelper.GearRatio.STANDARD,
             BACK_LEFT_MODULE_DRIVE_MOTOR,
             BACK_LEFT_MODULE_STEER_MOTOR,
@@ -166,6 +174,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
             tab.getLayout("Back Right Module", BuiltInLayouts.kList)
                     .withSize(2, 4)
                     .withPosition(6, 0),
+            config,
             Mk3SwerveModuleHelper.GearRatio.STANDARD,
             BACK_RIGHT_MODULE_DRIVE_MOTOR,
             BACK_RIGHT_MODULE_STEER_MOTOR,
