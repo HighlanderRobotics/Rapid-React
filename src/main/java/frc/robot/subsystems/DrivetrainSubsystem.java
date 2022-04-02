@@ -239,7 +239,9 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 
   public Command followPathCommand(PathPlannerTrajectory path) {
     return new SequentialCommandGroup(
-      new InstantCommand(() -> { pathRunning = true; }),
+      new InstantCommand(() -> m_odometry.resetPosition(path.getInitialPose(), new Rotation2d())),
+      new InstantCommand(() -> zeroGyroscope()),
+      new InstantCommand(() -> pathRunning = true),
       new PPSwerveControllerCommand(
         path,
         () -> m_odometry.getPoseMeters(),
