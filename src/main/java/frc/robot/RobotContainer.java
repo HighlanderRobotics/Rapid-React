@@ -5,6 +5,8 @@
 package frc.robot;
 
 
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -159,7 +161,7 @@ public class RobotContainer {
     new Button(controller::getRightBumper)
             .whileHeld(new RunCommand(() -> {shooterSubsystem.setTargetRPM(2000); routingSubsystem.setInnerFeederRPM(500);}));
     new Button(controller::getLeftBumper)
-            .whileHeld(new RunCommand(() -> {intakeSubsystem.extend(); intakeSubsystem.setIntakeRPM(3000);}, intakeSubsystem));
+            .whileHeld(new RunCommand(() -> {intakeSubsystem.extend(); intakeSubsystem.intakeMotor.set(TalonFXControlMode.PercentOutput, 0.65);}, intakeSubsystem));
     new Button(controller::getStartButton)
             .whenPressed(new ResetHood(hoodSubsystem));
 
