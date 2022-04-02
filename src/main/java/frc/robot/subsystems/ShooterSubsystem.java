@@ -58,7 +58,7 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable {
     // flywheel.configVoltageCompSaturation(12.5);
     // flywheel.enableVoltageCompensation(true);
     flywheel.selectProfileSlot(0, 0);
-    flywheel.config_kP(0, 0.06);
+    flywheel.config_kP(0, 0.4);
     flywheel.config_kI(0, 0.0);
     flywheel.config_kD(0, 1.0);
     flywheel.config_kF(0, 0.058);
@@ -75,7 +75,9 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable {
     kalmanFilter.correct(u, VecBuilder.fill(flywheel.getSelectedSensorVelocity()));
     // disable this to speed stuff up!!
     //SmartDashboard.putNumber("filter output", kalmanFilter.getXhat(0));
-    //SmartDashboard.putNumber("RPM error", getRPMError());
+    SmartDashboard.putNumber("RPM error", getRPMError());
+    SmartDashboard.putNumber("Unfiltered RPM error", getUnfilteredRPMError());
+    SmartDashboard.putBoolean("RPM in range", isRPMInRange());
 
   }
 
@@ -98,8 +100,12 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable {
     return Math.abs(getFilteredRPM() - targetRPM);
   }
 
+  public double getUnfilteredRPMError() {
+    return Math.abs(Falcon.ticksToRPM(flywheel.getSelectedSensorVelocity()) - targetRPM);
+  }
+
   public boolean isRPMInRange() {
-    return getRPMError() < 10;
+    return getRPMError() < 10 && getUnfilteredRPMError() < 10;
   }
 
   

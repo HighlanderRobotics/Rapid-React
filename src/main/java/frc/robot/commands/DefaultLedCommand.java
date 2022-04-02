@@ -42,19 +42,18 @@ public class DefaultLedCommand extends CommandBase {
       // no ball
       if (!routingSubsystem.upperBeambreak.get()) {
         if (target) {
-          ledSubsystem.setAlternating(85, 255, 255);
+          ledSubsystem.setAlternating(2, 1, 85, 255, 255);
         } else {
           // crash here?
-          ledSubsystem.setAlternating(0, 255, 255);
+          ledSubsystem.setAlternating(2, 1, 0, 255, 255);
         }
       // one ball
       } else if (routingSubsystem.upperBeambreak.get() && !routingSubsystem.lowerBeambreak.get()) {
         if (target) {
-          ledSubsystem.setFrontColor(85, 255, 255);
+          ledSubsystem.setAlternating(1, 4, 85, 255, 255);
         } else {
-          ledSubsystem.setFrontColor(0, 255, 255);
+          ledSubsystem.setAlternating(1, 4, 0, 255, 255);
         }
-        ledSubsystem.setBackColor(0, 0, 0);
       // both balls
       } else {
         if (target) {

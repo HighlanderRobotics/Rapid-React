@@ -26,6 +26,15 @@ import frc.robot.subsystems.VisionSubsystem;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class ShootingSequence extends ParallelCommandGroup {
+
+  private long lastTime = System.currentTimeMillis();
+
+  private void printTime(String reason) {
+    long currentTime = System.currentTimeMillis();
+    System.out.println(reason + " took " + (currentTime - lastTime) + " milliseconds");
+    lastTime = currentTime;
+  }
+
   /** Creates a new ShootingSequence. */
   public ShootingSequence(HoodSubsystem hoodSubsystem,
   ShooterSubsystem shooterSubsystem,
@@ -39,23 +48,25 @@ public class ShootingSequence extends ParallelCommandGroup {
       .andThen(new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem)),
       new RunCommand(() -> hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()), hoodSubsystem),
       new SequentialCommandGroup(
+        new InstantCommand(() -> printTime("started")),
         new ParallelCommandGroup(
           new WaitUntilCommand(visionSubsystem::pointingAtTarget)
-            .andThen(new PrintCommand("autoaim done")),
+            .andThen(new InstantCommand(() -> printTime("autoaim"))),
           new WaitUntilCommand(shooterSubsystem::isRPMInRange)
-            .andThen(new PrintCommand("RPM done")),
+            .andThen(new InstantCommand(() -> printTime("RPM"))),
           new WaitUntilCommand(hoodSubsystem::atTargetAngle)
-            .andThen(new PrintCommand("hood done"))
+            .andThen(new InstantCommand(() -> printTime("hood")))
         )
         .deadlineWith(new RunCommand(() -> routingSubsystem.setInnerFeederRPM(-1000), routingSubsystem).withTimeout(0.2)
           .andThen(new RunCommand(() -> routingSubsystem.setInnerFeederRPM(0), routingSubsystem)))
-        .withTimeout(2.0)
+        // .withTimeout(2.0)
         .raceWith(new RunCommand(() -> ledSubsystem.rainbow(3), ledSubsystem)),
         //new InstantCommand(drivetrainSubsystem::lock),
         new ShootTwoBalls(routingSubsystem, shooterSubsystem)
           .alongWith(new RunCommand(() -> ledSubsystem.rainbow(6), ledSubsystem))
       )
     );
+    
   }
 }
 

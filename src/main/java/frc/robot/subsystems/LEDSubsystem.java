@@ -85,9 +85,10 @@ public class LEDSubsystem extends SubsystemBase {
     }
   }
 
-  public void setAlternating(int h, int s, int v) {
+  // gap = how far between, streak = how many in a row
+  public void setAlternating(int gap, int streak, int h, int s, int v) {
     for (int i = 0; i <= 34; i++) {
-      if (i % 2 == 0) {
+      if ((i / streak) % (gap + 1) == 0) {
         setSymmetrical(i, h, s, v);
       } else {
         setSymmetrical(i, 0, 0, 0);

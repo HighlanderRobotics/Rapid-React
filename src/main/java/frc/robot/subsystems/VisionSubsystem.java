@@ -82,7 +82,7 @@ public class VisionSubsystem extends SubsystemBase implements Loggable {
   }
 
   public boolean pointingAtTarget() {
-    return Math.abs(lowerLimeLight.getHorizontalOffset()) < 2.0;
+    return Math.abs(lowerLimeLight.getHorizontalOffset()) < 3.0;
   }
 
   @Override
