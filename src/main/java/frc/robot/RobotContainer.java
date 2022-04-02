@@ -161,7 +161,7 @@ public class RobotContainer {
     new Button(controller::getRightBumper)
             .whileHeld(new RunCommand(() -> {shooterSubsystem.setTargetRPM(2000); routingSubsystem.setInnerFeederRPM(500);}));
     new Button(controller::getLeftBumper)
-            .whileHeld(new RunCommand(() -> {intakeSubsystem.extend(); intakeSubsystem.intakeMotor.set(TalonFXControlMode.PercentOutput, 0.65);}, intakeSubsystem));
+            .whileHeld(new RunCommand(() -> {intakeSubsystem.extend(); intakeSubsystem.setIntakeRPM(4000);}, intakeSubsystem));
     new Button(controller::getStartButton)
             .whenPressed(new ResetHood(hoodSubsystem));
 
