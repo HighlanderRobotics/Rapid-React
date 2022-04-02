@@ -88,7 +88,7 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
     }
 
     if(intakeOut && !(ballInLower && ballInUpper)) {
-      setOuterFeederRPM(3000);
+      outerFeeder.set(TalonFXControlMode.PercentOutput, 0.6);
     } else {
       setOuterFeederRPM(0);
     }
