@@ -7,9 +7,12 @@ package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 
+import edu.wpi.first.hal.simulation.PowerDistributionDataJNI;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -71,6 +74,8 @@ public class RobotContainer {
   private final SlewRateLimiter forwardLimiter = new SlewRateLimiter(3.5);
   private final SlewRateLimiter strafeLimiter = new SlewRateLimiter(3.5);
 
+  private final PowerDistribution pdp = new PowerDistribution(0, ModuleType.kCTRE);
+
   @Config
   double hoodTarget = 20.0;
   @Config
@@ -95,6 +100,7 @@ public class RobotContainer {
             () -> -modifyTurnAxis(controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
             true
     ));
+    SmartDashboard.putNumber("Amp Draw", pdp.getTotalCurrent());
 /*
     SmartDashboard.putData("Aim", new RunCommand(() -> hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()), hoodSubsystem));
     SmartDashboard.putData("Aim", new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem));
