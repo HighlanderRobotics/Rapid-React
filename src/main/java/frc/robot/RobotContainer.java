@@ -107,42 +107,43 @@ public class RobotContainer {
             true
     ));
 
-    SmartDashboard.putData("Check path", new InstantCommand(() -> {
-      PathPlannerTrajectory path = PathPlanner.loadPath("Hub Scale Test", 0.5, 0.5);
-      drivetrainSubsystem.m_odometry.resetPosition(
-        new Pose2d(path.getInitialState().poseMeters.getTranslation(), 
-        path.getInitialState().holonomicRotation), new Rotation2d());
-      System.out.println(path.sample(0.0).poseMeters.getX());
-      System.out.println(drivetrainSubsystem.m_odometry.getPoseMeters().getX());
-    }));
-    SmartDashboard.putNumber("Amp Draw", pdp.getTotalCurrent());
-/*
-    SmartDashboard.putData("Aim", new RunCommand(() -> hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()), hoodSubsystem));
-    SmartDashboard.putData("Aim", new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem));
-    SmartDashboard.putData("Manual Run Flywheel", new RunCommand(() -> shooterSubsystem.setTargetRPM(targetRPM), shooterSubsystem));
-    SmartDashboard.putData("Manual Run Hood", new RunCommand(() -> hoodSubsystem.setSetpoint(hoodTarget), hoodSubsystem));
-    SmartDashboard.putData("Reset Hood", new ResetHood(hoodSubsystem));
-    SmartDashboard.putData("Shoot one ball", new ShootOneBall(routingSubsystem));
-    SmartDashboard.putData("Route one ball", new RouteOneBall(routingSubsystem));
+    // SmartDashboard.putData("Check path", new InstantCommand(() -> {
+    //   PathPlannerTrajectory path = PathPlanner.loadPath("Hub Scale Test", 0.5, 0.5);
+    //   drivetrainSubsystem.m_odometry.resetPosition(
+    //     new Pose2d(path.getInitialState().poseMeters.getTranslation(), 
+    //     path.getInitialState().holonomicRotation), new Rotation2d());
+    //   System.out.println(path.sample(0.0).poseMeters.getX());
+    //   System.out.println(drivetrainSubsystem.m_odometry.getPoseMeters().getX());
+    // }));
+    // SmartDashboard.putNumber("Amp Draw", pdp.getTotalCurrent());
+
+    // SmartDashboard.putData("Aim", new RunCommand(() -> hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()), hoodSubsystem));
+    // SmartDashboard.putData("Aim", new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem));
+    // SmartDashboard.putData("Manual Run Flywheel", new RunCommand(() -> shooterSubsystem.setTargetRPM(targetRPM), shooterSubsystem));
+    // SmartDashboard.putData("Manual Run Hood", new RunCommand(() -> hoodSubsystem.setSetpoint(hoodTarget), hoodSubsystem));
+    // SmartDashboard.putData("Reset Hood", new ResetHood(hoodSubsystem));
+    // SmartDashboard.putData("Shoot one ball", new ShootOneBall(routingSubsystem));
+    // SmartDashboard.putData("Route one ball", new RouteOneBall(routingSubsystem));
     SmartDashboard.putData("lock ratchet", new InstantCommand(() -> climberSubsystem.lockRatchet()));
     SmartDashboard.putData("unlock ratchet", new InstantCommand(() -> climberSubsystem.unlockRatchet()));
-    SmartDashboard.putData("Run Routing for Shooting", new RunCommand(() -> {routingSubsystem.setOuterFeederRPM(700); routingSubsystem.setInnerFeederRPM(500);}, routingSubsystem));
-    SmartDashboard.putData("Shoot two balls", new ShootTwoBalls(routingSubsystem, shooterSubsystem));
-    SmartDashboard.putData("Extend Intake", new RunCommand(() -> intakeSubsystem.extend(), intakeSubsystem));
-    SmartDashboard.putData("Shoot", 
-      new ParallelCommandGroup(new SequentialCommandGroup(
-        new WaitUntilCommand(m_shooterSubsystem::isRPMInRange), 
-        new RunCommand(() -> {m_routingSubsystem.setOuterFeederRPM(500); m_routingSubsystem.setInnerFeederRPM(1000);}, m_routingSubsystem)), 
-        new RunCommand(() -> m_shooterSubsystem.setTargetRPM(targetRPM), m_shooterSubsystem)));
-    SmartDashboard.putData("Run Intake", new RunCommand(() -> m_intakeSubsystem.setIntakeRPM(3000)));
-    SmartDashboard.putData("Toggle Intake", new InstantCommand(() -> m_intakeSubsystem.toggleIntake(), m_intakeSubsystem));
-    SmartDashboard.putData("Auto Aim", new AutoAim(m_visionSubsystem, m_drivetrainSubsystem));
-    */
+    // SmartDashboard.putData("Run Routing for Shooting", new RunCommand(() -> {routingSubsystem.setOuterFeederRPM(700); routingSubsystem.setInnerFeederRPM(500);}, routingSubsystem));
+    // SmartDashboard.putData("Shoot two balls", new ShootTwoBalls(routingSubsystem, shooterSubsystem));
+    // SmartDashboard.putData("Extend Intake", new RunCommand(() -> intakeSubsystem.extend(), intakeSubsystem));
+    // SmartDashboard.putData("Shoot", 
+    //   new ParallelCommandGroup(new SequentialCommandGroup(
+    //     new WaitUntilCommand(m_shooterSubsystem::isRPMInRange), 
+    //     new RunCommand(() -> {m_routingSubsystem.setOuterFeederRPM(500); m_routingSubsystem.setInnerFeederRPM(1000);}, m_routingSubsystem)), 
+    //     new RunCommand(() -> m_shooterSubsystem.setTargetRPM(targetRPM), m_shooterSubsystem)));
+    // SmartDashboard.putData("Run Intake", new RunCommand(() -> m_intakeSubsystem.setIntakeRPM(3000)));
+    // SmartDashboard.putData("Toggle Intake", new InstantCommand(() -> m_intakeSubsystem.toggleIntake(), m_intakeSubsystem));
+    // SmartDashboard.putData("Auto Aim", new AutoAim(m_visionSubsystem, m_drivetrainSubsystem));
+    
+    climberSubsystem.setDefaultCommand(new RunCommand(() -> climberSubsystem.retractIfLocked(controller.getRightTriggerAxis() * 0.6), climberSubsystem));
     intakeSubsystem.setDefaultCommand(new RunCommand(() -> {intakeSubsystem.retract(); intakeSubsystem.setIntakeRPM(0);}, intakeSubsystem));
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
     hoodSubsystem.setDefaultCommand(new RunCommand(() -> hoodSubsystem.setSetpoint(hoodTarget), hoodSubsystem));
     hoodSubsystem.enable();
-    //m_routingSubsystem.setDefaultCommand(new RunCommand(() -> m_routingSubsystem.runRouting(true), m_routingSubsystem));
+    routingSubsystem.setDefaultCommand(new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem));
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
     ledSubsystem.setDefaultCommand(new DefaultLedCommand(ledSubsystem, visionSubsystem, routingSubsystem));
     // Configure the button bindings
@@ -187,7 +188,7 @@ public class RobotContainer {
     new Button(operator::getLeftBumper)
       .whenPressed(new InstantCommand(() -> climberSubsystem.decreaseAngle(0.5)));
     new Button(operator::getRightBumper)
-      .whenPressed(new InstantCommand(() -> climberSubsystem.increaseAngle(0.5)));
+      .whenPressed(new InstantCommand(() -> climberSubsystem.increaseExtension(0.5)));
     new Button(operator::getStartButton)
       .whenPressed(new InstantCommand(() -> climberSubsystem.extendedAndLocked = false));
   }
@@ -199,7 +200,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    PathPlannerTrajectory path = PathPlanner.loadPath("Lower Red 2 Ball", 8.0, 5.0);
+    PathPlannerTrajectory path = PathPlanner.loadPath("Upper Red 2 Ball", 1.0, 1.0);
     return drivetrainSubsystem.followPathCommand(path);
   }
   

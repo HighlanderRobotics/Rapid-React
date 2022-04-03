@@ -82,7 +82,7 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
     boolean ballInLower = lowerBeambreak.get();
     boolean ballInUpper = upperBeambreak.get();
     if(!ballInUpper){
-      setInnerFeederRPM(800);
+      setInnerFeederRPM(600);
     } else {
       setInnerFeederRPM(0);
     }

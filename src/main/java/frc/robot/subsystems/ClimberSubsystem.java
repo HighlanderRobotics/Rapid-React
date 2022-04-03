@@ -86,6 +86,10 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
     setClimberAngle(getClimberAngle() - amount);
   }
 
+  public void increaseExtension(double amount){
+    setDistance(getDistance() + amount);
+  }
+
   @Log
   public double getClimberAngle() {
     double ticks = angleMotor.getSelectedSensorPosition();
