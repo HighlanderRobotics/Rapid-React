@@ -191,7 +191,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    PathPlannerTrajectory path = PathPlanner.loadPath("Hub Scale Test", 0.5, 0.5);
+    PathPlannerTrajectory path = PathPlanner.loadPath("Test", 0.5, 0.5);
     return drivetrainSubsystem.followPathCommand(path);
   }
   
@@ -233,7 +233,7 @@ public class RobotContainer {
     value = deadband(value, 0.05);
 
     // Square the axis
-    value = Math.copySign(value * value, value);
+    value = Math.copySign(value * value , value);
 
     if (!ClimberSubsystem.extendedAndLocked) {
       return value;
