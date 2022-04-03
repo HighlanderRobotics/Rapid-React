@@ -30,7 +30,7 @@ public final class Constants {
      */
     public static final double DRIVETRAIN_WHEELBASE_METERS = 0.44; // FIXME Measure and set wheelbase
 
-    public static final double ROTATION_SPEED_MULTPILIER = 0.7;
+    public static final double ROTATION_SPEED_MULTPILIER = 0.55;
     public static final int DRIVETRAIN_PIGEON_ID = 0; // FIXME Set Pigeon ID
 
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 6; // FIXME Set front left module drive motor ID
