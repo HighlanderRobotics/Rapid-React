@@ -199,7 +199,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    PathPlannerTrajectory path = PathPlanner.loadPath("Test", 0.5, 0.5);
+    PathPlannerTrajectory path = PathPlanner.loadPath("Lower Red 2 Ball", 8.0, 5.0);
     return drivetrainSubsystem.followPathCommand(path);
   }
   
