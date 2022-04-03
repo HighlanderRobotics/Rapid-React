@@ -10,6 +10,8 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -97,6 +99,15 @@ public class RobotContainer {
             () -> -modifyTurnAxis(controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
             true
     ));
+
+    SmartDashboard.putData("Check path", new InstantCommand(() -> {
+      PathPlannerTrajectory path = PathPlanner.loadPath("Hub Scale Test", 0.5, 0.5);
+      drivetrainSubsystem.m_odometry.resetPosition(
+        new Pose2d(path.getInitialState().poseMeters.getTranslation(), 
+        path.getInitialState().holonomicRotation), new Rotation2d());
+      System.out.println(path.sample(0.0).poseMeters.getX());
+      System.out.println(drivetrainSubsystem.m_odometry.getPoseMeters().getX());
+    }));
 /*
     SmartDashboard.putData("Aim", new RunCommand(() -> hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()), hoodSubsystem));
     SmartDashboard.putData("Aim", new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem));
@@ -180,7 +191,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    PathPlannerTrajectory path = PathPlanner.loadPath("Hub Scale Test", 0.1, 0.1);
+    PathPlannerTrajectory path = PathPlanner.loadPath("Hub Scale Test", 0.5, 0.5);
     return drivetrainSubsystem.followPathCommand(path);
   }
   

@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.commands.SwerveController;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
@@ -62,7 +63,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
    * <p>
    * This is a measure of how fast the robot should be able to drive in a straight line.
    */
-  public static final double MAX_VELOCITY_METERS_PER_SECOND = 100.0 / 60.0 *
+  public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 *
           SdsModuleConfigurations.MK3_STANDARD.getDriveReduction() *
           SdsModuleConfigurations.MK3_STANDARD.getWheelDiameter() * Math.PI;
   /**
@@ -93,7 +94,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 //   private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
   // FIXME Uncomment if you are using a NavX
  private final AHRS m_navx = new AHRS(Port.kUSB); // NavX connected over MXP
- private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation());
+ public final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation());
 
   // These are our modules. We initialize them in the constructor.
   private final SwerveModule m_frontLeftModule;
@@ -245,7 +246,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
         path.getInitialState().holonomicRotation), new Rotation2d())),
       // new InstantCommand(() -> resetGyroscope(0)),
       new InstantCommand(() -> pathRunning = true),
-      new PPSwerveControllerCommand(
+      new SwerveController(
         path,
         () -> m_odometry.getPoseMeters(),
         m_kinematics,
@@ -253,6 +254,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
         new PIDController(0.0, 0, 0), //coppied from 3175 since they have a similar bot and idk where to get these values
         new ProfiledPIDController(0.0, 0, 0, new Constraints(2, 2)), //was 0.003
         (SwerveModuleState[] states) -> {
+          System.out.println("from path follower " + states[0].speedMetersPerSecond);
           m_chassisSpeeds = m_kinematics.toChassisSpeeds(states);
         },
         this
@@ -268,13 +270,18 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
   @Override
   public void periodic() {
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
+    System.out.println("in periodic " + states[0].speedMetersPerSecond);
+
+
     m_odometry.update(getGyroscopeRotation(), 
       getModuleState(m_frontLeftModule), 
       getModuleState(m_frontRightModule),
       getModuleState(m_backLeftModule),
       getModuleState(m_backRightModule));
     SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
-
+    System.out.println("after desaturate " + states[0].speedMetersPerSecond);
+    System.out.println("voltage " + states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE);
+    double multiplier = 1.0;
     
     if(!lockOut){
         m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
