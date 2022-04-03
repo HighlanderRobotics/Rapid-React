@@ -254,7 +254,6 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
         new PIDController(0.0, 0, 0), //coppied from 3175 since they have a similar bot and idk where to get these values
         new ProfiledPIDController(0.0, 0, 0, new Constraints(2, 2)), //was 0.003
         (SwerveModuleState[] states) -> {
-          System.out.println("from path follower " + states[0].speedMetersPerSecond);
           m_chassisSpeeds = m_kinematics.toChassisSpeeds(states);
         },
         this
@@ -270,7 +269,6 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
   @Override
   public void periodic() {
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
-    System.out.println("in periodic " + states[0].speedMetersPerSecond);
 
 
     m_odometry.update(getGyroscopeRotation(), 
@@ -279,9 +277,6 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
       getModuleState(m_backLeftModule),
       getModuleState(m_backRightModule));
     SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
-    System.out.println("after desaturate " + states[0].speedMetersPerSecond);
-    System.out.println("voltage " + states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE);
-    double multiplier = 1.0;
     
     if(!lockOut){
         m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
