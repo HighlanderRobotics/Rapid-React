@@ -77,7 +77,8 @@ public final class Constants {
     public static final int CLIMBER_RATCHET_SERVO = 9;
 
     public static final double ksVolts = 4.15;
-    // public static final double ksVoltSecondsPerMeter = 0.0006;
+    // public static final double ksVoltS
+    //econdsPerMeter = 0.0006;
     // public static final double kaVoltSecondsSquaredPerMeter = -0.0055;
     public static final int LED_PORT = 8;
 }

@@ -240,16 +240,18 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 
   public Command followPathCommand(PathPlannerTrajectory path) {
     return new SequentialCommandGroup(
-      new InstantCommand(() -> m_odometry.resetPosition(path.getInitialPose(), new Rotation2d())),
-      new InstantCommand(() -> resetGyroscope(0)),
+      new InstantCommand(() -> m_odometry.resetPosition(
+        new Pose2d(path.getInitialState().poseMeters.getTranslation(), 
+        path.getInitialState().holonomicRotation), new Rotation2d())),
+      // new InstantCommand(() -> resetGyroscope(0)),
       new InstantCommand(() -> pathRunning = true),
       new PPSwerveControllerCommand(
         path,
         () -> m_odometry.getPoseMeters(),
         m_kinematics,
-        new PIDController(0.08, 0, 0), //was 0.0080395
-        new PIDController(0.08, 0, 0), //coppied from 3175 since they have a similar bot and idk where to get these values
-        new ProfiledPIDController(0.03, 0, 0, new Constraints(2, 2)), //was 0.003
+        new PIDController(0.0, 0, 0), //was 0.0080395
+        new PIDController(0.0, 0, 0), //coppied from 3175 since they have a similar bot and idk where to get these values
+        new ProfiledPIDController(0.0, 0, 0, new Constraints(2, 2)), //was 0.003
         (SwerveModuleState[] states) -> {
           m_chassisSpeeds = m_kinematics.toChassisSpeeds(states);
         },
@@ -287,12 +289,12 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     }
   
 
-    //SmartDashboard.putNumber("heading", getGyroscopeRotation().getDegrees());
+    SmartDashboard.putNumber("heading", getGyroscopeRotation().getDegrees());
 
-    // m_field.setRobotPose(m_odometry.getPoseMeters());
-    //SmartDashboard.putData("Field", m_field);
+    m_field.setRobotPose(m_odometry.getPoseMeters());
+    SmartDashboard.putData("Field", m_field);
 
-    //SmartDashboard.putNumber("X Pose", m_odometry.getPoseMeters().getX());
-    //SmartDashboard.putNumber("Y Pose", m_odometry.getPoseMeters().getY());
+    SmartDashboard.putNumber("X Pose", m_odometry.getPoseMeters().getX());
+    SmartDashboard.putNumber("Y Pose", m_odometry.getPoseMeters().getY());
   }
 }
