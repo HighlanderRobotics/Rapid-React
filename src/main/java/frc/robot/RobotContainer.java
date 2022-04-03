@@ -9,11 +9,16 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.wpilibj.Compressor;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+
+import edu.wpi.first.hal.simulation.PowerDistributionDataJNI;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -75,6 +80,8 @@ public class RobotContainer {
   private final SlewRateLimiter forwardLimiter = new SlewRateLimiter(3.5);
   private final SlewRateLimiter strafeLimiter = new SlewRateLimiter(3.5);
 
+  private final PowerDistribution pdp = new PowerDistribution(0, ModuleType.kCTRE);
+
   @Config
   double hoodTarget = 20.0;
   @Config
@@ -108,6 +115,7 @@ public class RobotContainer {
       System.out.println(path.sample(0.0).poseMeters.getX());
       System.out.println(drivetrainSubsystem.m_odometry.getPoseMeters().getX());
     }));
+    SmartDashboard.putNumber("Amp Draw", pdp.getTotalCurrent());
 /*
     SmartDashboard.putData("Aim", new RunCommand(() -> hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()), hoodSubsystem));
     SmartDashboard.putData("Aim", new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem));
@@ -166,7 +174,7 @@ public class RobotContainer {
     new Button(controller::getRightBumper)
             .whileHeld(new RunCommand(() -> {shooterSubsystem.setTargetRPM(2000); routingSubsystem.setInnerFeederRPM(500);}));
     new Button(controller::getLeftBumper)
-            .whileHeld(new RunCommand(() -> {intakeSubsystem.extend(); intakeSubsystem.setIntakeRPM(3000);}, intakeSubsystem));
+            .whileHeld(new RunCommand(() -> {intakeSubsystem.extend(); intakeSubsystem.setIntakeRPM(4000);}, intakeSubsystem));
     new Button(controller::getStartButton)
             .whenPressed(new ResetHood(hoodSubsystem));
 
