@@ -65,7 +65,8 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
    */
   public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 *
           SdsModuleConfigurations.MK3_STANDARD.getDriveReduction() *
-          SdsModuleConfigurations.MK3_STANDARD.getWheelDiameter() * Math.PI;
+          0.0955 * Math.PI;
+          //SdsModuleConfigurations.MK3_STANDARD.getWheelDiameter() * Math.PI;
   /**
    * The maximum angular velocity of the robot in radians per second.
    * <p>
@@ -241,17 +242,18 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 
   public Command followPathCommand(PathPlannerTrajectory path) {
     return new SequentialCommandGroup(
+      new InstantCommand(() -> resetGyroscope(path.getInitialState().holonomicRotation.getDegrees())),
       new InstantCommand(() -> m_odometry.resetPosition(
         new Pose2d(path.getInitialState().poseMeters.getTranslation(), 
-        path.getInitialState().holonomicRotation), new Rotation2d())),
-      new InstantCommand(() -> resetGyroscope(path.getInitialState().holonomicRotation.getDegrees())),
+        path.getInitialState().holonomicRotation), getGyroscopeRotation())),
+      
       new InstantCommand(() -> pathRunning = true),
       new SwerveController(
         path,
         () -> m_odometry.getPoseMeters(),
         m_kinematics,
-        new PIDController(0.008, 0.0,0.0 ), //coppied from 3175 since they have a similar bot and idk where to get these values
-        new PIDController(0.008, 0.0, 0.0), //was 0.0080395 
+        new PIDController(0.5, 0.0,0.0 ), //coppied from 3175 since they have a similar bot and idk where to get these values
+        new PIDController(0.5, 0.0, 0.0), //was 0.0080395 
         new ProfiledPIDController(0.5, 0.0, 0.0, new Constraints(2, 2)), //was 0.003
         (SwerveModuleState[] states) -> {
           m_chassisSpeeds = m_kinematics.toChassisSpeeds(states);
