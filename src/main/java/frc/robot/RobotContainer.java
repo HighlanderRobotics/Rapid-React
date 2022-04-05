@@ -50,6 +50,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ProxyScheduleCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -205,7 +206,7 @@ public class RobotContainer {
     return drivetrainSubsystem.followPathCommand(path)
       // .alongWith(new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem))
       .alongWith(new WaitCommand(1.0).andThen(new RunCommand(() -> {intakeSubsystem.extend(); intakeSubsystem.setIntakeRPM(4000);}, intakeSubsystem).withTimeout(3.0)))
-      .andThen(new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem));
+      .andThen(new ProxyScheduleCommand(new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem)));
   }
   
   private static double deadband(double value, double deadband) {
