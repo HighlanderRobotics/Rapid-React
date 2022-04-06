@@ -52,7 +52,7 @@ public class AutonomousChooser {
         
         chooser.setDefaultOption("UNIVERSAL 2 ball", new TwoBallAuto(drivetrainSubsystem, hoodSubsystem, shooterSubsystem, visionSubsystem, routingSubsystem, intakeSubsystem, ledSubsystem));
         chooser.addOption("NONE", new PrintCommand("owo"));
-        chooser.addOption("RED TERMINAL 3 ball 0 steal", getRedTerminal3Ball());
+        chooser.addOption("RED TERMINAL 3 ball 0 hide", getRedTerminal3Ball());
 
         SmartDashboard.putData(chooser);
     }
