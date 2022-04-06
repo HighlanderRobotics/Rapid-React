@@ -50,8 +50,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.ProxyScheduleCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -203,10 +205,25 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     PathPlannerTrajectory path = PathPlanner.loadPath("Upper Red 2 Ball", 0.5, 0.5);
-    return drivetrainSubsystem.followPathCommand(path)
-      // .alongWith(new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem))
-      .alongWith(new WaitCommand(1.0).andThen(new RunCommand(() -> {intakeSubsystem.extend(); intakeSubsystem.setIntakeRPM(4000);}, intakeSubsystem).withTimeout(3.0)))
-      .andThen(new ProxyScheduleCommand(new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem)));
+    return new SequentialCommandGroup(
+      drivetrainSubsystem.followPathCommand(path)
+      .alongWith(
+        new WaitCommand(1.0).andThen(new RunCommand(() -> 
+        {
+          intakeSubsystem.extend(); 
+          intakeSubsystem.setIntakeRPM(4000);
+        },
+        intakeSubsystem).withTimeout(3.0)))
+        .raceWith(new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem)),
+        new ShootingSequence(
+          hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem)
+          .withTimeout(3.0)
+          .andThen(new PrintCommand("*****shooting one complete")),
+      new PrintCommand("************* shooting one proxy complete"),
+      drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Upper Red 3rd Ball", 0.5, 0.5)),
+      new PrintCommand("*****************path following complete"),
+      new ProxyScheduleCommand(
+        new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem).withTimeout(3.0)));
   }
   
   private static double deadband(double value, double deadband) {

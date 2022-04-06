@@ -25,6 +25,7 @@ public class ShootTwoBalls extends SequentialCommandGroup {
                 new WaitCommand(0.1),
                 new RunCommand(() -> {
                   routingSubsystem.setInnerFeederRPM(800);
-                  routingSubsystem.setOuterFeederRPM(400);}, routingSubsystem));
+                  routingSubsystem.setOuterFeederRPM(400);}, routingSubsystem)
+                  /*.withInterrupt(() -> !routingSubsystem.upperBeambreak.get())*/);
   }
 }
