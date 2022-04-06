@@ -29,6 +29,7 @@ import frc.robot.commands.ExtendClimber;
 import frc.robot.commands.DefaultLedCommand;
 import frc.robot.commands.DefaultRoutingCommand;
 import frc.robot.commands.ExtendIntake;
+import frc.robot.commands.IncreaseExtension;
 import frc.robot.commands.ResetHood;
 import frc.robot.commands.RetractClimber;
 import frc.robot.commands.RouteOneBall;
@@ -192,9 +193,10 @@ public class RobotContainer {
     new Button(operator::getLeftBumper)
       .whenPressed(new InstantCommand(() -> climberSubsystem.decreaseAngle(0.5)));
     new Button(operator::getRightBumper)
-      .whenPressed(new InstantCommand(() -> climberSubsystem.increaseExtension(0.5)));
+      .toggleWhenPressed(new IncreaseExtension(climberSubsystem));
     new Button(operator::getStartButton)
       .whenPressed(new InstantCommand(() -> climberSubsystem.extendedAndLocked = false));
+
   }
 
 

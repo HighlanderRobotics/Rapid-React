@@ -89,6 +89,7 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
   public void increaseExtension(double amount){
     setDistance(getDistance() + amount);
   }
+  
 
   @Log
   public double getClimberAngle() {
