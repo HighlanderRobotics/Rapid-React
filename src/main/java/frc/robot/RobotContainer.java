@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.AutoAim;
+import frc.robot.commands.AutonomousChooser;
 import frc.robot.commands.BallRejection;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.ExtendClimber;
@@ -84,6 +85,8 @@ public class RobotContainer {
 
   private final SlewRateLimiter forwardLimiter = new SlewRateLimiter(3.5);
   private final SlewRateLimiter strafeLimiter = new SlewRateLimiter(3.5);
+
+  private final AutonomousChooser chooser = new AutonomousChooser(drivetrainSubsystem, hoodSubsystem, shooterSubsystem, visionSubsystem, routingSubsystem, intakeSubsystem, ledSubsystem);
 
   private final PowerDistribution pdp = new PowerDistribution(0, ModuleType.kCTRE);
 
@@ -206,26 +209,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    PathPlannerTrajectory path = PathPlanner.loadPath("Upper Red 2 Ball", 0.5, 0.5);
-    return new SequentialCommandGroup(
-      drivetrainSubsystem.followPathCommand(path)
-      .alongWith(
-        new WaitCommand(1.0).andThen(new RunCommand(() -> 
-        {
-          intakeSubsystem.extend(); 
-          intakeSubsystem.setIntakeRPM(4000);
-        },
-        intakeSubsystem).withTimeout(3.0)))
-        .raceWith(new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem)),
-        new ShootingSequence(
-          hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem)
-          .withTimeout(3.0)
-          .andThen(new PrintCommand("*****shooting one complete")),
-      new PrintCommand("************* shooting one proxy complete"),
-      drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Upper Red 3rd Ball", 0.5, 0.5)),
-      new PrintCommand("*****************path following complete"),
-      new ProxyScheduleCommand(
-        new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem).withTimeout(3.0)));
+    return chooser.getAutoCommand();
   }
   
   private static double deadband(double value, double deadband) {
