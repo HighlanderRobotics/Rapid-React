@@ -5,10 +5,14 @@
 package frc.robot.commands;
 
 import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.ProxyScheduleCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -61,21 +65,46 @@ public class AutonomousChooser {
         return chooser.getSelected();
     }
 
-    public Command getRedTerminal3Ball(){
-        return new SequentialCommandGroup(
-            drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Upper Red 2 Ball", 0.5, 0.5))
-            .alongWith(
-              new WaitCommand(1.0).andThen(new RunCommand(() -> 
-              {
-                intakeSubsystem.extend(); 
-                intakeSubsystem.setIntakeRPM(4000);
-              },
-              intakeSubsystem).withTimeout(3.0)))
-              .raceWith(new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem)),
-              new ShootingSequence(
+    private Command shoot(double time){
+      return new ShootingSequence(
                 hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem)
-                .withTimeout(3.0),
-            drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Upper Red 3rd Ball", 0.5, 0.5)),
-              new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem).withTimeout(3.0));      
+                .withTimeout(time);
     }
+
+    private Command shoot(){
+      return shoot(3.0);
+    }
+
+    private Command runIntakeAndRouting() {
+      return new ParallelCommandGroup(
+        new WaitCommand(1.0).andThen(new RunCommand(() -> 
+        {
+          intakeSubsystem.extend(); 
+          intakeSubsystem.setIntakeRPM(4000);
+        }, intakeSubsystem)),
+        (new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem)));
+    }
+
+    private Command getRedTerminal3Ball(){
+        return new SequentialCommandGroup(
+          new ResetHood(hoodSubsystem),
+          resetOdo(PathPlanner.loadPath("Upper Red 2 Ball", 2.0, 1.0)),
+          drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Upper Red 2 Ball", 2.0, 1.0))
+            .raceWith(runIntakeAndRouting()),
+          shoot(),
+          drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Upper Red 3rd Ball", 2.0, 1.0))
+            .raceWith(runIntakeAndRouting())
+            .raceWith(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem)),
+          shoot());      
+    }
+
+    private Command resetOdo(PathPlannerTrajectory path){
+      return new SequentialCommandGroup(
+      new InstantCommand(() -> drivetrainSubsystem.resetGyroscope(path.getInitialState().holonomicRotation.getDegrees())),
+      new InstantCommand(() -> drivetrainSubsystem.m_odometry.resetPosition(
+        new Pose2d(path.getInitialState().poseMeters.getTranslation(), 
+        path.getInitialState().holonomicRotation), drivetrainSubsystem.getGyroscopeRotation())));
+      
+    }
+
 }

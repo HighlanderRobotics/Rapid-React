@@ -179,7 +179,7 @@ public class RobotContainer {
                 shooterSubsystem.setTargetRPM(-1000);
               }, intakeSubsystem, routingSubsystem, shooterSubsystem));
     new Button(controller::getXButton)
-            .whenPressed(new BallRejection(intakeSubsystem, routingSubsystem));
+            .whileHeld(new BallRejection(intakeSubsystem, routingSubsystem));
     new Button(controller::getRightBumper)
             .whileHeld(new RunCommand(() -> {shooterSubsystem.setTargetRPM(2000); routingSubsystem.setInnerFeederRPM(500);}));
     new Button(controller::getLeftBumper)

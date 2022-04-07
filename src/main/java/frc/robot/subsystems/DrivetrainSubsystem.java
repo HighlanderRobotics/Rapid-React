@@ -242,11 +242,6 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 
   public Command followPathCommand(PathPlannerTrajectory path) {
     return new SequentialCommandGroup(
-      new InstantCommand(() -> resetGyroscope(path.getInitialState().holonomicRotation.getDegrees())),
-      new InstantCommand(() -> m_odometry.resetPosition(
-        new Pose2d(path.getInitialState().poseMeters.getTranslation(), 
-        path.getInitialState().holonomicRotation), getGyroscopeRotation())),
-      
       new InstantCommand(() -> pathRunning = true),
       new SwerveController(
         path,
