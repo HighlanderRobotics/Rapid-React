@@ -56,7 +56,8 @@ public class AutonomousChooser {
         
         chooser.setDefaultOption("UNIVERSAL 2 ball", new TwoBallAuto(drivetrainSubsystem, hoodSubsystem, shooterSubsystem, visionSubsystem, routingSubsystem, intakeSubsystem, ledSubsystem));
         chooser.addOption("NONE", new PrintCommand("owo"));
-        chooser.addOption("RED TERMINAL 3 ball 0 hide", getRedTerminal3Ball());
+        chooser.addOption("TERMINAL 3 BALL 0 HIDE", getTerminal3Ball());
+        chooser.addOption("HANGAR 2 BALL 2 HIDE", getHangar2Ball2Hide());
 
         SmartDashboard.putData(chooser);
     }
@@ -85,19 +86,31 @@ public class AutonomousChooser {
         (new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem)));
     }
 
-    private Command getRedTerminal3Ball(){
+    private Command getTerminal3Ball(){
         return new SequentialCommandGroup(
           new ResetHood(hoodSubsystem),
           resetOdo(PathPlanner.loadPath("Upper Red 2 Ball", 2.0, 1.0)),
           drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Upper Red 2 Ball", 2.0, 1.0))
             .raceWith(runIntakeAndRouting()),
-          shoot(),
+          shoot(2.0),
           drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Upper Red 3rd Ball", 2.0, 1.0))
             .raceWith(runIntakeAndRouting())
             .raceWith(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem)),
           shoot());      
     }
 
+    private Command getHangar2Ball2Hide(){
+      return new SequentialCommandGroup(
+        new ResetHood(hoodSubsystem),
+        resetOdo(PathPlanner.loadPath("Lower Red 2 Ball", 8.0, 5.0)),
+        drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Lower Red 2 Ball", 4.0, 5.0))
+          .raceWith(runIntakeAndRouting()),
+        shoot(2.0),
+        drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Lower Red 2 Hide", 1.0, 2.0))
+        .raceWith(runIntakeAndRouting())
+        .raceWith(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem))
+      );
+    }
     private Command resetOdo(PathPlannerTrajectory path){
       return new SequentialCommandGroup(
       new InstantCommand(() -> drivetrainSubsystem.resetGyroscope(path.getInitialState().holonomicRotation.getDegrees())),
