@@ -44,7 +44,7 @@ public class ShootingSequence extends ParallelCommandGroup {
   LEDSubsystem ledSubsystem) {
     addCommands(
       new AutoAim(visionSubsystem, drivetrainSubsystem),
-      new WaitCommand(0.2)
+      new WaitCommand(0.15)
       .andThen(new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem)),
       new RunCommand(() -> hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()), hoodSubsystem),
       new SequentialCommandGroup(
@@ -57,11 +57,12 @@ public class ShootingSequence extends ParallelCommandGroup {
           new WaitUntilCommand(hoodSubsystem::atTargetAngle)
             .andThen(new InstantCommand(() -> printTime("hood")))
         )
-        .deadlineWith(new RunCommand(() -> routingSubsystem.setInnerFeederRPM(-1000), routingSubsystem).withTimeout(0.2)
+        .deadlineWith(new RunCommand(() -> routingSubsystem.setInnerFeederRPM(-1000), routingSubsystem).withTimeout(0.15)
           .andThen(new RunCommand(() -> routingSubsystem.setInnerFeederRPM(0), routingSubsystem)))
         // .withTimeout(2.0)
         .raceWith(new RunCommand(() -> ledSubsystem.rainbow(3), ledSubsystem)),
         //new InstantCommand(drivetrainSubsystem::lock),
+        new WaitCommand(0.1),
         new ShootTwoBalls(routingSubsystem, shooterSubsystem)
           .raceWith(new RunCommand(() -> ledSubsystem.rainbow(6), ledSubsystem))
         //new WaitCommand(0.5)
