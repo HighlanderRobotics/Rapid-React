@@ -58,6 +58,8 @@ public class AutonomousChooser {
         chooser.addOption("NONE", new PrintCommand("owo"));
         chooser.addOption("TERMINAL 3 BALL 0 HIDE", getTerminal3Ball());
         chooser.addOption("HANGAR 2 BALL 2 HIDE", getHangar2Ball2Hide());
+        chooser.addOption("TERMINAL TARMAC EDGE 3 BALL", getTarmacEdgeTerminal3Ball()
+        );
 
         SmartDashboard.putData(chooser);
     }
@@ -109,6 +111,20 @@ public class AutonomousChooser {
         drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Lower Red 2 Hide", 1.0, 2.0))
         .raceWith(runIntakeAndRouting())
         .raceWith(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem))
+      );
+    }
+
+    private Command getTarmacEdgeTerminal3Ball(){
+      return new SequentialCommandGroup(
+        new ResetHood(hoodSubsystem),
+        resetOdo(PathPlanner.loadPath("Upper Red Edge 2 Ball", 2.0, 1.0)),
+        drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Upper Red Edge 2 Ball", 2.0, 1.0))
+          .raceWith(runIntakeAndRouting()),
+        shoot(2.0),
+        drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Upper Red 3rd Ball", 2.0, 1.0))
+          .raceWith(runIntakeAndRouting())
+          .raceWith(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem)),
+        shoot()
       );
     }
     private Command resetOdo(PathPlannerTrajectory path){
