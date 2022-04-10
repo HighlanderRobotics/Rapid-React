@@ -22,6 +22,7 @@ public class ExtendClimber extends SequentialCommandGroup {
     addCommands(
       // clear leds
       new InstantCommand(() -> ledSubsystem.setSolidColor(0, 0, 0)),
+      new InstantCommand(() -> climber.startedExtension = true),
 
       // unlock ratchet and reset angle first
       new ParallelCommandGroup(

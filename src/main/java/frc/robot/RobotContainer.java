@@ -253,7 +253,7 @@ public class RobotContainer {
     // Square the axis
     value = Math.copySign(value * value , value);
 
-    if (!ClimberSubsystem.extendedAndLocked) {
+    if (!ClimberSubsystem.startedExtension) {
       return value;
     } else {
       return value * 0.2;

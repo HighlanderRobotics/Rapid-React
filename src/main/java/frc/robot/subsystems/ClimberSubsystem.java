@@ -27,6 +27,7 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
   private final Servo ratchet;
   public static boolean extendedAndLocked = false;
   public static boolean startedRetracting = false;
+  public static boolean startedExtension = false;
   /** Creates a new ClimberSubsystem. */
   public ClimberSubsystem() {
     angleMotor = new LazyTalonFX(Constants.CLIMBER_ANGLE_MOTOR);
