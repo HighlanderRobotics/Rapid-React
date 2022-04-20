@@ -27,7 +27,7 @@ public class BallRejection extends CommandBase {
       intakeSubsystem.extend();
       intakeSubsystem.setIntakeRPM(-2000);
       routingSubsystem.setInnerFeederRPM(-200);
-      routingSubsystem.setOuterFeederRPM(-1000);
+      routingSubsystem.setOuterFeederRPM(-1500);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

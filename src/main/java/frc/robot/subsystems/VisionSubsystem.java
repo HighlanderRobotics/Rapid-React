@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.components.ShootingLookup;
 import io.github.oblarg.oblog.Loggable;
@@ -89,6 +90,7 @@ public class VisionSubsystem extends SubsystemBase implements Loggable {
   public void periodic() {
     // This method will be called once per scheduler run
     //chooseActiveLimeLight();
+    SmartDashboard.putBoolean("is pointing", pointingAtTarget());
     if (usingLowerLimeLight){
       degreesToTarget = lowerLimeLight.getHorizontalOffset();
     }else{
