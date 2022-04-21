@@ -38,6 +38,7 @@ import frc.robot.commands.ShootOneBall;
 import frc.robot.commands.ShootTwoBalls;
 import frc.robot.commands.ShootingSequence;
 import frc.robot.commands.TwoBallAuto;
+import frc.robot.components.Falcon;
 import frc.robot.subsystems.LimeLightSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -85,6 +86,7 @@ public class RobotContainer {
 
   private final SlewRateLimiter forwardLimiter = new SlewRateLimiter(3.5);
   private final SlewRateLimiter strafeLimiter = new SlewRateLimiter(3.5);
+  private final SlewRateLimiter flywheelLimiter = new SlewRateLimiter(3.0);
 
   private final AutonomousChooser chooser = new AutonomousChooser(drivetrainSubsystem, hoodSubsystem, shooterSubsystem, visionSubsystem, routingSubsystem, intakeSubsystem, ledSubsystem);
 
@@ -148,7 +150,7 @@ public class RobotContainer {
     
     climberSubsystem.setDefaultCommand(new RunCommand(() -> climberSubsystem.retractIfLocked(controller.getRightTriggerAxis() * -0.6), climberSubsystem));
     intakeSubsystem.setDefaultCommand(new RunCommand(() -> {intakeSubsystem.retract(); intakeSubsystem.setIntakeRPM(0);}, intakeSubsystem));
-    shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
+    shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(flywheelLimiter.calculate(0)), shooterSubsystem));
     hoodSubsystem.setDefaultCommand(new RunCommand(() -> hoodSubsystem.setSetpoint(hoodTarget), hoodSubsystem));
     hoodSubsystem.enable();
     routingSubsystem.setDefaultCommand(new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem));
@@ -168,7 +170,8 @@ public class RobotContainer {
     new Button(controller::getRightStickButton)
             .whenPressed(new InstantCommand(() -> drivetrainSubsystem.resetGyroscope(0)));
     new Button(controller::getAButton)
-            .whileHeld(new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem));
+            .whileHeld(new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem)
+            .andThen(new InstantCommand(() -> flywheelLimiter.reset(Falcon.ticksToRPM(shooterSubsystem.flywheel.getSelectedSensorVelocity())))));
     new Button(controller::getYButton)
             .whileHeld(
               new RunCommand(() -> {
