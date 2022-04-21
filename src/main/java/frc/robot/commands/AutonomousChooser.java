@@ -58,8 +58,8 @@ public class AutonomousChooser {
         chooser.addOption("NONE", new PrintCommand("owo"));
         chooser.addOption("TERMINAL 3 BALL 0 HIDE", getTerminal3Ball());
         chooser.addOption("HANGAR 2 BALL 2 HIDE", getHangar2Ball2Hide());
-        chooser.addOption("TERMINAL TARMAC EDGE 3 BALL", getTarmacEdgeTerminal3Ball()
-        );
+        chooser.addOption("TERMINAL TARMAC EDGE 3 BALL", getTarmacEdgeTerminal3Ball());
+        chooser.addOption("HANGAR 2 BALL 1 HIDE", getHangar2Ball1Hide());
 
         SmartDashboard.putData(chooser);
     }
@@ -109,9 +109,29 @@ public class AutonomousChooser {
           .raceWith(runIntakeAndRouting()),
         shoot(2.0),
         drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Lower Red 2 Hide", 1.0, 2.0))
-        .raceWith(runIntakeAndRouting())
-        .raceWith(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem))
+          .raceWith(runIntakeAndRouting())
+          .raceWith(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem))
       );
+    }
+
+    private Command getHangar2Ball1Hide(){
+      return new SequentialCommandGroup(
+        new ResetHood(hoodSubsystem),
+        resetOdo(PathPlanner.loadPath("Lower Red 2 Ball", 2.0, 1.0)),
+        drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Lower Red 2 Ball", 2.0, 1.0))
+          .raceWith(runIntakeAndRouting()),
+        shoot(2.0),
+        drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Lower Red 1 Hide", 1.0, 2.0))
+          .raceWith(runIntakeAndRouting())
+          .raceWith(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem)),
+        new RunCommand(() -> {
+          intakeSubsystem.extend();
+          intakeSubsystem.setIntakeRPM(-2000);
+          routingSubsystem.setInnerFeederRPM(-1500);  
+          routingSubsystem.setOuterFeederRPM(-2000);
+          shooterSubsystem.setTargetRPM(-1000);
+        }, intakeSubsystem, routingSubsystem, shooterSubsystem)
+        );
     }
 
     private Command getTarmacEdgeTerminal3Ball(){
