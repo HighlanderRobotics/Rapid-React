@@ -30,7 +30,7 @@ public class DefaultRoutingCommand extends SequentialCommandGroup {
       new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem).withInterrupt(() -> routingSubsystem.shouldRejectBall()),
       new PrintCommand("running ball rejection"),
       new ConditionalCommand(
-        new ProxyScheduleCommand(new BallRejection(intakeSubsystem, routingSubsystem)
+        new ProxyScheduleCommand(new BallRejection(intakeSubsystem, routingSubsystem, shooterSubsystem)
         .raceWith(new SequentialCommandGroup(new WaitUntilCommand(() -> !routingSubsystem.lowerBeambreak.get()), new WaitCommand(1.0)))), 
         new ProxyScheduleCommand(new ShootOneBall(routingSubsystem))
           .raceWith(new RunCommand(() -> {hoodSubsystem.setSetpoint(0);}, hoodSubsystem)), 

@@ -152,7 +152,7 @@ public class RobotContainer {
     hoodSubsystem.setDefaultCommand(new RunCommand(() -> hoodSubsystem.setSetpoint(hoodTarget), hoodSubsystem));
     hoodSubsystem.enable();
     routingSubsystem.setDefaultCommand(new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem));
-    shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
+    shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.flywheel.set(TalonFXControlMode.PercentOutput, 0), shooterSubsystem));
     ledSubsystem.setDefaultCommand(new DefaultLedCommand(ledSubsystem, visionSubsystem, routingSubsystem));
     // Configure the button bindings
     configureButtonBindings();
@@ -179,7 +179,7 @@ public class RobotContainer {
                 shooterSubsystem.setTargetRPM(-1000);
               }, intakeSubsystem, routingSubsystem, shooterSubsystem));
     new Button(controller::getXButton)
-            .whileHeld(new BallRejection(intakeSubsystem, routingSubsystem));
+            .whileHeld(new BallRejection(intakeSubsystem, routingSubsystem, shooterSubsystem));
     new Button(controller::getRightBumper)
             .whileHeld(new RunCommand(() -> {shooterSubsystem.setTargetRPM(2000); routingSubsystem.setInnerFeederRPM(500);}));
     new Button(controller::getLeftBumper)

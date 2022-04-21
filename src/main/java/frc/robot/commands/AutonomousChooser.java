@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.ProxyScheduleCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -60,6 +61,7 @@ public class AutonomousChooser {
         chooser.addOption("HANGAR 2 BALL 2 HIDE", getHangar2Ball2Hide());
         chooser.addOption("TERMINAL TARMAC EDGE 3 BALL", getTarmacEdgeTerminal3Ball());
         chooser.addOption("HANGAR 2 BALL 1 HIDE", getHangar2Ball1Hide());
+        chooser.addOption("UNIVERSAL 1 BALL", getOneBallAuto());
 
         SmartDashboard.putData(chooser);
     }
@@ -104,8 +106,8 @@ public class AutonomousChooser {
     private Command getHangar2Ball2Hide(){
       return new SequentialCommandGroup(
         new ResetHood(hoodSubsystem),
-        resetOdo(PathPlanner.loadPath("Lower Red 2 Ball", 8.0, 5.0)),
-        drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Lower Red 2 Ball", 4.0, 5.0))
+        resetOdo(PathPlanner.loadPath("Lower Red 2 Ball", 2.0, 1.0)),
+        drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Lower Red 2 Ball", 2.0, 1.0))
           .raceWith(runIntakeAndRouting()),
         shoot(2.0),
         drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Lower Red 2 Hide", 1.0, 2.0))
@@ -154,6 +156,21 @@ public class AutonomousChooser {
         new Pose2d(path.getInitialState().poseMeters.getTranslation(), 
         path.getInitialState().holonomicRotation), drivetrainSubsystem.getGyroscopeRotation())));
       
+    }
+    
+    private Command getOneBallAuto() {
+      return new SequentialCommandGroup(
+        new WaitCommand (1),
+        new ParallelRaceGroup (
+          new DefaultDriveCommand(drivetrainSubsystem, () -> -0.1 * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND, () -> 0, () -> 0, false),
+          new WaitCommand(4),
+          new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem)
+        ),
+        new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem).withTimeout(.25),
+        new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem),
+        new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem)
+      
+      );
     }
 
 }
