@@ -259,4 +259,8 @@ public class RobotContainer {
       return value * 0.2;
     }
   }
+
+  void disabledLEDPeriodic() {
+    ledSubsystem.setSinePulsing(1);
+  }
 }

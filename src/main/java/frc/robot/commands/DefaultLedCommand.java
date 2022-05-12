@@ -30,7 +30,7 @@ public class DefaultLedCommand extends CommandBase {
     if (ClimberSubsystem.extendedAndLocked) {
       if (ClimberSubsystem.startedRetracting) {
         // started climbing; run the RGB!
-        ledSubsystem.rainbow(2);
+        ledSubsystem.setRainbow(2);
       } else {
         // ready to retract; turn green
         ledSubsystem.setSolidColor(60, 255, 255);
