@@ -123,7 +123,7 @@ public class RobotContainer {
     //   System.out.println(path.sample(0.0).poseMeters.getX());
     //   System.out.println(drivetrainSubsystem.m_odometry.getPoseMeters().getX());
     // }));
-    // SmartDashboard.putNumber("Amp Draw", pdp.getTotalCurrent());
+    SmartDashboard.putNumber("Amp Draw", pdp.getTotalCurrent());
 
     // SmartDashboard.putData("Aim", new RunCommand(() -> hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()), hoodSubsystem));
     // SmartDashboard.putData("Aim", new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem));
