@@ -90,6 +90,8 @@ public class RobotContainer {
 
   private final PowerDistribution pdp = new PowerDistribution(0, ModuleType.kCTRE);
 
+  double demoRate = 1.0;
+
   @Config
   double hoodTarget = 20.0;
   @Config
@@ -109,12 +111,15 @@ public class RobotContainer {
 
     drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
             drivetrainSubsystem,
-            () -> -modifyAxis(strafeLimiter.calculate(-controller.getLeftX())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(forwardLimiter.calculate(controller.getLeftY())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyTurnAxis(controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+            () -> -modifyAxis(strafeLimiter.calculate(-controller.getLeftX() * demoRate)) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+            () -> -modifyAxis(forwardLimiter.calculate(controller.getLeftY() * demoRate)) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+            () -> -modifyTurnAxis(controller.getRightX() * demoRate) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
             true
     ));
 
+    SmartDashboard.putData("Demo Drive Mode", new InstantCommand(() -> demoRate = 0.5));
+
+    SmartDashboard.putData("Reg Drive Mode", new InstantCommand(() -> demoRate = 1.0));
     // SmartDashboard.putData("Check path", new InstantCommand(() -> {
     //   PathPlannerTrajectory path = PathPlanner.loadPath("Hub Scale Test", 0.5, 0.5);
     //   drivetrainSubsystem.m_odometry.resetPosition(
@@ -261,6 +266,6 @@ public class RobotContainer {
   }
 
   void disabledLEDPeriodic() {
-    ledSubsystem.setSinePulsing(1);
+    ledSubsystem.setSolidColor(140, 255, 255);
   }
 }
