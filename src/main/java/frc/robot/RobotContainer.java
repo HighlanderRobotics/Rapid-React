@@ -178,7 +178,7 @@ public class RobotContainer {
             .whileHeld(
               new RunCommand(() -> {
                 intakeSubsystem.extend();
-                intakeSubsystem.setIntakeRPM(-2000);
+                intakeSubsystem.setIntakeRPM(2000);
                 routingSubsystem.setInnerFeederRPM(-1000);
                 routingSubsystem.setOuterFeederRPM(-2000);
                 shooterSubsystem.setTargetRPM(-1000);
