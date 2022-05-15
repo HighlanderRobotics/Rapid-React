@@ -46,6 +46,8 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
 
     innerFeeder.setNeutralMode(NeutralMode.Brake);
     outerFeeder.setNeutralMode(NeutralMode.Brake);
+
+    innerFeeder.
   }
 
   
@@ -106,6 +108,10 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
 
   public frc.robot.components.PicoColorSensor.RawColor getColor(){
     return colorSensor.getRawColor0();
+  }
+
+  public void sickPipes(){
+    innerFeeder.
   }
 
   @Override
