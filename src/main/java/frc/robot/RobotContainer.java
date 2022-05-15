@@ -120,6 +120,8 @@ public class RobotContainer {
     SmartDashboard.putData("Demo Drive Mode", new InstantCommand(() -> demoRate = 0.5));
 
     SmartDashboard.putData("Reg Drive Mode", new InstantCommand(() -> demoRate = 1.0));
+
+    SmartDashboard.putData("Sick Pipes", new RunCommand(() -> routingSubsystem.sickPipes(), routingSubsystem));
     // SmartDashboard.putData("Check path", new InstantCommand(() -> {
     //   PathPlannerTrajectory path = PathPlanner.loadPath("Hub Scale Test", 0.5, 0.5);
     //   drivetrainSubsystem.m_odometry.resetPosition(
