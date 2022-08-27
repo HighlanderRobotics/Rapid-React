@@ -174,11 +174,11 @@ public class RobotContainer {
   private void configureButtonBindings() {
     new Button(controller::getRightStickButton)
             .whenPressed(new InstantCommand(() -> drivetrainSubsystem.resetGyroscope(0)));
-    new Button(controller::getAButton)
+    new Button(controller::getRightBumper)
             .whileHeld(new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem)
             .andThen(new InstantCommand(() -> flywheelLimiter.reset(Falcon.ticksToRPM(shooterSubsystem.flywheel.getSelectedSensorVelocity())))));
-    new Button(controller::getYButton)
-            .whileHeld(
+    new Trigger(() -> controller.getLeftTriggerAxis() > 0.1)
+            .whileActiveContinuous(
               new RunCommand(() -> {
                 intakeSubsystem.extend();
                 intakeSubsystem.setIntakeRPM(-2000);
@@ -186,15 +186,14 @@ public class RobotContainer {
                 routingSubsystem.setOuterFeederRPM(-2000);
                 shooterSubsystem.setTargetRPM(-1000);
               }, intakeSubsystem, routingSubsystem, shooterSubsystem));
-    new Button(controller::getXButton)
-            .whileHeld(new BallRejection(intakeSubsystem, routingSubsystem, shooterSubsystem));
-    new Button(controller::getRightBumper)
-            .whileHeld(new RunCommand(() -> {shooterSubsystem.setTargetRPM(2000); routingSubsystem.setInnerFeederRPM(500);}));
+    new Trigger(() -> controller.getRightTriggerAxis() > 0.1)
+            .whileActiveContinuous(new RunCommand(() -> {shooterSubsystem.setTargetRPM(2000); routingSubsystem.setInnerFeederRPM(500);}));
     new Button(controller::getLeftBumper)
             .whileHeld(new RunCommand(() -> {intakeSubsystem.extend(); intakeSubsystem.setIntakeRPM(4000);}, intakeSubsystem));
     new Button(controller::getStartButton)
             .whenPressed(new ResetHood(hoodSubsystem));
 
+    //Middle bumpers are bound to A and X for some reason
   
 
     new Button(operator::getAButton)
