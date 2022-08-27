@@ -31,6 +31,7 @@ import frc.robot.commands.DefaultLedCommand;
 import frc.robot.commands.DefaultRoutingCommand;
 import frc.robot.commands.ExtendIntake;
 import frc.robot.commands.IncreaseExtension;
+import frc.robot.commands.LEDRainbowDemoCommand;
 import frc.robot.commands.ResetHood;
 import frc.robot.commands.RetractClimber;
 import frc.robot.commands.RouteOneBall;
@@ -43,6 +44,7 @@ import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.TelescopingClimberSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
@@ -81,6 +83,7 @@ public class RobotContainer {
   private final VisionSubsystem visionSubsystem = new VisionSubsystem(new LimeLightSubsystem("limelight-top"), limeLightSubsystem);
   private final RoutingSubsystem routingSubsystem = new RoutingSubsystem();
   private final LEDSubsystem ledSubsystem = new LEDSubsystem();
+  private final TelescopingClimberSubsystem climberSubsystem = new TelescopingClimberSubsystem();
   // private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
 
   private final SlewRateLimiter forwardLimiter = new SlewRateLimiter(3.5);
@@ -132,6 +135,10 @@ public class RobotContainer {
     // }));
     SmartDashboard.putNumber("Amp Draw", pdp.getTotalCurrent());
 
+    SmartDashboard.putData("Climber to 0", new InstantCommand(() -> climberSubsystem.setSetpoint(0)));
+    SmartDashboard.putData("Climber to 100", new InstantCommand(() -> climberSubsystem.setSetpoint(1000)));
+
+    SmartDashboard.putData("LED Demo", new LEDRainbowDemoCommand(ledSubsystem));
     // SmartDashboard.putData("Aim", new RunCommand(() -> hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()), hoodSubsystem));
     // SmartDashboard.putData("Aim", new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem));
     // SmartDashboard.putData("Manual Run Flywheel", new RunCommand(() -> shooterSubsystem.setTargetRPM(targetRPM), shooterSubsystem));
