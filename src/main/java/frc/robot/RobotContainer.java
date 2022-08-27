@@ -61,6 +61,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -156,6 +157,10 @@ public class RobotContainer {
     routingSubsystem.setDefaultCommand(new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem));
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.flywheel.set(TalonFXControlMode.PercentOutput, 0), shooterSubsystem));
     ledSubsystem.setDefaultCommand(new DefaultLedCommand(ledSubsystem, visionSubsystem, routingSubsystem));
+
+    new Trigger(() -> routingSubsystem.lowerBeambreak.get() && routingSubsystem.shouldRejectBall())
+      .whenActive(new BallRejection(intakeSubsystem, routingSubsystem, shooterSubsystem)
+      .raceWith(new WaitUntilCommand(() -> !routingSubsystem.lowerBeambreak.get()).andThen(new WaitCommand(0.5))));
     // Configure the button bindings
     configureButtonBindings();
     }
