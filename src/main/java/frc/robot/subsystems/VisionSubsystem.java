@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.components.ShootingLookup;
 import io.github.oblarg.oblog.Loggable;
@@ -35,24 +36,25 @@ public class VisionSubsystem extends SubsystemBase implements Loggable {
     lookup = new ShootingLookup();
     
     lookup.insert(0.0, new Pair<>(3000.0, 0.0));
-    lookup.insert(3.0, new Pair<>(2400.0, 1.0));
-    lookup.insert(4.0, new Pair<>(2400.0, 5.0));
+    lookup.insert(3.0, new Pair<>(2350.0, 1.0));
+    lookup.insert(4.0, new Pair<>(2350.0, 5.0));
     lookup.insert(6.0, new Pair<>(2500.0, 8.0));
     lookup.insert(8.0, new Pair<>(2650.0, 13.0));
     lookup.insert(10.0, new Pair<>(2800.0, 18.0)); // old values -> 3000/23 sometimes goes over? Better with Vaughn's hood drivetrain tape
     lookup.insert(12.0, new Pair<>(2900.0, 18.0));
     lookup.insert(14.0, new Pair<>(3000.0, 19.0));
     // lookup.insert(15.0, new Pair<>(3350.0, 27.0));//old values // 3350/27 kind of worked but not sure yet... 3300/25 was ok too?
-    lookup.insert(16.0, new Pair<>(3500.0, 25.0));
+    lookup.insert(16.0, new Pair<>(3400.0, 25.0));
     lookup.insert(18.0, new Pair<>(3900.0, 29.0));
     lookup.insert(20.0, new Pair<>(4100.0, 32.2));
   }
 
-  @Config
+  // @Config
   public void setFeetToTarget(double feet) {
     feetToTarget = feet;
   }
 
+  @Log
   public double getDistanceToTarget(){
     return feetToTarget;
   }
@@ -81,11 +83,15 @@ public class VisionSubsystem extends SubsystemBase implements Loggable {
     return lowerLimeLight.pidOutput;
   }
 
+  public boolean pointingAtTarget() {
+    return Math.abs(lowerLimeLight.getHorizontalOffset()) < 3.0;
+  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     //chooseActiveLimeLight();
+    SmartDashboard.putBoolean("is pointing", pointingAtTarget());
     if (usingLowerLimeLight){
       degreesToTarget = lowerLimeLight.getHorizontalOffset();
     }else{
@@ -93,6 +99,7 @@ public class VisionSubsystem extends SubsystemBase implements Loggable {
     }
 
     Pair<Double, Double> targets = lookup.get(lowerLimeLight.getDistance());
+    feetToTarget = lowerLimeLight.getDistance();
     targetRPM = targets.getFirst();
     targetHoodAngle = targets.getSecond();
     chooseActiveLimeLight();

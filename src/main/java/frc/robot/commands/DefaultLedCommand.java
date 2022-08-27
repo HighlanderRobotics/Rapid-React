@@ -4,7 +4,9 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.RoutingSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -24,25 +26,47 @@ public class DefaultLedCommand extends CommandBase {
 
   @Override
   public void execute() {
-    boolean target = visionSubsystem.lowerLimeLight.isPointingAtTarget;
-    if (!routingSubsystem.upperBeambreak.get()) {
-      if (target) {
-        ledSubsystem.setAlternating(85, 255, 255);
+    // climber indicator
+    if (ClimberSubsystem.extendedAndLocked) {
+      if (ClimberSubsystem.startedRetracting) {
+        // started climbing; run the RGB!
+        ledSubsystem.setRainbow(2);
       } else {
-        ledSubsystem.setAlternating(0, 255, 255);
+        // ready to retract; turn green
+        ledSubsystem.setSolidColor(60, 255, 255);
       }
-    } else if (routingSubsystem.upperBeambreak.get() && !routingSubsystem.lowerBeambreak.get()) {
-      if (target) {
-        ledSubsystem.setFrontColor(85, 255, 255);
-      } else {
-        ledSubsystem.setFrontColor(0, 255, 255);
-      }
-      ledSubsystem.setBackColor(0, 0, 0);
     } else {
-      if (target) {
-        ledSubsystem.setSolidColor(85, 255, 255);
+      // otherwise show shoowing indicator with red/green for target lock
+      boolean target = visionSubsystem.lowerLimeLight.isPointingAtTarget;
+
+      // no ball
+      if (!routingSubsystem.upperBeambreak.get()) {
+        if (target) {
+          ledSubsystem.setAlternating(2, 1, 85, 255, 255);
+        } else {
+          // crash here?
+          ledSubsystem.setAlternating(2, 1, 0, 255, 255);
+        }
+      // one ball
+      } else if (routingSubsystem.upperBeambreak.get() && !routingSubsystem.lowerBeambreak.get()) {
+        if (target) {
+          ledSubsystem.setAlternating(1, 4, 85, 255, 255);
+        } else {
+          ledSubsystem.setAlternating(1, 4, 0, 255, 255);
+        }
+      // both balls
       } else {
-        ledSubsystem.setSolidColor(0, 255, 255);
+        if (target) {
+          ledSubsystem.setSolidColor(85, 255, 255);
+        } else {
+          ledSubsystem.setSolidColor(0, 255, 255);
+        }
+      }
+
+      double time = DriverStation.getMatchTime();
+      // flash purple every half second during the last 20 seconds
+      if (time < 20.0 && time % 0.5 > 0.25) {
+        ledSubsystem.setSolidColor(155, 255, 255); 
       }
     }
   }

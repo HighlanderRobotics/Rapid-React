@@ -4,8 +4,8 @@
 
 package frc.robot.subsystems;
 
+
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -15,23 +15,25 @@ import frc.robot.components.ReversibleDigitalInput;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
-import edu.wpi.first.wpilibj2.command.PIDSubsystem;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Servo;
 
 
 public class ClimberSubsystem extends SubsystemBase implements Loggable {
   public final LazyTalonFX angleMotor;
   public final LazyTalonFX extensionMotor;
+  private boolean lastLimit = false;
   private final ReversibleDigitalInput limitSwitch;
   public double targetDistance = 0;
   private final Servo ratchet;
+  public static boolean extendedAndLocked = false;
+  public static boolean startedRetracting = false;
+  public static boolean startedExtension = false;
   /** Creates a new ClimberSubsystem. */
   public ClimberSubsystem() {
     angleMotor = new LazyTalonFX(Constants.CLIMBER_ANGLE_MOTOR);
     angleMotor.setInverted(true);
-    angleMotor.configMotionCruiseVelocity(Falcon.rpmToTicks(200));
-    angleMotor.configMotionAcceleration(Falcon.rpmToTicks(100));
+    angleMotor.configMotionCruiseVelocity(Falcon.rpmToTicks(400));
+    angleMotor.configMotionAcceleration(Falcon.rpmToTicks(400));
     extensionMotor = new LazyTalonFX(Constants.CLIMBER_EXTENSION_MOTOR);
     extensionMotor.setInverted(true);
     extensionMotor.setSelectedSensorPosition(0);
@@ -45,6 +47,23 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
 
   public void unlockRatchet() {
     ratchet.set(0.3);
+    extendedAndLocked = false;
+  }
+
+  public void retractIfLocked(double power) {
+    // shouldn't be extending
+    if (power > 0) {
+      power = 0;
+    }
+
+    // ONLY go if everything is locked and extended, and don't go with super low power
+    if (extendedAndLocked && power < -0.1) {
+      extensionMotor.set(TalonFXControlMode.PercentOutput, power);
+      startedRetracting = true;
+    } else {
+      // otherwise should stop
+      extensionMotor.set(TalonFXControlMode.PercentOutput, 0);
+    }
   }
 
   @Config
@@ -67,6 +86,11 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
   public void decreaseAngle(double amount){
     setClimberAngle(getClimberAngle() - amount);
   }
+
+  public void increaseExtension(double amount){
+    setDistance(getDistance() + amount);
+  }
+  
 
   @Log
   public double getClimberAngle() {
@@ -111,8 +135,11 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if(getClimberLimit()) {
-      angleMotor.getSensorCollection().setIntegratedSensorPosition(0, 100); 
+    if(getClimberLimit() && !lastLimit) {
+      angleMotor.getSensorCollection().setIntegratedSensorPosition(0, 100);
+      lastLimit = true;
+    } else if (!getClimberLimit() && lastLimit) {
+      lastLimit = false;
     }
   }
 }

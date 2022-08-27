@@ -14,11 +14,12 @@ public class LEDSubsystem extends SubsystemBase {
   AddressableLED led;
   AddressableLEDBuffer buffer;
   int rainbowFirstPixelHue = 0;
+  double pulsingValue = 0;
   /** Creates a new LEDSubsystem. */
   public LEDSubsystem() {
     led = new AddressableLED(Constants.LED_PORT);
     // 70 leds / 2 leds per index
-    buffer = new AddressableLEDBuffer(35);
+    buffer = new AddressableLEDBuffer(70);
     led.setLength(buffer.getLength());
     led.start();
   }
@@ -41,9 +42,30 @@ public class LEDSubsystem extends SubsystemBase {
   */
   public void setSymmetrical(int i, int h, int s, int v) {
     if (i > 34) {i = 34;}
+    if (i < 0)  {i = 0;}
     buffer.setHSV(i, h, s, v);
     // for i=18 this sets it twice since it's (probably) on both sides, which is inefficient but fine
-    buffer.setHSV(34 - i, h, s, v);
+    buffer.setHSV(69 - i, h, s, v);
+  }
+
+  // set a ratio of the lights on to indicate progress like climber extension
+  public void setProgress(double ratio, boolean reverse, int h, int s, int v) {
+    if (ratio < 0.0) {
+      ratio = 0.0;
+    }
+
+    if (ratio > 1.0) {
+      ratio = 1.0;
+    }
+
+    int numLights = (int)Math.round(19.0 * ratio);
+    for (int i = 0; i < numLights; i++) {
+      if (!reverse) {
+        setSymmetrical(i, h, s, v);
+      } else {
+        setSymmetrical(18 - i, h, s, v);
+      }
+    }
   }
 
   public void setSolidColor(int h, int s, int v){
@@ -53,20 +75,21 @@ public class LEDSubsystem extends SubsystemBase {
   }
 
   public void setFrontColor(int h, int s, int v){
-    for (int i = 8; i <= 18; i++) {
+    for (int i = 18; i <= 34; i++) {
       setSymmetrical(i, h, s, v);
     }
   }
 
   public void setBackColor(int h, int s, int v){
-    for (int i = 0; i <= 8; i ++){
+    for (int i = 0; i <= 17; i ++){
       setSymmetrical(i, h, s, v);
     }
   }
 
-  public void setAlternating(int h, int s, int v) {
-    for (int i = 0; i <= 18; i++) {
-      if (i % 2 == 0) {
+  // gap = how far between, streak = how many in a row
+  public void setAlternating(int gap, int streak, int h, int s, int v) {
+    for (int i = 0; i <= 34; i++) {
+      if ((i / streak) % (gap + 1) == 0) {
         setSymmetrical(i, h, s, v);
       } else {
         setSymmetrical(i, 0, 0, 0);
@@ -82,9 +105,9 @@ public class LEDSubsystem extends SubsystemBase {
     }
   }
 
-  public void rainbow(int increaseAmount) {
+  public void setRainbow(int increaseAmount) {
     // For every pixel
-    for (int i = 0; i <= 18; i++) {
+    for (int i = 0; i <= 34; i++) {
       // Calculate hue from 0 to 180 (it wraps around)
       // the constant 2 is how much the hue changes; increase it to "compress" the rainbow more
       final int hue = (rainbowFirstPixelHue + (i * 2)) % 180;
@@ -97,9 +120,20 @@ public class LEDSubsystem extends SubsystemBase {
     rainbowFirstPixelHue %= 180;
   }
 
+  public void setSinePulsing(double increaseAmount) {
+    // For every pixel
+    for (int i = 0; i <= 34; i++) {
+      // Set the value to follow a sine wave from 0 to 180, with input in degrees
+      setSymmetrical(i, 150, 255, (int)Math.floor(Math.sin(Math.toDegrees(pulsingValue)) * 90 + 90));
+    }
+
+    pulsingValue += increaseAmount;
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    
     led.setData(buffer);
   }
 }

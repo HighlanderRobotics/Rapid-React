@@ -44,6 +44,7 @@ public class TwoBallAuto extends ParallelCommandGroup {
           new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem)
         ),
         new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem).withTimeout(.25),
+        new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem),
         new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem)
       )
     );

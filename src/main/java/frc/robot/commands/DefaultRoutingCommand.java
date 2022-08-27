@@ -7,9 +7,12 @@ package frc.robot.commands;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.ProxyScheduleCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.RoutingSubsystem;
@@ -25,10 +28,12 @@ public class DefaultRoutingCommand extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
       new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem).withInterrupt(() -> routingSubsystem.shouldRejectBall()),
+      new PrintCommand("running ball rejection"),
       new ConditionalCommand(
-        new ProxyScheduleCommand(new BallRejection(intakeSubsystem, routingSubsystem).withTimeout(0.5)), 
+        new ProxyScheduleCommand(new BallRejection(intakeSubsystem, routingSubsystem)
+        .raceWith(new SequentialCommandGroup(new WaitUntilCommand(() -> !routingSubsystem.lowerBeambreak.get()), new WaitCommand(1.0)))), 
         new ProxyScheduleCommand(new ShootOneBall(routingSubsystem))
-          .alongWith(new RunCommand(() -> {hoodSubsystem.setSetpoint(0);}, hoodSubsystem)), 
+          .raceWith(new RunCommand(() -> {hoodSubsystem.setSetpoint(0);}, hoodSubsystem)), 
         () -> routingSubsystem.upperBeambreak.get()
     ));
   }

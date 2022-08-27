@@ -5,11 +5,15 @@
 package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 // import com.ctre.phoenix.sensors.PigeonIMU;
 import com.swervedrivespecialties.swervelib.Mk3SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -17,6 +21,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -25,7 +30,11 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.commands.SwerveController;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
@@ -34,7 +43,9 @@ import static frc.robot.Constants.*;
 import java.util.function.ToDoubleFunction;
 
 public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
-  boolean lockOut = false;
+  private boolean lockOut = false;
+  private boolean pathRunning = false;
+
   /**
    * The maximum voltage that will be delivered to the drive motors.
    * <p>
@@ -52,9 +63,10 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
    * <p>
    * This is a measure of how fast the robot should be able to drive in a straight line.
    */
-  public static final double MAX_VELOCITY_METERS_PER_SECOND = 100.0 / 60.0 *
+  public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 *
           SdsModuleConfigurations.MK3_STANDARD.getDriveReduction() *
-          SdsModuleConfigurations.MK3_STANDARD.getWheelDiameter() * Math.PI;
+          0.0955 * Math.PI;
+          //SdsModuleConfigurations.MK3_STANDARD.getWheelDiameter() * Math.PI;
   /**
    * The maximum angular velocity of the robot in radians per second.
    * <p>
@@ -83,7 +95,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 //   private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
   // FIXME Uncomment if you are using a NavX
  private final AHRS m_navx = new AHRS(Port.kUSB); // NavX connected over MXP
- private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation());
+ public final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation());
 
   // These are our modules. We initialize them in the constructor.
   private final SwerveModule m_frontLeftModule;
@@ -178,14 +190,18 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
    * Sets the gyroscope angle to zero. This can be used to set the direction the robot is currently facing to the
    * 'forwards' direction.
    */
-  public void zeroGyroscope() {
+  public void resetGyroscope(double value) {
     // FIXME Remove if you are using a Pigeon
 //     m_pigeon.setFusedHeading(0.0);
 
     // FIXME Uncomment if you are using a NavX
-    System.out.println("reset");
+   System.out.println("reset");
    m_navx.zeroYaw();
-   yawOffset = getGyroscopeRotation().getDegrees() + yawOffset;
+   yawOffset = getGyroscopeRotation().getDegrees() + yawOffset - 90 + value;
+  }
+
+  public void zeroGyroscope(){
+    resetGyroscope(0);
   }
 
   public Rotation2d getGyroscopeRotation() {
@@ -224,6 +240,25 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     lockOut = !lockOut;
   }
 
+  public Command followPathCommand(PathPlannerTrajectory path) {
+    return new SequentialCommandGroup(
+      new InstantCommand(() -> pathRunning = true),
+      new SwerveController(
+        path,
+        () -> m_odometry.getPoseMeters(),
+        m_kinematics,
+        new PIDController(0.5, 0.0,0.0 ), //coppied from 3175 since they have a similar bot and idk where to get these values
+        new PIDController(0.5, 0.0, 0.0), //was 0.0080395 
+        new ProfiledPIDController(0.5, 0.0, 0.0, new Constraints(2, 2)), //was 0.003
+        (SwerveModuleState[] states) -> {
+          m_chassisSpeeds = m_kinematics.toChassisSpeeds(states);
+        },
+        this
+      ),
+      new InstantCommand(() -> { pathRunning = false; m_chassisSpeeds = new ChassisSpeeds(0, 0, 0);})
+    );
+  }
+
   private SwerveModuleState getModuleState(SwerveModule module){
     return new SwerveModuleState(module.getDriveVelocity(), Rotation2d.fromDegrees(Math.toDegrees(module.getSteerAngle())));
   }
@@ -231,13 +266,15 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
   @Override
   public void periodic() {
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
+
+
     m_odometry.update(getGyroscopeRotation(), 
       getModuleState(m_frontLeftModule), 
       getModuleState(m_frontRightModule),
       getModuleState(m_backLeftModule),
       getModuleState(m_backRightModule));
     SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
-
+    
     if(!lockOut){
         m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
         m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
@@ -249,10 +286,11 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
         m_backLeftModule.set(0, -45);
         m_backRightModule.set(0, 45);
     }
+  
 
     SmartDashboard.putNumber("heading", getGyroscopeRotation().getDegrees());
 
-    // m_field.setRobotPose(m_odometry.getPoseMeters());
+    m_field.setRobotPose(m_odometry.getPoseMeters());
     SmartDashboard.putData("Field", m_field);
 
     SmartDashboard.putNumber("X Pose", m_odometry.getPoseMeters().getX());
