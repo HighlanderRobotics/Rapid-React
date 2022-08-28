@@ -24,7 +24,10 @@ public class TelescopingClimberSubsystem extends PIDSubsystem {
   protected void useOutput(double output, double setpoint) {
     // if (output > 0 && )
 
-    climberMotor.set(ControlMode.PercentOutput, output);
+    // climberMotor.set(ControlMode.PercentOutput, output);
+    System.out.println("Output: " + output);
+    System.out.println("Setpoint: " + setpoint);
+    System.out.println("Current Position: " + getMeasurement());
   }
 
   @Override
