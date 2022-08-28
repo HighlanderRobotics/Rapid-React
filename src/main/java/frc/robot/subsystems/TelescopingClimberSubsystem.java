@@ -38,11 +38,11 @@ public class TelescopingClimberSubsystem extends PIDSubsystem {
     return climberMotor.getSelectedSensorPosition();
   }
 
-  protected double convertInchesToTicks(double inches) {
+  public static double convertInchesToTicks(double inches) {
       return inches / 0.1014 * 2048;
   }
 
-  protected double convertTicksToInches(double ticks) {
+  public static double convertTicksToInches(double ticks) {
     return ticks / 2048 * 0.1014;
   }
 }
