@@ -135,9 +135,9 @@ public class RobotContainer {
     // }));
     SmartDashboard.putNumber("Amp Draw", pdp.getTotalCurrent());
 
-    SmartDashboard.putData("Climber to 0", new InstantCommand(() -> climberSubsystem.setSetpoint(0)));
-    SmartDashboard.putData("Climber to 100", new InstantCommand(() -> climberSubsystem.setSetpoint(1000)));
-
+    SmartDashboard.putData("Climber to 0", new InstantCommand(() -> climberSubsystem.setSetpoint(0), climberSubsystem));
+    SmartDashboard.putData("Climber to 50,000", new InstantCommand(() -> climberSubsystem.setSetpoint(-50000), climberSubsystem));
+    
     SmartDashboard.putData("LED Demo", new LEDRainbowDemoCommand(ledSubsystem));
     // SmartDashboard.putData("Aim", new RunCommand(() -> hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()), hoodSubsystem));
     // SmartDashboard.putData("Aim", new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem));
