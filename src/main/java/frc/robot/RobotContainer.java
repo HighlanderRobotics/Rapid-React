@@ -189,12 +189,14 @@ public class RobotContainer {
     new Trigger(() -> controller.getRightTriggerAxis() > 0.1)
             .whileActiveContinuous(new RunCommand(() -> {shooterSubsystem.setTargetRPM(2000); routingSubsystem.setInnerFeederRPM(500);}));
     new Button(controller::getLeftBumper)
-            .whileHeld(new RunCommand(() -> {intakeSubsystem.extend(); intakeSubsystem.setIntakeRPM(4000);}, intakeSubsystem));
+            .whenPressed(new RunCommand(() -> {intakeSubsystem.extend(); intakeSubsystem.setIntakeRPM(4000);}, intakeSubsystem).until(() -> !controller.getLeftBumper()));
     new Button(controller::getStartButton)
             .whenPressed(new ResetHood(hoodSubsystem));
 
     //Middle bumpers are bound to A and X for some reason
   
+    new Button(controller::getXButton)
+              .whileHeld(new RunCommand(() -> {shooterSubsystem.setTargetRPM(2000); routingSubsystem.setInnerFeederRPM(1000);}));
 
     new Button(operator::getAButton)
       .toggleWhenPressed(new ExtendClimber(climberSubsystem, ledSubsystem, 38, 20.0));
