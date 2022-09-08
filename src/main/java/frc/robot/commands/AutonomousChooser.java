@@ -92,6 +92,7 @@ public class AutonomousChooser {
         return new SequentialCommandGroup(
           new ResetHood(hoodSubsystem),
           resetOdo(PathPlanner.loadPath("Upper Red 2 Ball", 2.0, 1.0)),
+          shoot(2.0),
           drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Upper Red 2 Ball", 2.0, 1.0)),
             shoot(2.0),
           drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Upper Red 3rd Ball", 2.0, 1.0))
@@ -104,6 +105,7 @@ public class AutonomousChooser {
       return new SequentialCommandGroup(
         new ResetHood(hoodSubsystem),
         resetOdo(PathPlanner.loadPath("Lower Red 2 Ball", 8.0, 5.0)),
+        shoot(2.0),
         drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Lower Red 2 Ball", 4.0, 5.0))
           .raceWith(runIntakeAndRouting()),
         shoot(2.0),
@@ -117,6 +119,7 @@ public class AutonomousChooser {
       return new SequentialCommandGroup(
         new ResetHood(hoodSubsystem),
         resetOdo(PathPlanner.loadPath("Lower Red 2 Ball", 2.0, 1.0)),
+        shoot(2.0),
         drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Lower Red 2 Ball", 2.0, 1.0))
           .raceWith(runIntakeAndRouting()),
         shoot(2.0),
@@ -137,6 +140,7 @@ public class AutonomousChooser {
       return new SequentialCommandGroup(
         new ResetHood(hoodSubsystem),
         resetOdo(PathPlanner.loadPath("Upper Red Edge 2 Ball", 2.0, 1.0)),
+        shoot(2.0),
         drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Upper Red Edge 2 Ball", 2.0, 1.0))
           .raceWith(runIntakeAndRouting()),
         shoot(2.0),
