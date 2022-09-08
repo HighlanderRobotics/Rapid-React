@@ -66,6 +66,7 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
     outerFeeder.set(TalonFXControlMode.Velocity, Falcon.rpmToTicks(rpm));
   }
 
+  @Log
   public boolean shouldRejectBall(){
     if(lowerBeambreak.get()){
       if (DriverStation.getAlliance() == DriverStation.Alliance.Red){

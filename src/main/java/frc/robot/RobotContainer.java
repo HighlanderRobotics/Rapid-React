@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.AutonomousChooser;
 import frc.robot.commands.BallRejection;
+import frc.robot.commands.BallRejectionSequence;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.ExtendClimber;
 import frc.robot.commands.DefaultLedCommand;
@@ -159,8 +160,9 @@ public class RobotContainer {
     ledSubsystem.setDefaultCommand(new DefaultLedCommand(ledSubsystem, visionSubsystem, routingSubsystem));
 
     new Trigger(() -> routingSubsystem.lowerBeambreak.get() && routingSubsystem.shouldRejectBall())
-      .whenActive(new BallRejection(intakeSubsystem, routingSubsystem, shooterSubsystem)
-      .raceWith(new WaitUntilCommand(() -> !routingSubsystem.lowerBeambreak.get()).andThen(new WaitCommand(0.5))));
+      .whenActive(new BallRejectionSequence(intakeSubsystem, routingSubsystem, shooterSubsystem)
+      .raceWith(new WaitUntilCommand(() -> ! routingSubsystem.lowerBeambreak.get());
+
     // Configure the button bindings
     configureButtonBindings();
     }
