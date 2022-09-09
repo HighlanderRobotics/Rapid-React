@@ -13,7 +13,7 @@ import frc.robot.Constants;
 
 public class TelescopingClimberSubsystem extends PIDSubsystem {
   WPI_TalonFX climberMotor;
-  public static final int MAXEXTENSION = 50000;
+  public static final int MAXEXTENSION = -50000;
   /** Creates a new TelescopingClimberSubsystem. */
   public TelescopingClimberSubsystem() {
     super(new PIDController(0.00001, 0, 0));
@@ -48,7 +48,7 @@ public class TelescopingClimberSubsystem extends PIDSubsystem {
   }
   public void toggleArm()
   {
-    if(getMeasurement() > 0){
+    if(getMeasurement() != 0){
       setSetpoint(0);
     }else{
       setSetpoint(MAXEXTENSION);
