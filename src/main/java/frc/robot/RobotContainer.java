@@ -160,13 +160,11 @@ public class RobotContainer {
     ledSubsystem.setDefaultCommand(new DefaultLedCommand(ledSubsystem, visionSubsystem, routingSubsystem));
 
     new Trigger(() -> routingSubsystem.lowerBeambreak.get() && routingSubsystem.shouldRejectBall())
-      .whenActive(new BallRejectionSequence(intakeSubsystem, routingSubsystem, shooterSubsystem)
-      .raceWith(new WaitUntilCommand(() -> ! routingSubsystem.lowerBeambreak.get());
-
+      .whenActive(new WaitCommand(1) /*The waitcommand should wait minimum amount of time required for the ballrejectionsequence to work*/
+      .deadlineWith(new BallRejectionSequence(intakeSubsystem, routingSubsystem, shooterSubsystem)));
     // Configure the button bindings
     configureButtonBindings();
     }
-
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
