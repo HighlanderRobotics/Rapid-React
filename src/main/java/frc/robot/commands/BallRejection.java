@@ -31,7 +31,7 @@ public class BallRejection extends CommandBase {
   public void initialize() {
       intakeSubsystem.extend();
       intakeSubsystem.setIntakeRPM(2000);
-      routingSubsystem.setInnerFeederRPM(-200);
+      routingSubsystem.setInnerFeederRPM(-600);
       routingSubsystem.setOuterFeederRPM(-1500);
       shooterSubsystem.setTargetRPM(-1000);
   }
