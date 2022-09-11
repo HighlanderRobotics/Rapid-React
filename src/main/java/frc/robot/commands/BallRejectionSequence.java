@@ -26,6 +26,9 @@ public class BallRejectionSequence extends SequentialCommandGroup {
       new InstantCommand(() -> {
         routingSubsystem.setInnerFeederRPM(0);
         routingSubsystem.setOuterFeederRPM(0);
+        // Possibly to stop another ball from moving it, if intaking 2 at the same time it could be bad idk
+        // intakeSubsystem.setIntakeRPM(0);
+        // intakeSubsystem.retract();
       }),
       new WaitCommand(0.2),
       new ConditionalCommand(new BallRejection(intakeSubsystem, routingSubsystem, shooterSubsystem), new InstantCommand(), ()->routingSubsystem.shouldRejectBall())

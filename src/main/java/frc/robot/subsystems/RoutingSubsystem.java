@@ -33,6 +33,9 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
   RawColor color = new RawColor(0, 0, 0, 0);
   double saturation = 0;
   public final PicoColorSensor colorSensor = new PicoColorSensor();
+  // Very temporary was too lazy to find a proper way to add ballcolor to shuffleboard
+  public static String ballColor;
+
   /** Creates a new RoutingSubsystem. */
   public RoutingSubsystem() {
     innerFeeder.config_kP(0, innerFeederPID.getP());
@@ -74,6 +77,11 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
       }
       if (DriverStation.getAlliance() == DriverStation.Alliance.Blue){
         return (getColor().red > getColor().blue);
+      }
+      if (getColor().blue > getColor().red) {
+        ballColor = "BLUE";
+      } else {
+        ballColor = "RED";
       }
     }
     return false;

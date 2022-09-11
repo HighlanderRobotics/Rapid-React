@@ -64,6 +64,9 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
+import edu.wpi.first.wpilibj.DriverStation;
+
+
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -149,7 +152,10 @@ public class RobotContainer {
     // SmartDashboard.putData("Run Intake", new RunCommand(() -> m_intakeSubsystem.setIntakeRPM(3000)));
     // SmartDashboard.putData("Toggle Intake", new InstantCommand(() -> m_intakeSubsystem.toggleIntake(), m_intakeSubsystem));
     // SmartDashboard.putData("Auto Aim", new AutoAim(m_visionSubsystem, m_drivetrainSubsystem));
-    
+    SmartDashboard.putString("Ball Color", RoutingSubsystem.ballColor);
+    SmartDashboard.putString("Our Team Color", DriverStation.getAlliance().toString());
+
+
     climberSubsystem.setDefaultCommand(new RunCommand(() -> climberSubsystem.retractIfLocked(controller.getRightTriggerAxis() * -0.6), climberSubsystem));
     intakeSubsystem.setDefaultCommand(new RunCommand(() -> {intakeSubsystem.retract(); intakeSubsystem.setIntakeRPM(0);}, intakeSubsystem));
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(flywheelLimiter.calculate(0)), shooterSubsystem));
