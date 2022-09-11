@@ -200,7 +200,7 @@ public class RobotContainer {
             .whileHeld(new RunCommand(() -> {intakeSubsystem.extend(); intakeSubsystem.setIntakeRPM(4000);}, intakeSubsystem));
     new Button(controller::getStartButton)
             .whenPressed(new ResetHood(hoodSubsystem));
-    new Button (controller::getBackButton)
+    new Button (controller::getBButton)
               .whenPressed(new InstantCommand(() -> {climberSubsystem.toggleArm();}));
     new Button (operator::getAButton)
               .whileHeld(new RunCommand(() -> {climberSubsystem.armDown();}));

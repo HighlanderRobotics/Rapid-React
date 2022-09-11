@@ -53,10 +53,16 @@ public class TelescopingClimberSubsystem extends PIDSubsystem implements Loggabl
   @Log
   public void toggleArm()
   {
-    if(getMeasurement() > convertInchesToTicks(-1)){
+    double measurement = getMeasurement();
+
+    System.out.println("Toggling arm. measurement = " + measurement);
+
+    if(measurement > convertInchesToTicks(-1)){
       setSetpoint(0);
+      System.out.println("Going all the way down");
     }else{
       setSetpoint(MAXEXTENSION);
+      System.out.println("Going all the way up");
     }
      
 
