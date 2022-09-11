@@ -202,6 +202,10 @@ public class RobotContainer {
             .whenPressed(new ResetHood(hoodSubsystem));
     new Button (controller::getBackButton)
               .whenPressed(new RunCommand(() -> {climberSubsystem.toggleArm();}));
+    new Button (operator::getAButton)
+              .whileHeld(new RunCommand(() -> {climberSubsystem.armDown();}));
+    new Button (operator::getYButton)
+              .whileHeld(new RunCommand(() -> {climberSubsystem.armUp();}));
 
     //new Button (operator::getYButton())
 
