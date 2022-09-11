@@ -10,8 +10,10 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import frc.robot.Constants;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
-public class TelescopingClimberSubsystem extends PIDSubsystem {
+public class TelescopingClimberSubsystem extends PIDSubsystem implements Loggable {
   WPI_TalonFX climberMotor;
   public static final int MAXEXTENSION = -50000;
   public static final double INCREMENT = 10; //convertInchesToTicks(-0.001);
@@ -47,6 +49,8 @@ public class TelescopingClimberSubsystem extends PIDSubsystem {
   public static double convertTicksToInches(double ticks) {
     return ticks / 2048 * 0.1014;
   }
+
+  @Log
   public void toggleArm()
   {
     if(getMeasurement() > convertInchesToTicks(-1)){
@@ -58,6 +62,7 @@ public class TelescopingClimberSubsystem extends PIDSubsystem {
 
   }
 
+  @Log
   public void armDown()
   {
     if (getMeasurement() - INCREMENT < 0) {
@@ -70,6 +75,7 @@ public class TelescopingClimberSubsystem extends PIDSubsystem {
 
   }
 
+  @Log
   public void armUp()
   {
     if (getMeasurement() + INCREMENT > MAXEXTENSION){
