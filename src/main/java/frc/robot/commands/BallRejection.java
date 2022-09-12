@@ -38,15 +38,29 @@ public class BallRejection extends CommandBase {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    intakeSubsystem.setIntakeRPM(2000);
+    routingSubsystem.setInnerFeederRPM(-600);
+    routingSubsystem.setOuterFeederRPM(-1500);
+    shooterSubsystem.setTargetRPM(-1000);
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    intakeSubsystem.setIntakeRPM(0);
+    routingSubsystem.setInnerFeederRPM(0);
+    routingSubsystem.setOuterFeederRPM(0);
+    shooterSubsystem.setTargetRPM(0);
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    if (!routingSubsystem.lowerBeambreak.get()) {
+      return true;
+    }
+
     return false;
   }
 }
