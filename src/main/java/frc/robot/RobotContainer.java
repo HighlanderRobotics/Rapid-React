@@ -154,6 +154,9 @@ public class RobotContainer {
     // SmartDashboard.putData("Auto Aim", new AutoAim(m_visionSubsystem, m_drivetrainSubsystem));
     SmartDashboard.putString("Ball Color", RoutingSubsystem.ballColor);
     SmartDashboard.putString("Our Team Color", DriverStation.getAlliance().toString());
+    SmartDashboard.putNumber("Amount of Red", RoutingSubsystem.currentColor.red);
+    SmartDashboard.putNumber("Amount of Blue", RoutingSubsystem.currentColor.blue);
+    SmartDashboard.putNumber("Amount of Green", RoutingSubsystem.currentColor.green);
 
 
     climberSubsystem.setDefaultCommand(new RunCommand(() -> climberSubsystem.retractIfLocked(controller.getRightTriggerAxis() * -0.6), climberSubsystem));
@@ -169,7 +172,9 @@ public class RobotContainer {
       .whenActive(new RunCommand(() -> {
         while (routingSubsystem.lowerBeambreak.get()) {
           new WaitCommand(.02);
+          SmartDashboard.putBoolean("Is Rejecting", true);
         }
+        SmartDashboard.putBoolean("Is Rejecting", false);
       }) /*The runcommand should wait minimum amount of time required for the ballrejectionsequence to work*/
       .deadlineWith(new BallRejectionSequence(intakeSubsystem, routingSubsystem, shooterSubsystem)));
     // Configure the button bindings

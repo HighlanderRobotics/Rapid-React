@@ -35,6 +35,7 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
   public final PicoColorSensor colorSensor = new PicoColorSensor();
   // Very temporary was too lazy to find a proper way to add ballcolor to shuffleboard
   public static String ballColor;
+  public static frc.robot.components.PicoColorSensor.RawColor currentColor;
 
   /** Creates a new RoutingSubsystem. */
   public RoutingSubsystem() {
@@ -130,5 +131,9 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
     //System.out.println();
     //System.out.println(getColor().red);
     //System.out.println(getColor().blue);
+
+
+    // Debugging Purposes
+    currentColor = getColor();
   }
 }
