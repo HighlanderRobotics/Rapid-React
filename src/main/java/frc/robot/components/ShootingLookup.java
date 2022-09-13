@@ -7,7 +7,6 @@ package frc.robot.components;
 import java.util.TreeMap;
 
 import edu.wpi.first.math.Pair;
-import frc.robot.subsystems.ShooterSubsystem;
 
 /** Add your docs here. */
 public class ShootingLookup {
