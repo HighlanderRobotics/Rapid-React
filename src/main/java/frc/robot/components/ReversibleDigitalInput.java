@@ -2,9 +2,6 @@ package frc.robot.components;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Log;
-import io.github.oblarg.oblog.annotations.Config.Relay;
-import io.github.oblarg.oblog.annotations.Log.Logs;
 
 public class ReversibleDigitalInput implements Loggable {
     

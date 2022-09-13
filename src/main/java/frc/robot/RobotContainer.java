@@ -5,16 +5,9 @@
 package frc.robot;
 
 
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-
-import edu.wpi.first.wpilibj.Compressor;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 
-import edu.wpi.first.hal.simulation.PowerDistributionDataJNI;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
@@ -22,22 +15,15 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.AutoAim;
 import frc.robot.commands.AutonomousChooser;
 import frc.robot.commands.BallRejection;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.ExtendClimber;
 import frc.robot.commands.DefaultLedCommand;
-import frc.robot.commands.DefaultRoutingCommand;
-import frc.robot.commands.ExtendIntake;
 import frc.robot.commands.IncreaseExtension;
 import frc.robot.commands.ResetHood;
 import frc.robot.commands.RetractClimber;
-import frc.robot.commands.RouteOneBall;
-import frc.robot.commands.ShootOneBall;
-import frc.robot.commands.ShootTwoBalls;
 import frc.robot.commands.ShootingSequence;
-import frc.robot.commands.TwoBallAuto;
 import frc.robot.components.Falcon;
 import frc.robot.subsystems.LimeLightSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -50,16 +36,8 @@ import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.RoutingSubsystem;
 import io.github.oblarg.oblog.annotations.Config;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.ProxyScheduleCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.ScheduleCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 
 /**
