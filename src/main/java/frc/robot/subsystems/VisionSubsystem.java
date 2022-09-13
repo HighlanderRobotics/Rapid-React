@@ -40,7 +40,7 @@ public class VisionSubsystem extends SubsystemBase implements Loggable {
     lookup.insert(4.0, new Pair<>(2350.0, 5.0));
     lookup.insert(6.0, new Pair<>(2500.0, 8.0));
     lookup.insert(8.0, new Pair<>(2650.0, 13.0));
-    lookup.insert(10.0, new Pair<>(2800.0, 18.0)); // old values -> 3000/23 sometimes goes over? Better with Vaughn's hood drivetrain tape
+    lookup.insert(10.0, new Pair<>(2700.0, 18.0)); // old values -> 3000/23 sometimes goes over? Better with Vaughn's hood drivetrain tape
     lookup.insert(12.0, new Pair<>(2900.0, 18.0));
     lookup.insert(14.0, new Pair<>(3000.0, 19.0));
     // lookup.insert(15.0, new Pair<>(3350.0, 27.0));//old values // 3350/27 kind of worked but not sure yet... 3300/25 was ok too?
