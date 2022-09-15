@@ -135,10 +135,21 @@ public class RobotContainer {
     // }));
     SmartDashboard.putNumber("Amp Draw", pdp.getTotalCurrent());
 
-    SmartDashboard.putData("Climber to 0", new InstantCommand(() -> climberSubsystem.setSetpoint(0), climberSubsystem));
-    SmartDashboard.putData("Climber to 50,000", new InstantCommand(() -> climberSubsystem.setSetpoint(-50000), climberSubsystem));
-    SmartDashboard.putData("Climber to 12 inches", new InstantCommand(() -> climberSubsystem.setSetpoint(TelescopingClimberSubsystem.convertInchesToTicks(-22)), climberSubsystem));
+    SmartDashboard.putData("Climber to 0", new RunCommand(() -> climberSubsystem.setSetpoint(0), climberSubsystem));
+    SmartDashboard.putData("Climber to 50,000", new RunCommand(() -> climberSubsystem.setSetpoint(-50000), climberSubsystem));
+    SmartDashboard.putData("Climber to 12 inches", new RunCommand(() -> climberSubsystem.setSetpoint(TelescopingClimberSubsystem.convertInchesToTicks(-22)), climberSubsystem));
     SmartDashboard.putData("LED Demo", new LEDRainbowDemoCommand(ledSubsystem));
+    SmartDashboard.putData("Ratchet Unlock", new InstantCommand(() -> climberSubsystem.unlockRatchet(), climberSubsystem));
+    SmartDashboard.putData("Ratchet Lock", new InstantCommand(() -> climberSubsystem.lockRatchet(), climberSubsystem));
+    SmartDashboard.putData("Extend Climber Solenoid", new RunCommand(() -> climberSubsystem.extendSolenoid(), climberSubsystem));
+    SmartDashboard.putData("Retract Climber Solenoid", new RunCommand(() -> climberSubsystem.retractSolenoid(), climberSubsystem));
+    // Extends intake to adjust CoG and have passive arms clear
+    // Then deploys mantis arms. RunCommand holds out intake afterwards, should be interrupted by controller
+    SmartDashboard.putData("Traverse Sequence", new SequentialCommandGroup(
+      new InstantCommand(() -> {intakeSubsystem.extend(); intakeSubsystem.setIntakeRPM(2000);}, intakeSubsystem),
+      new WaitCommand(0.4),
+      new InstantCommand(() -> climberSubsystem.retractSolenoid(), climberSubsystem),
+      new RunCommand(() -> {})));
     // SmartDashboard.putData("Aim", new RunCommand(() -> hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()), hoodSubsystem));
     // SmartDashboard.putData("Aim", new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem));
     // SmartDashboard.putData("Manual Run Flywheel", new RunCommand(() -> shooterSubsystem.setTargetRPM(targetRPM), shooterSubsystem));
@@ -168,6 +179,7 @@ public class RobotContainer {
     routingSubsystem.setDefaultCommand(new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem));
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
     ledSubsystem.setDefaultCommand(new DefaultLedCommand(ledSubsystem, visionSubsystem, routingSubsystem));
+    climberSubsystem.setDefaultCommand(new RunCommand(() -> climberSubsystem.extendSolenoid(), climberSubsystem));
     // Configure the button bindings
     configureButtonBindings();
     }
@@ -211,6 +223,16 @@ public class RobotContainer {
     //new Button (operator::getYButton())
 
 
+    new Button(operator::getAButton)
+              .whenPressed(new RunCommand(() -> climberSubsystem.setSetpoint(TelescopingClimberSubsystem.convertInchesToTicks(-22)), climberSubsystem));
+    new Button(operator::getBButton)
+              .whenPressed(new RunCommand(() -> climberSubsystem.setSetpoint(0), climberSubsystem));
+    new Button(operator::getXButton)
+              .whenPressed(new SequentialCommandGroup(
+                new InstantCommand(() -> {intakeSubsystem.extend(); intakeSubsystem.setIntakeRPM(2000);}, intakeSubsystem),
+                new WaitCommand(0.4),
+                new InstantCommand(() -> climberSubsystem.retractSolenoid(), climberSubsystem),
+                new RunCommand(() -> {})));
     // new Button(operator::getAButton)
     //   .toggleWhenPressed(new ExtendClimber(climberSubsystem, ledSubsystem, 38, 20.0));
     // new Button(operator::getBButton)

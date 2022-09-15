@@ -8,20 +8,31 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
+import edu.wpi.first.wpilibj.PneumaticsControlModule;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import frc.robot.Constants;
+import frc.robot.components.ReversibleDigitalInput;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
 public class TelescopingClimberSubsystem extends PIDSubsystem implements Loggable {
   WPI_TalonFX climberMotor;
+  DoubleSolenoid mantisArmSolenoid;
+  Servo ratchetServo;
+  ReversibleDigitalInput limitSwitch;
   public static final int MAXEXTENSION = -50000;
   public static final double INCREMENT = 10; //convertInchesToTicks(-0.001);
   /** Creates a new TelescopingClimberSubsystem. */
   public TelescopingClimberSubsystem() {
-    super(new PIDController(0.00001, 0, 0));
+    super(new PIDController(0.00001, 0.0000003, 0));
     climberMotor = new WPI_TalonFX(Constants.CLIMBER_EXTENSION_MOTOR);
-
+    mantisArmSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, Constants.CLIMBER_SOLENOID_FORWARD, Constants.CLIMBER_SOLENOID_BACKWARD);
+    ratchetServo = new Servo(Constants.CLIMBER_RATCHET_SERVO);
+    limitSwitch = new ReversibleDigitalInput(Constants.CLIMBER_LIMIT_SWITCH, false);
     super.enable();
   }
 
@@ -40,6 +51,27 @@ public class TelescopingClimberSubsystem extends PIDSubsystem implements Loggabl
   @Override
   protected double getMeasurement() {
     return climberMotor.getSelectedSensorPosition();
+  }
+
+  public void extendSolenoid(){
+    mantisArmSolenoid.set(kForward);
+  }
+
+  public void retractSolenoid(){
+    mantisArmSolenoid.set(kReverse);
+  }
+
+  @Log
+  public boolean getLimitSwitch() {
+    return limitSwitch.get();
+  }
+
+  public void unlockRatchet() {
+    ratchetServo.set(0);
+  }
+
+  public void lockRatchet() {
+    ratchetServo.set(1);
   }
 
   public static double convertInchesToTicks(double inches) {
