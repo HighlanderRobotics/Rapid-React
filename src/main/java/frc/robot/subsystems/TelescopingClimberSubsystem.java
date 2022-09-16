@@ -35,17 +35,24 @@ public class TelescopingClimberSubsystem extends PIDSubsystem implements Loggabl
     limitSwitch = new ReversibleDigitalInput(Constants.CLIMBER_LIMIT_SWITCH, false);
     super.enable();
   }
+  
 
   @Override
   protected void useOutput(double output, double setpoint) {
-    // if (output > 0 && )
+     if (output > 0 && limitSwitch.get())
+     {
+      climberMotor.set(ControlMode.PercentOutput, 0);
+     }else{
+      climberMotor.set(ControlMode.PercentOutput, output);
+     }
 
-    climberMotor.set(ControlMode.PercentOutput, output);
-    System.out.println("Output: " + output);
-    System.out.println("Setpoint: " + setpoint);
-    System.out.println("Current Position: " + getMeasurement());
-    System.out.println("Ticks: " + getMeasurement());
-    System.out.println("Ticks to Inches: " + convertTicksToInches(getMeasurement()));
+
+    
+    // System.out.println("Output: " + output);
+    // System.out.println("Setpoint: " + setpoint);
+    // System.out.println("Current Position: " + getMeasurement());
+    // System.out.println("Ticks: " + getMeasurement());
+    // System.out.println("Ticks to Inches: " + convertTicksToInches(getMeasurement()));
   }
 
   @Override
@@ -82,7 +89,6 @@ public class TelescopingClimberSubsystem extends PIDSubsystem implements Loggabl
     return ticks / 2048 * 0.1014;
   }
 
-  @Log
   public void toggleArm()
   {
     double measurement = getMeasurement();
@@ -100,20 +106,18 @@ public class TelescopingClimberSubsystem extends PIDSubsystem implements Loggabl
 
   }
 
-  @Log
   public void armDown()
   {
     if (getMeasurement() - INCREMENT < 0) {
       setSetpoint(getMeasurement() - INCREMENT);
-      System.out.println("Going down.");
+      //System.out.println("Going down.");
     }else{
       setSetpoint(0);
-      System.out.println("Going all the way down.");
+      //System.out.println("Going all the way down.");
     }
 
   }
 
-  @Log
   public void armUp()
   {
     if (getMeasurement() + INCREMENT > MAXEXTENSION){
