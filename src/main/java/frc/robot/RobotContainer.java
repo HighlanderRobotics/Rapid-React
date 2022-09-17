@@ -117,7 +117,7 @@ public class RobotContainer {
             () -> -modifyAxis(strafeLimiter.calculate(-controller.getLeftX() * demoRate)) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
             () -> -modifyAxis(forwardLimiter.calculate(controller.getLeftY() * demoRate)) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
             () -> -modifyTurnAxis(controller.getRightX() * demoRate) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
-            false
+            true
     ));
 
     SmartDashboard.putData("Demo Drive Mode", new InstantCommand(() -> demoRate = 0.5));
