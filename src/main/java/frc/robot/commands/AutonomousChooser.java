@@ -121,8 +121,9 @@ public class AutonomousChooser {
         resetOdo(PathPlanner.loadPath("Lower Red 2 Ball", 2.0, 1.0)),
         shoot(2.0),
         drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Lower Red 2 Ball", 2.0, 1.0))
+          .andThen(new WaitCommand(0.5))
           .raceWith(runIntakeAndRouting()),
-        shoot(2.0),
+        shoot(2.5),
         drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Lower Red 1 Hide", 1.0, 2.0))
           .raceWith(runIntakeAndRouting())
           .raceWith(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem)),
@@ -152,6 +153,7 @@ public class AutonomousChooser {
     }
     private Command resetOdo(PathPlannerTrajectory path){
       return new SequentialCommandGroup(
+      new PrintCommand("" + path.getInitialState().holonomicRotation.getDegrees()),
       new InstantCommand(() -> drivetrainSubsystem.resetGyroscope(path.getInitialState().holonomicRotation.getDegrees())),
       new InstantCommand(() -> drivetrainSubsystem.m_odometry.resetPosition(
         new Pose2d(path.getInitialState().poseMeters.getTranslation(), 
