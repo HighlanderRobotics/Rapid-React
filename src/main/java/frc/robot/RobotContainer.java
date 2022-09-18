@@ -224,9 +224,9 @@ public class RobotContainer {
 
 
     new Button(operator::getAButton)
-              .whenPressed(new RunCommand(() -> climberSubsystem.setSetpoint(TelescopingClimberSubsystem.convertInchesToTicks(-22)), climberSubsystem));
+              .whenPressed(new RunCommand(() -> climberSubsystem.setSetpoint(TelescopingClimberSubsystem.convertInchesToTicks(-21)), climberSubsystem));
     new Button(operator::getBButton)
-              .whenPressed(new RunCommand(() -> climberSubsystem.setSetpoint(0), climberSubsystem));
+              .whenPressed(new RunCommand(() -> climberSubsystem.setSetpoint(TelescopingClimberSubsystem.convertInchesToTicks(1)), climberSubsystem));
     new Button(operator::getXButton)
               .whenPressed(new SequentialCommandGroup(
                 new InstantCommand(() -> {intakeSubsystem.extend(); intakeSubsystem.setIntakeRPM(2000);}, intakeSubsystem),
