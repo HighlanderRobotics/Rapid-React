@@ -53,13 +53,14 @@ public class AutonomousChooser {
         this.intakeSubsystem = intakeSubsystem;
         this.ledSubsystem = ledSubsystem;
         
-        chooser.setDefaultOption("UNIVERSAL 2 ball", new TwoBallAuto(drivetrainSubsystem, hoodSubsystem, shooterSubsystem, visionSubsystem, routingSubsystem, intakeSubsystem, ledSubsystem));
+        chooser.setDefaultOption("UNIVERSAL 2 BALL", new TwoBallAuto(drivetrainSubsystem, hoodSubsystem, shooterSubsystem, visionSubsystem, routingSubsystem, intakeSubsystem, ledSubsystem));
         chooser.addOption("NONE", new PrintCommand("owo"));
         chooser.addOption("TERMINAL 3 BALL 0 HIDE", getTerminal3Ball());
         chooser.addOption("HANGAR 2 BALL 2 HIDE", getHangar2Ball2Hide());
         chooser.addOption("TERMINAL TARMAC EDGE 3 BALL", getTarmacEdgeTerminal3Ball());
-        chooser.addOption("HANGAR 2 BALL 1 HIDE", getHangar2Ball1Hide());
+        chooser.addOption("HANGAR 3 BALL 1 HIDE", getHangar2Ball1Hide());
         chooser.addOption("CHEZY CHAMPS 4 BALL", getChezyChamps4Ball());
+        chooser.addOption("CHEZY CHAMPS UNIVERSAL 3 BALL", getChezyChampsUniversal3Ball());
 
         SmartDashboard.putData(chooser);
     }
@@ -160,6 +161,16 @@ public class AutonomousChooser {
         drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Chezy Champs 3rd 4th Ball", 2.0, 1.0))
           .raceWith(runIntakeAndRouting()),
         shoot()
+      );
+    }
+
+    double startAngle = drivetrainSubsystem.getGyroscopeRotation().getDegrees();
+    private Command getChezyChampsUniversal3Ball() {
+      return new SequentialCommandGroup(
+        new ResetHood(hoodSubsystem),
+        shoot(2.0),
+        new PIDAngleSnap(drivetrainSubsystem, startAngle),
+        new TwoBallAuto(drivetrainSubsystem, hoodSubsystem, shooterSubsystem, visionSubsystem, routingSubsystem, intakeSubsystem, ledSubsystem)
       );
     }
 
