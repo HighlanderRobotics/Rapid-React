@@ -124,11 +124,11 @@ public class RobotContainer {
 
     drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
         drivetrainSubsystem,
-        () -> -modifyAxis(strafeLimiter.calculate(-controller.getLeftX() * demoRate))
+        () -> -modifyAxis(strafeLimiter.calculate(-controller.getLeftX()))
             * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-        () -> -modifyAxis(forwardLimiter.calculate(controller.getLeftY() * demoRate))
+        () -> -modifyAxis(forwardLimiter.calculate(controller.getLeftY()))
             * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-        () -> -modifyTurnAxis(controller.getRightX() * demoRate)
+        () -> -modifyTurnAxis(controller.getRightX())
             * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
         true));
 
@@ -378,9 +378,11 @@ public class RobotContainer {
     ledSubsystem.setSolidColor(140, 255, 255);
   }
 
-  public void climberRachetDisabledInit() {
+  public void climberRachetTeleopExit() {
     if(shouldLockRatchet){
       climberSubsystem.lockRatchet();
+    } else {
+      climberSubsystem.unlockRatchet();
     }
   }
 }

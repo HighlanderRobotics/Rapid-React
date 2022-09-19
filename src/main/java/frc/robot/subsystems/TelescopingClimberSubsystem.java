@@ -28,7 +28,7 @@ public class TelescopingClimberSubsystem extends PIDSubsystem implements Loggabl
   public static final double INCREMENT = 10; //convertInchesToTicks(-0.001);
   /** Creates a new TelescopingClimberSubsystem. */
   public TelescopingClimberSubsystem() {
-    super(new PIDController(0.00020, 0.000000, 0));
+    super(new PIDController(0.0001, 0.000000, 0));
     climberMotor = new WPI_TalonFX(Constants.CLIMBER_EXTENSION_MOTOR);
     mantisArmSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, Constants.CLIMBER_SOLENOID_FORWARD, Constants.CLIMBER_SOLENOID_BACKWARD);
     ratchetServo = new Servo(Constants.CLIMBER_RATCHET_SERVO);
@@ -45,14 +45,6 @@ public class TelescopingClimberSubsystem extends PIDSubsystem implements Loggabl
      }else{
       climberMotor.set(ControlMode.PercentOutput, output);
      }
-
-
-    
-    // System.out.println("Output: " + output);
-    // System.out.println("Setpoint: " + setpoint);
-    // System.out.println("Current Position: " + getMeasurement());
-    // System.out.println("Ticks: " + getMeasurement());
-    // System.out.println("Ticks to Inches: " + convertTicksToInches(getMeasurement()));
   }
 
   @Override
