@@ -121,7 +121,7 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-
+    // By default, use the joystick input to drive the drivetrain
     drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
         drivetrainSubsystem,
         () -> -modifyAxis(strafeLimiter.calculate(-controller.getLeftX()))
@@ -132,6 +132,7 @@ public class RobotContainer {
             * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
         true));
 
+        // This block of SmartDashboard.putData calls puts testing buttons on the smart dashboard
     SmartDashboard.putData("Demo Drive Mode", new InstantCommand(() -> demoRate = 0.5));
 
     SmartDashboard.putData("Reg Drive Mode", new InstantCommand(() -> demoRate = 1.0));
@@ -214,16 +215,22 @@ public class RobotContainer {
     // climberSubsystem.setDefaultCommand(new RunCommand(() ->
     // climberSubsystem.retractIfLocked(controller.getRightTriggerAxis() * -0.6),
     // climberSubsystem));
+    // By default, retract the intake and don't run the motor
     intakeSubsystem.setDefaultCommand(new RunCommand(() -> {
       intakeSubsystem.retract();
       intakeSubsystem.setIntakeRPM(0);
     }, intakeSubsystem));
-    shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
+    // By default, set the hood subsystem to go to an arbitrary position
     hoodSubsystem.setDefaultCommand(new RunCommand(() -> hoodSubsystem.setSetpoint(hoodTarget), hoodSubsystem));
+    // Enable the hood PID
     hoodSubsystem.enable();
+    // By default, spin the wheels as necessary to hold both balls
     routingSubsystem.setDefaultCommand(new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem));
+    // By default, don't spin the flywheel
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
+    // By default, show the balls in the robot and the whether the target is visible
     ledSubsystem.setDefaultCommand(new DefaultLedCommand(ledSubsystem, visionSubsystem, routingSubsystem));
+    // By default, lock the mantis arms, hold the climber at its starting position, and leave the ratchet open
     climberSubsystem.setDefaultCommand(new RunCommand(() -> {
       climberSubsystem.extendSolenoid();
       climberSubsystem.setSetpoint(0);
@@ -242,11 +249,14 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    // Resets the field relative gyro heading on the swerve drive
     new Button(controller::getRightStickButton)
         .whenPressed(new InstantCommand(() -> drivetrainSubsystem.resetGyroscope(0)));
+    // Runs the shooting sequence
     new Button(controller::getAButton)
         .whileHeld(new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem,
             routingSubsystem, ledSubsystem));
+    // Rejects balls out of the intake
     new Button(controller::getYButton)
         .whileHeld(
             new RunCommand(() -> {
@@ -256,36 +266,38 @@ public class RobotContainer {
               routingSubsystem.setOuterFeederRPM(-2000);
               shooterSubsystem.setTargetRPM(-1000);
             }, intakeSubsystem, routingSubsystem, shooterSubsystem));
+    // Rejects balls out of the intake
     new Button(controller::getXButton)
         .whileHeld(new BallRejection(intakeSubsystem, routingSubsystem));
+    // Vomits balls out of the shooter
     new Button(controller::getRightBumper)
         .whileHeld(new RunCommand(() -> {
           shooterSubsystem.setTargetRPM(2000);
           routingSubsystem.setInnerFeederRPM(500);
         }));
+    // Runs the intake
     new Button(controller::getLeftBumper)
         .whileHeld(new RunCommand(() -> {
           intakeSubsystem.extend();
           intakeSubsystem.setIntakeRPM(4000);
         }, intakeSubsystem));
+    // Resets the hood to compensate for encoder drift or wrong startup position
     new Button(controller::getStartButton)
         .whenPressed(new ResetHood(hoodSubsystem));
-    new Button(controller::getBButton)
-        .whenPressed(new InstantCommand(() -> {
-          climberSubsystem.toggleArm();
-        }));
-
+    // Puts the climber up to the mid bar
     new Button(operator::getAButton)
-        .whenPressed(new SequentialCommandGroup(
+        .toggleWhenPressed(new SequentialCommandGroup(
           new InstantCommand(() -> climberSubsystem.unlockRatchet(), climberSubsystem),
           new WaitCommand(.1),
           new RunCommand(() -> climberSubsystem.setSetpoint(TelescopingClimberSubsystem.convertInchesToTicks(-21)))));
+    // Pulls the climber into the robot
     new Button(operator::getBButton)
-        .whenPressed(new RunCommand(() -> {
+        .toggleWhenPressed(new RunCommand(() -> {
           climberSubsystem.setSetpoint(TelescopingClimberSubsystem.convertInchesToTicks(1));
           // climberSubsystem.lockRatchet();
         },
             climberSubsystem));
+    // Extends the mantis arms
     new Button(operator::getXButton)
         .whenPressed(new SequentialCommandGroup(
             new InstantCommand(() -> {
@@ -296,6 +308,7 @@ public class RobotContainer {
             new InstantCommand(() -> climberSubsystem.retractSolenoid(), climberSubsystem),
             new RunCommand(() -> {
             })));
+    // Re extends the arms and unlocks the ratchet if the robot is ready to traverse
     new Button(operator::getYButton)
         .whenPressed(new InstantCommand(
             () -> {
@@ -378,6 +391,7 @@ public class RobotContainer {
     ledSubsystem.setSolidColor(140, 255, 255);
   }
 
+  // Called on teleop end to lock the ratchet if the robot is not traversed
   public void climberRachetTeleopExit() {
     if(shouldLockRatchet){
       climberSubsystem.lockRatchet();
