@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import java.time.Instant;
+
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
@@ -36,6 +38,7 @@ public class AutonomousChooser {
     RoutingSubsystem routingSubsystem;
     IntakeSubsystem intakeSubsystem;
     LEDSubsystem ledSubsystem;
+    double startAngle = 0;
 
     public AutonomousChooser(
         DrivetrainSubsystem drivetrainSubsystem, 
@@ -164,12 +167,12 @@ public class AutonomousChooser {
       );
     }
 
-    double startAngle = drivetrainSubsystem.getGyroscopeRotation().getDegrees();
     private Command getChezyChampsUniversal3Ball() {
       return new SequentialCommandGroup(
+        new InstantCommand(() -> startAngle = drivetrainSubsystem.getGyroscopeRotation().getDegrees()),
         new ResetHood(hoodSubsystem),
         shoot(2.0),
-        new PIDAngleSnap(drivetrainSubsystem, startAngle),
+        // new PIDAngleSnap(drivetrainSubsystem, startAngle),
         new TwoBallAuto(drivetrainSubsystem, hoodSubsystem, shooterSubsystem, visionSubsystem, routingSubsystem, intakeSubsystem, ledSubsystem)
       );
     }
