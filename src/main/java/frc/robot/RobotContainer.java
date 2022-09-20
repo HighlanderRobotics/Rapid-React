@@ -174,6 +174,7 @@ public class RobotContainer {
         new InstantCommand(() -> climberSubsystem.retractSolenoid(), climberSubsystem),
         new RunCommand(() -> {
         })));
+    SmartDashboard.putData("Reset Climber to 0", new InstantCommand(() -> climberSubsystem.resetClimbMotor()));
     // SmartDashboard.putData("Aim", new RunCommand(() ->
     // hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()),
     // hoodSubsystem));
@@ -304,7 +305,7 @@ public class RobotContainer {
               intakeSubsystem.extend();
               intakeSubsystem.setIntakeRPM(2000);
             }, intakeSubsystem),
-            new WaitCommand(0.4),
+            new WaitCommand(0.5),
             new InstantCommand(() -> climberSubsystem.retractSolenoid(), climberSubsystem),
             new RunCommand(() -> {
             })));
