@@ -14,6 +14,7 @@ public class LEDSubsystem extends SubsystemBase {
   AddressableLED led;
   AddressableLEDBuffer buffer;
   int rainbowFirstPixelHue = 0;
+  double pulsingValue = 0;
   /** Creates a new LEDSubsystem. */
   public LEDSubsystem() {
     led = new AddressableLED(Constants.LED_PORT);
@@ -104,7 +105,7 @@ public class LEDSubsystem extends SubsystemBase {
     }
   }
 
-  public void rainbow(int increaseAmount) {
+  public void setRainbow(int increaseAmount) {
     // For every pixel
     for (int i = 0; i <= 34; i++) {
       // Calculate hue from 0 to 180 (it wraps around)
@@ -117,6 +118,16 @@ public class LEDSubsystem extends SubsystemBase {
     rainbowFirstPixelHue += increaseAmount;
     // Check bounds
     rainbowFirstPixelHue %= 180;
+  }
+
+  public void setSinePulsing(double increaseAmount) {
+    // For every pixel
+    for (int i = 0; i <= 34; i++) {
+      // Set the value to follow a sine wave from 0 to 180, with input in degrees
+      setSymmetrical(i, 150, 255, (int)Math.floor(Math.sin(Math.toDegrees(pulsingValue)) * 90 + 90));
+    }
+
+    pulsingValue += increaseAmount;
   }
 
   @Override

@@ -60,7 +60,7 @@ public class RobotContainer {
   private final VisionSubsystem visionSubsystem = new VisionSubsystem(new LimeLightSubsystem("limelight-top"), limeLightSubsystem);
   private final RoutingSubsystem routingSubsystem = new RoutingSubsystem();
   private final LEDSubsystem ledSubsystem = new LEDSubsystem();
-  private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
+  // private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
 
   private final SlewRateLimiter forwardLimiter = new SlewRateLimiter(3.5);
   private final SlewRateLimiter strafeLimiter = new SlewRateLimiter(3.5);
@@ -69,6 +69,8 @@ public class RobotContainer {
   private final AutonomousChooser chooser = new AutonomousChooser(drivetrainSubsystem, hoodSubsystem, shooterSubsystem, visionSubsystem, routingSubsystem, intakeSubsystem, ledSubsystem);
 
   private final PowerDistribution pdp = new PowerDistribution(0, ModuleType.kCTRE);
+
+  double demoRate = 1.0;
 
   @Config
   double hoodTarget = 20.0;
@@ -89,12 +91,17 @@ public class RobotContainer {
 
     drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
             drivetrainSubsystem,
-            () -> -modifyAxis(strafeLimiter.calculate(-controller.getLeftX())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(forwardLimiter.calculate(controller.getLeftY())) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyTurnAxis(controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+            () -> -modifyAxis(strafeLimiter.calculate(-controller.getLeftX() * demoRate)) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+            () -> -modifyAxis(forwardLimiter.calculate(controller.getLeftY() * demoRate)) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+            () -> -modifyTurnAxis(controller.getRightX() * demoRate) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
             true
     ));
 
+    SmartDashboard.putData("Demo Drive Mode", new InstantCommand(() -> demoRate = 0.5));
+
+    SmartDashboard.putData("Reg Drive Mode", new InstantCommand(() -> demoRate = 1.0));
+
+    SmartDashboard.putData("Sick Pipes", new RunCommand(() -> routingSubsystem.sickPipes(), routingSubsystem));
     // SmartDashboard.putData("Check path", new InstantCommand(() -> {
     //   PathPlannerTrajectory path = PathPlanner.loadPath("Hub Scale Test", 0.5, 0.5);
     //   drivetrainSubsystem.m_odometry.resetPosition(
@@ -112,8 +119,8 @@ public class RobotContainer {
     // SmartDashboard.putData("Reset Hood", new ResetHood(hoodSubsystem));
     // SmartDashboard.putData("Shoot one ball", new ShootOneBall(routingSubsystem));
     // SmartDashboard.putData("Route one ball", new RouteOneBall(routingSubsystem));
-    SmartDashboard.putData("lock ratchet", new InstantCommand(() -> climberSubsystem.lockRatchet()));
-    SmartDashboard.putData("unlock ratchet", new InstantCommand(() -> climberSubsystem.unlockRatchet()));
+    // SmartDashboard.putData("lock ratchet", new InstantCommand(() -> climberSubsystem.lockRatchet()));
+    // SmartDashboard.putData("unlock ratchet", new InstantCommand(() -> climberSubsystem.unlockRatchet()));
     // SmartDashboard.putData("Run Routing for Shooting", new RunCommand(() -> {routingSubsystem.setOuterFeederRPM(700); routingSubsystem.setInnerFeederRPM(500);}, routingSubsystem));
     // SmartDashboard.putData("Shoot two balls", new ShootTwoBalls(routingSubsystem, shooterSubsystem));
     // SmartDashboard.putData("Extend Intake", new RunCommand(() -> intakeSubsystem.extend(), intakeSubsystem));
@@ -126,7 +133,7 @@ public class RobotContainer {
     // SmartDashboard.putData("Toggle Intake", new InstantCommand(() -> m_intakeSubsystem.toggleIntake(), m_intakeSubsystem));
     // SmartDashboard.putData("Auto Aim", new AutoAim(m_visionSubsystem, m_drivetrainSubsystem));
     
-    climberSubsystem.setDefaultCommand(new RunCommand(() -> climberSubsystem.retractIfLocked(controller.getRightTriggerAxis() * -0.6), climberSubsystem));
+    // climberSubsystem.setDefaultCommand(new RunCommand(() -> climberSubsystem.retractIfLocked(controller.getRightTriggerAxis() * -0.6), climberSubsystem));
     intakeSubsystem.setDefaultCommand(new RunCommand(() -> {intakeSubsystem.retract(); intakeSubsystem.setIntakeRPM(0);}, intakeSubsystem));
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(flywheelLimiter.calculate(0)), shooterSubsystem));
     hoodSubsystem.setDefaultCommand(new RunCommand(() -> hoodSubsystem.setSetpoint(hoodTarget), hoodSubsystem));
@@ -154,7 +161,7 @@ public class RobotContainer {
             .whileHeld(
               new RunCommand(() -> {
                 intakeSubsystem.extend();
-                intakeSubsystem.setIntakeRPM(-2000);
+                intakeSubsystem.setIntakeRPM(2000);
                 routingSubsystem.setInnerFeederRPM(-1000);
                 routingSubsystem.setOuterFeederRPM(-2000);
                 shooterSubsystem.setTargetRPM(-1000);
@@ -170,16 +177,16 @@ public class RobotContainer {
 
   
 
-    new Button(operator::getAButton)
-      .toggleWhenPressed(new ExtendClimber(climberSubsystem, ledSubsystem, 38, 20.0));
-    new Button(operator::getBButton)
-      .whenActive(new RetractClimber(climberSubsystem));
-    new Button(operator::getLeftBumper)
-      .whenPressed(new InstantCommand(() -> climberSubsystem.decreaseAngle(0.5)));
-    new Button(operator::getRightBumper)
-      .toggleWhenPressed(new IncreaseExtension(climberSubsystem));
-    new Button(operator::getStartButton)
-      .whenPressed(new InstantCommand(() -> climberSubsystem.extendedAndLocked = false));
+    // new Button(operator::getAButton)
+    //   .toggleWhenPressed(new ExtendClimber(climberSubsystem, ledSubsystem, 38, 20.0));
+    // new Button(operator::getBButton)
+    //   .whenActive(new RetractClimber(climberSubsystem));
+    // new Button(operator::getLeftBumper)
+    //   .whenPressed(new InstantCommand(() -> climberSubsystem.decreaseAngle(0.5)));
+    // new Button(operator::getRightBumper)
+    //   .toggleWhenPressed(new IncreaseExtension(climberSubsystem));
+    // new Button(operator::getStartButton)
+    //   .whenPressed(new InstantCommand(() -> climberSubsystem.extendedAndLocked = false));
 
   }
 
@@ -239,5 +246,9 @@ public class RobotContainer {
     } else {
       return value * 0.2;
     }
+  }
+
+  void disabledLEDPeriodic() {
+    ledSubsystem.setSolidColor(140, 255, 255);
   }
 }

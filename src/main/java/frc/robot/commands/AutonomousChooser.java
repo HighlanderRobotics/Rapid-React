@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import java.time.Instant;
+
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
@@ -37,6 +39,7 @@ public class AutonomousChooser {
     RoutingSubsystem routingSubsystem;
     IntakeSubsystem intakeSubsystem;
     LEDSubsystem ledSubsystem;
+    double startAngle = 0;
 
     public AutonomousChooser(
         DrivetrainSubsystem drivetrainSubsystem, 
@@ -54,13 +57,14 @@ public class AutonomousChooser {
         this.intakeSubsystem = intakeSubsystem;
         this.ledSubsystem = ledSubsystem;
         
-        chooser.setDefaultOption("UNIVERSAL 2 ball", new TwoBallAuto(drivetrainSubsystem, hoodSubsystem, shooterSubsystem, visionSubsystem, routingSubsystem, intakeSubsystem, ledSubsystem));
+        chooser.setDefaultOption("UNIVERSAL 2 BALL", new TwoBallAuto(drivetrainSubsystem, hoodSubsystem, shooterSubsystem, visionSubsystem, routingSubsystem, intakeSubsystem, ledSubsystem));
         chooser.addOption("NONE", new PrintCommand("owo"));
         chooser.addOption("TERMINAL 3 BALL 0 HIDE", getTerminal3Ball());
         chooser.addOption("HANGAR 2 BALL 2 HIDE", getHangar2Ball2Hide());
         chooser.addOption("TERMINAL TARMAC EDGE 3 BALL", getTarmacEdgeTerminal3Ball());
-        chooser.addOption("HANGAR 2 BALL 1 HIDE", getHangar2Ball1Hide());
-        chooser.addOption("UNIVERSAL 1 BALL", getOneBallAuto());
+        chooser.addOption("HANGAR 3 BALL 1 HIDE", getHangar2Ball1Hide());
+        chooser.addOption("CHEZY CHAMPS 4 BALL", getChezyChamps4Ball());
+        chooser.addOption("CHEZY CHAMPS UNIVERSAL 3 BALL", getChezyChampsUniversal3Ball());
 
         SmartDashboard.putData(chooser);
     }
@@ -93,9 +97,9 @@ public class AutonomousChooser {
         return new SequentialCommandGroup(
           new ResetHood(hoodSubsystem),
           resetOdo(PathPlanner.loadPath("Upper Red 2 Ball", 2.0, 1.0)),
-          drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Upper Red 2 Ball", 2.0, 1.0))
-            .raceWith(runIntakeAndRouting()),
           shoot(2.0),
+          drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Upper Red 2 Ball", 2.0, 1.0)),
+            shoot(2.0),
           drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Upper Red 3rd Ball", 2.0, 1.0))
             .raceWith(runIntakeAndRouting())
             .raceWith(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem)),
@@ -105,8 +109,9 @@ public class AutonomousChooser {
     private Command getHangar2Ball2Hide(){
       return new SequentialCommandGroup(
         new ResetHood(hoodSubsystem),
-        resetOdo(PathPlanner.loadPath("Lower Red 2 Ball", 2.0, 1.0)),
-        drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Lower Red 2 Ball", 2.0, 1.0))
+        resetOdo(PathPlanner.loadPath("Lower Red 2 Ball", 8.0, 5.0)),
+        shoot(2.0),
+        drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Lower Red 2 Ball", 4.0, 5.0))
           .raceWith(runIntakeAndRouting()),
         shoot(2.0),
         drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Lower Red 2 Hide", 1.0, 2.0))
@@ -119,9 +124,11 @@ public class AutonomousChooser {
       return new SequentialCommandGroup(
         new ResetHood(hoodSubsystem),
         resetOdo(PathPlanner.loadPath("Lower Red 2 Ball", 2.0, 1.0)),
-        drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Lower Red 2 Ball", 2.0, 1.0))
-          .raceWith(runIntakeAndRouting()),
         shoot(2.0),
+        drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Lower Red 2 Ball", 2.0, 1.0))
+          .andThen(new WaitCommand(0.5))
+          .raceWith(runIntakeAndRouting()),
+        shoot(2.5),
         drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Lower Red 1 Hide", 1.0, 2.0))
           .raceWith(runIntakeAndRouting())
           .raceWith(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem)),
@@ -139,6 +146,7 @@ public class AutonomousChooser {
       return new SequentialCommandGroup(
         new ResetHood(hoodSubsystem),
         resetOdo(PathPlanner.loadPath("Upper Red Edge 2 Ball", 2.0, 1.0)),
+        shoot(2.0),
         drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Upper Red Edge 2 Ball", 2.0, 1.0))
           .raceWith(runIntakeAndRouting()),
         shoot(2.0),
@@ -148,8 +156,31 @@ public class AutonomousChooser {
         shoot()
       );
     }
+
+    private Command getChezyChamps4Ball(){
+      return new SequentialCommandGroup(
+        new ResetHood(hoodSubsystem),
+        resetOdo(PathPlanner.loadPath("Chezy Champs 3rd 4th Ball", 2.0, 1.0)),
+        shoot(4.0),
+        drivetrainSubsystem.followPathCommand(PathPlanner.loadPath("Chezy Champs 3rd 4th Ball", 2.0, 1.0))
+          .raceWith(runIntakeAndRouting()),
+        shoot()
+      );
+    }
+
+    private Command getChezyChampsUniversal3Ball() {
+      return new SequentialCommandGroup(
+        new InstantCommand(() -> startAngle = drivetrainSubsystem.getGyroscopeRotation().getDegrees()),
+        new ResetHood(hoodSubsystem),
+        shoot(2.0),
+        // new PIDAngleSnap(drivetrainSubsystem, startAngle),
+        new TwoBallAuto(drivetrainSubsystem, hoodSubsystem, shooterSubsystem, visionSubsystem, routingSubsystem, intakeSubsystem, ledSubsystem)
+      );
+    }
+
     private Command resetOdo(PathPlannerTrajectory path){
       return new SequentialCommandGroup(
+      new PrintCommand("" + path.getInitialState().holonomicRotation.getDegrees()),
       new InstantCommand(() -> drivetrainSubsystem.resetGyroscope(path.getInitialState().holonomicRotation.getDegrees())),
       new InstantCommand(() -> drivetrainSubsystem.m_odometry.resetPosition(
         new Pose2d(path.getInitialState().poseMeters.getTranslation(), 

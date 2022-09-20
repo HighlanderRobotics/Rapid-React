@@ -8,10 +8,13 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.music.Orchestra;
 import com.revrobotics.ColorSensorV3.RawColor;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.components.Falcon;
@@ -31,6 +34,7 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
   RawColor color = new RawColor(0, 0, 0, 0);
   double saturation = 0;
   public final PicoColorSensor colorSensor = new PicoColorSensor();
+  public final Orchestra sickPipes = new Orchestra();
   /** Creates a new RoutingSubsystem. */
   public RoutingSubsystem() {
     innerFeeder.config_kP(0, innerFeederPID.getP());
@@ -44,6 +48,11 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
 
     innerFeeder.setNeutralMode(NeutralMode.Brake);
     outerFeeder.setNeutralMode(NeutralMode.Brake);
+
+    sickPipes.addInstrument(innerFeeder);
+    sickPipes.addInstrument(outerFeeder);
+ 
+    sickPipes.loadMusic(Filesystem.getDeployDirectory() + "/sickPipes.chrp");
   }
 
   
@@ -104,6 +113,10 @@ public class RoutingSubsystem extends SubsystemBase implements Loggable {
 
   public frc.robot.components.PicoColorSensor.RawColor getColor(){
     return colorSensor.getRawColor0();
+  }
+
+  public void sickPipes(){
+    sickPipes.play();
   }
 
   @Override

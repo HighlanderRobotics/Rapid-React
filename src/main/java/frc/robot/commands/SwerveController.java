@@ -116,8 +116,8 @@ public class SwerveController extends CommandBase {
 
         real_field.setRobotPose(currentState);
         target_field.setRobotPose(desiredState.poseMeters);
-        System.out.println("current state rotation" + currentState.getRotation());
-        System.out.println("desired state rotation" + desiredState.holonomicRotation);
+        // System.out.println("current state rotation" + currentState.getRotation());
+        // System.out.println("desired state rotation" + desiredState.holonomicRotation);
 
 
         var targetChassisSpeeds = m_controller.calculate(currentState, desiredState, desiredState.holonomicRotation);

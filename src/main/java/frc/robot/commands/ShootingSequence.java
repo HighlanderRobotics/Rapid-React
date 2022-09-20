@@ -55,11 +55,11 @@ public class ShootingSequence extends ParallelCommandGroup {
         .deadlineWith(new RunCommand(() -> routingSubsystem.setInnerFeederRPM(-1000), routingSubsystem).withTimeout(0.15)
           .andThen(new RunCommand(() -> routingSubsystem.setInnerFeederRPM(0), routingSubsystem)))
         // .withTimeout(2.0)
-        .raceWith(new RunCommand(() -> ledSubsystem.rainbow(3), ledSubsystem)),
+        .raceWith(new RunCommand(() -> ledSubsystem.setRainbow(3), ledSubsystem)),
         //new InstantCommand(drivetrainSubsystem::lock),
         new WaitCommand(0.2),
         new ShootTwoBalls(routingSubsystem, shooterSubsystem)
-          .raceWith(new RunCommand(() -> ledSubsystem.rainbow(6), ledSubsystem))
+          .raceWith(new RunCommand(() -> ledSubsystem.setRainbow(6), ledSubsystem))
         //new WaitCommand(0.5)
         
       )
