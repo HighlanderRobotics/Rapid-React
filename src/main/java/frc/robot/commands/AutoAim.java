@@ -5,9 +5,12 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -15,11 +18,13 @@ import frc.robot.subsystems.VisionSubsystem;
 public class AutoAim extends CommandBase{
   VisionSubsystem m_visionSubsystem;
   DrivetrainSubsystem m_drivetrainSubsystem;
+  XboxController m_controller;
   double endThreshold = 0.5;
   /** Creates a new AutoAim. */
-  public AutoAim(VisionSubsystem visionSubsystem, DrivetrainSubsystem drivetrainSubsystem) {
+  public AutoAim(VisionSubsystem visionSubsystem, DrivetrainSubsystem drivetrainSubsystem, XboxController controller) {
         m_visionSubsystem = visionSubsystem;
         m_drivetrainSubsystem = drivetrainSubsystem;
+        m_controller = controller;
         addRequirements(drivetrainSubsystem);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -34,6 +39,8 @@ public class AutoAim extends CommandBase{
   @Override
   public void execute () {
     m_drivetrainSubsystem.drive(new ChassisSpeeds(0, 0, m_visionSubsystem.pidOutput()));
+    m_controller.setRumble(RumbleType.kRightRumble, 1.0);
+    m_controller.setRumble(RumbleType.kLeftRumble, 1.0);
   }
 
   public void end(){

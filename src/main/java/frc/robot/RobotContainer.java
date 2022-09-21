@@ -242,7 +242,7 @@ public class RobotContainer {
         .whenPressed(new InstantCommand(() -> drivetrainSubsystem.resetGyroscope(0)));
     // Runs the shooting sequence
     new Button(controller::getAButton)
-            .whileHeld(new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem)
+            .whileHeld(new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem, controller)
             .andThen(new InstantCommand(() -> flywheelLimiter.reset(Falcon.ticksToRPM(shooterSubsystem.flywheel.getSelectedSensorVelocity())))));
     new Button(controller::getYButton)
         .whileHeld(

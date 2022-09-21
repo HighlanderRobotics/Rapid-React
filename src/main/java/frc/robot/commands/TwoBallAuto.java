@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -43,8 +44,8 @@ public class TwoBallAuto extends ParallelCommandGroup {
           new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem)
         ),
         new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem).withTimeout(.25),
-        new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem),
-        new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem)
+        new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem, new XboxController(0)),
+        new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem, new XboxController(0))
       )
     );
     addRequirements(drivetrainSubsystem, hoodSubsystem, shooterSubsystem, routingSubsystem, intakeSubsystem);
