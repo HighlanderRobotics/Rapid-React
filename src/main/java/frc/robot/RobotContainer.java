@@ -222,7 +222,7 @@ public class RobotContainer {
     climberSubsystem.setDefaultCommand(new RunCommand(() -> {
       climberSubsystem.extendSolenoid();
       climberSubsystem.setSetpoint(0);
-      climberSubsystem.unlockRatchet();
+      climberSubsystem.lockRatchet();
     }, climberSubsystem));
     // Configure the button bindings
     configureButtonBindings();
@@ -275,7 +275,7 @@ public class RobotContainer {
     new Button(operator::getAButton)
         .toggleWhenPressed(new SequentialCommandGroup(
           new InstantCommand(() -> climberSubsystem.unlockRatchet(), climberSubsystem),
-          new WaitCommand(.1),
+          new WaitCommand(.2),
           new RunCommand(() -> climberSubsystem.setSetpoint(TelescopingClimberSubsystem.convertInchesToTicks(-21)))));
     // Pulls the climber into the robot
     new Button(operator::getBButton)

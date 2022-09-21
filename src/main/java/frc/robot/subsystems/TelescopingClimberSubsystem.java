@@ -28,7 +28,7 @@ public class TelescopingClimberSubsystem extends PIDSubsystem implements Loggabl
   public static final double INCREMENT = 10; //convertInchesToTicks(-0.001);
   /** Creates a new TelescopingClimberSubsystem. */
   public TelescopingClimberSubsystem() {
-    super(new PIDController(0.00005, 0.000000, 0));
+    super(new PIDController(0.00003, 0.000000, 0));
     climberMotor = new WPI_TalonFX(Constants.CLIMBER_EXTENSION_MOTOR);
     mantisArmSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, Constants.CLIMBER_SOLENOID_FORWARD, Constants.CLIMBER_SOLENOID_BACKWARD);
     ratchetServo = new Servo(Constants.CLIMBER_RATCHET_SERVO);
