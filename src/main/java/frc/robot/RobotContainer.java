@@ -15,6 +15,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -143,8 +144,8 @@ public class RobotContainer {
         () -> climberSubsystem.setSetpoint(TelescopingClimberSubsystem.convertInchesToTicks(-22)), climberSubsystem));
     SmartDashboard.putData("LED Demo", new LEDRainbowDemoCommand(ledSubsystem));
     SmartDashboard.putData("Ratchet Unlock",
-        new InstantCommand(() -> climberSubsystem.unlockRatchet(), climberSubsystem));
-    SmartDashboard.putData("Ratchet Lock", new InstantCommand(() -> climberSubsystem.lockRatchet(), climberSubsystem));
+        new RunCommand(() -> climberSubsystem.unlockRatchet(), climberSubsystem));
+    SmartDashboard.putData("Ratchet Lock", new RunCommand(() -> climberSubsystem.lockRatchet(), climberSubsystem));
     SmartDashboard.putData("Extend Climber Solenoid",
         new RunCommand(() -> climberSubsystem.extendSolenoid(), climberSubsystem));
     SmartDashboard.putData("Retract Climber Solenoid",
@@ -243,7 +244,14 @@ public class RobotContainer {
     // Runs the shooting sequence
     new Button(controller::getAButton)
             .whileHeld(new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem, controller)
-            .andThen(new InstantCommand(() -> flywheelLimiter.reset(Falcon.ticksToRPM(shooterSubsystem.flywheel.getSelectedSensorVelocity())))));
+            .alongWith(new InstantCommand(() -> {
+              controller.setRumble(RumbleType.kRightRumble, 1.0);
+              controller.setRumble(RumbleType.kLeftRumble, 1.0);
+            }))
+            .andThen(new InstantCommand(() -> {
+              flywheelLimiter.reset(Falcon.ticksToRPM(shooterSubsystem.flywheel.getSelectedSensorVelocity()));
+              controller.setRumble(RumbleType.kRightRumble, 0.0);
+              controller.setRumble(RumbleType.kLeftRumble, 0.0);})));
     new Button(controller::getYButton)
         .whileHeld(
             new RunCommand(() -> {

@@ -39,8 +39,8 @@ public class AutoAim extends CommandBase{
   @Override
   public void execute () {
     m_drivetrainSubsystem.drive(new ChassisSpeeds(0, 0, m_visionSubsystem.pidOutput()));
-    m_controller.setRumble(RumbleType.kRightRumble, 1.0);
-    m_controller.setRumble(RumbleType.kLeftRumble, 1.0);
+    // m_controller.setRumble(RumbleType.kRightRumble, 1.0);
+    // m_controller.setRumble(RumbleType.kLeftRumble, 1.0);
   }
 
   public void end(){

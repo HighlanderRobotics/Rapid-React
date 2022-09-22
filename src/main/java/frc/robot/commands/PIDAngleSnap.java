@@ -41,6 +41,6 @@ public class PIDAngleSnap extends PIDCommand {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return drivetrainSubsystem.getGyroscopeRotation().getDegrees() == angle;
+    return Math.abs(drivetrainSubsystem.getGyroscopeRotation().getDegrees() - angle) < 5;
   }
 }

@@ -70,11 +70,11 @@ public class TelescopingClimberSubsystem extends PIDSubsystem implements Loggabl
   }
 
   public void unlockRatchet() {
-    ratchetServo.set(1);
+    ratchetServo.set(0.8);
   }
 
   public void lockRatchet() {
-    ratchetServo.set(0);
+    ratchetServo.set(0.4);
   }
 
   public static double convertInchesToTicks(double inches) {
