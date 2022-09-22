@@ -15,6 +15,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -47,6 +48,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -243,7 +245,21 @@ public class RobotContainer {
     // Runs the shooting sequence
     new Button(controller::getAButton)
             .whileHeld(new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem, controller)
-            .andThen(new InstantCommand(() -> flywheelLimiter.reset(Falcon.ticksToRPM(shooterSubsystem.flywheel.getSelectedSensorVelocity())))));
+             .alongWith(new InstantCommand(() -> {
+              controller.setRumble(RumbleType.kRightRumble, 1.0);
+              controller.setRumble(RumbleType.kLeftRumble, 1.0);
+            }))
+            .andThen(new InstantCommand(() -> 
+            {
+              flywheelLimiter.reset(Falcon.ticksToRPM(shooterSubsystem.flywheel.getSelectedSensorVelocity()));
+              controller.setRumble(RumbleType.kRightRumble, 0.0);
+              controller.setRumble(RumbleType.kLeftRumble, 0.0);
+            }))
+           );
+    new Trigger(() -> !controller.getAButton())
+            .whileActiveContinuous(new InstantCommand(() -> {
+              controller.setRumble(RumbleType.kRightRumble, 0.0);
+              controller.setRumble(RumbleType.kLeftRumble, 0.0);}));
     new Button(controller::getYButton)
         .whileHeld(
             new RunCommand(() -> {
