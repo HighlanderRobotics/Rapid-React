@@ -11,14 +11,22 @@ import com.swervedrivespecialties.swervelib.Mk3SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
+import edu.wpi.first.math.MatBuilder;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -87,7 +95,12 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 //   private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
   // FIXME Uncomment if you are using a NavX
  private final AHRS m_navx = new AHRS(Port.kUSB); // NavX connected over MXP
- public final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation());
+
+ private final Matrix<N3, N1> odometryStateStdDevs;
+ private final Matrix<N1, N1> odometryLocalMeasurementStdDevs;
+ private final Matrix<N3, N1> odometryVisionMeasurementStdDevs;
+
+ public final SwerveDrivePoseEstimator m_odometry;
 
   // These are our modules. We initialize them in the constructor.
   private final SwerveModule m_frontLeftModule;
@@ -106,6 +119,12 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
     SmartDashboard.putNumber("Heading", 0);
     SmartDashboard.putData("Field", m_field);
+
+    odometryStateStdDevs = new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(0.02, 0.02, 0.01); // TODO: Find actual numbers for this
+    odometryLocalMeasurementStdDevs = new MatBuilder<N1, N1>(Nat.N1(), Nat.N1()).fill(0.02); // TODO: Find actual numbers for this
+    odometryVisionMeasurementStdDevs = new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(0.02, 0.02, 0.01); // TODO: Find actual numbers for this
+
+    m_odometry = new SwerveDrivePoseEstimator(Rotation2d.fromDegrees(m_navx.getAngle()), new Pose2d(), m_kinematics, odometryStateStdDevs, odometryLocalMeasurementStdDevs, odometryVisionMeasurementStdDevs);
     // There are 4 methods you can call to create your swerve modules.
     // The method you use depends on what motors you are using.
     //
@@ -237,7 +256,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
       new InstantCommand(() -> pathRunning = true),
       new SwerveController(
         path,
-        () -> m_odometry.getPoseMeters(),
+        () -> m_odometry.getEstimatedPosition(),
         m_kinematics,
         new PIDController(0.5, 0.0,0.0 ), //coppied from 3175 since they have a similar bot and idk where to get these values
         new PIDController(0.5, 0.0, 0.0), //was 0.0080395 
@@ -282,10 +301,10 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 
     SmartDashboard.putNumber("heading", getGyroscopeRotation().getDegrees());
 
-    m_field.setRobotPose(m_odometry.getPoseMeters());
+    m_field.setRobotPose(m_odometry.getEstimatedPosition());
     SmartDashboard.putData("Field", m_field);
 
-    SmartDashboard.putNumber("X Pose", m_odometry.getPoseMeters().getX());
-    SmartDashboard.putNumber("Y Pose", m_odometry.getPoseMeters().getY());
+    SmartDashboard.putNumber("X Pose", m_odometry.getEstimatedPosition().getX());
+    SmartDashboard.putNumber("Y Pose", m_odometry.getEstimatedPosition().getY());
   }
 }
