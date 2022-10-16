@@ -69,7 +69,7 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   private final HoodSubsystem hoodSubsystem = new HoodSubsystem();
-  private final LimeLightSubsystem limeLightSubsystem = new LimeLightSubsystem("limelight-bottom");
+  private final LimeLightSubsystem limeLightSubsystem = new LimeLightSubsystem("gloworm");
   private final VisionSubsystem visionSubsystem = new VisionSubsystem(new LimeLightSubsystem("limelight-top"),
       limeLightSubsystem);
   private final RoutingSubsystem routingSubsystem = new RoutingSubsystem();

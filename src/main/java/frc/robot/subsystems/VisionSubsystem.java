@@ -12,7 +12,7 @@ import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
 public class VisionSubsystem extends SubsystemBase implements Loggable {
-  final LimeLightSubsystem upperLimeLight;
+  // final LimeLightSubsystem upperLimeLight;
   public final LimeLightSubsystem lowerLimeLight;
 
   
@@ -29,7 +29,7 @@ public class VisionSubsystem extends SubsystemBase implements Loggable {
 
   /** Creates a new VisionSubsystem. */
   public VisionSubsystem(final LimeLightSubsystem upperLimeLight, final LimeLightSubsystem lowerLimeLight) {
-    this.upperLimeLight = upperLimeLight;
+    // this.upperLimeLight = upperLimeLight;
     this.lowerLimeLight = lowerLimeLight;
 
     lookup = new ShootingLookup();
@@ -58,6 +58,7 @@ public class VisionSubsystem extends SubsystemBase implements Loggable {
     return feetToTarget;
   }
 
+  @Log
   public double getAngleToTarget(){
     return degreesToTarget;
   }
@@ -91,11 +92,11 @@ public class VisionSubsystem extends SubsystemBase implements Loggable {
     // This method will be called once per scheduler run
     //chooseActiveLimeLight();
     SmartDashboard.putBoolean("is pointing", pointingAtTarget());
-    if (usingLowerLimeLight){
+    // if (usingLowerLimeLight){
       degreesToTarget = lowerLimeLight.getHorizontalOffset();
-    }else{
-      degreesToTarget = upperLimeLight.getHorizontalOffset();  
-    }
+    // }else{
+      // degreesToTarget = upperLimeLight.getHorizontalOffset();  
+    // }
 
     Pair<Double, Double> targets = lookup.get(lowerLimeLight.getDistance());
     feetToTarget = lowerLimeLight.getDistance();

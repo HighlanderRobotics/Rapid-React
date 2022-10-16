@@ -10,10 +10,15 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+
+import org.photonvision.PhotonCamera;
+import org.photonvision.common.hardware.VisionLEDMode;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -32,11 +37,15 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
   public PIDController limelightPID = Constants.AUTOAIM_PID_CONTROLLER;
   private ShuffleboardTab tab = Shuffleboard.getTab("Drive Readouts");
   public String tableName;
+  PhotonCamera camera;
 
   
   public LimeLightSubsystem(String tableName) {
     this.tableName = tableName;
-    lightOn();
+    
+    camera = new PhotonCamera(tableName);
+
+    lightOff();
   }
 
  
@@ -44,26 +53,20 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
     
 
     //read values periodically
-    x = NetworkTableInstance.getDefault().getTable(tableName).getEntry("tx").getDouble(0.0);
-    y = NetworkTableInstance.getDefault().getTable(tableName).getEntry("ty").getDouble(0.0);
-    double area = NetworkTableInstance.getDefault().getTable(tableName).getEntry("ta").getDouble(0.0);
-
-
-    
-  }
-
-  public void lightReadings() {
-    
+    x = camera.getLatestResult().getBestTarget().getYaw();
+    y = camera.getLatestResult().getBestTarget().getPitch(); 
   }
 
   public double getArea() {
     return areaOffset;
   }
 
+  @Log
   public double getHorizontalOffset() {
     return horizontalOffset;
   }
 
+  @Log
   public double getVerticalOffset() {
     return verticalOffset;
   }
@@ -80,11 +83,11 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
   }
 
   public void lightOn() {
-    NetworkTableInstance.getDefault().getTable(tableName).getEntry("ledMode").setNumber(0);
+    camera.setLED(VisionLEDMode.kOn);
   }
 
   public void lightOff() {
-    NetworkTableInstance.getDefault().getTable(tableName).getEntry("ledMode").setNumber(1);
+    camera.setLED(VisionLEDMode.kOff);
   }
 
   public boolean isPointingAtTarget() {
@@ -104,16 +107,20 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    horizontalOffset = NetworkTableInstance.getDefault().getTable(tableName).getEntry("tx").getDouble(0.0);
-    verticalOffset = NetworkTableInstance.getDefault().getTable(tableName).getEntry("ty").getDouble(0.0);
-    double area = NetworkTableInstance.getDefault().getTable(tableName).getEntry("ta").getDouble(0.0);
-    isPointingAtTarget = NetworkTableInstance.getDefault().getTable(tableName).getEntry("tv").getDouble(0.0) == 1;
-    //SmartDashboard.putNumber("limelightX", horizontalOffset);
-    //SmartDashboard.putNumber("limelightY", verticalOffset);
-    //SmartDashboard.putNumber("limelightArea", area);
-    //SmartDashboard.putBoolean("is limelight detecting target", isPointingAtTarget);
-    //SmartDashboard.putNumber("PID output", pidOutput);
-    pidOutput = autoAim();
+    if (camera.getLatestResult().getBestTarget() != null) {
+      horizontalOffset = camera.getLatestResult().getBestTarget().getYaw();
+      verticalOffset = camera.getLatestResult().getBestTarget().getPitch(); 
+      isPointingAtTarget = camera.getLatestResult().hasTargets();
+      pidOutput = autoAim();
+    } 
+    else{
+      horizontalOffset = 0;
+      verticalOffset = 0;
+      isPointingAtTarget = false;
+      pidOutput = 0;
+    }
+
+    
     
   }
 
