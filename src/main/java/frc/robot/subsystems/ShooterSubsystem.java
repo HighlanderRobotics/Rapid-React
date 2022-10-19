@@ -24,6 +24,7 @@ import frc.robot.components.ShootingLookup;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Config;
 
+/** Contains the flywheel. */
 public class ShooterSubsystem extends SubsystemBase implements Loggable {
   
   public final TalonFX flywheel;

@@ -19,7 +19,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 
-
+/** Contains a single limelight. Could probably take over VisionSubsystem. */
 public class LimeLightSubsystem extends SubsystemBase implements Loggable{
   public double horizontalOffset; 
   public double verticalOffset;

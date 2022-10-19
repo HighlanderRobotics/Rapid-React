@@ -19,6 +19,9 @@ import frc.robot.components.ReversibleDigitalInput;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
+/** The new climber for Chezy Champs.
+ * Contains the motor, limit switch, and solenoids.
+ */
 public class TelescopingClimberSubsystem extends PIDSubsystem implements Loggable {
   WPI_TalonFX climberMotor;
   DoubleSolenoid mantisArmSolenoid;

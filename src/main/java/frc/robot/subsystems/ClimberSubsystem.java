@@ -17,7 +17,9 @@ import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import edu.wpi.first.wpilibj.Servo;
 
-
+/** Old tape measure based climber subsystem.
+ * Contains both motors, the limit switch, and ratchet servo.
+ */
 public class ClimberSubsystem extends SubsystemBase implements Loggable {
   public final LazyTalonFX angleMotor;
   public final LazyTalonFX extensionMotor;

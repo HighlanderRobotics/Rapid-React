@@ -24,6 +24,7 @@ import frc.robot.components.ReversibleDigitalInput;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
+/** Contains the two routing motors and beambreaks. */
 public class RoutingSubsystem extends SubsystemBase implements Loggable {
   public ReversibleDigitalInput lowerBeambreak = new ReversibleDigitalInput(Constants.LOWER_BEAMBREAK, true);
   public ReversibleDigitalInput upperBeambreak = new ReversibleDigitalInput(Constants.UPPER_BEAMBREAK, true);

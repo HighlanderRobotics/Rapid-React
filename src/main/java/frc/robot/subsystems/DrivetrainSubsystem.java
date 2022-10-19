@@ -34,6 +34,10 @@ import frc.robot.commands.SwerveController;
 import io.github.oblarg.oblog.Loggable;
 import static frc.robot.Constants.*;
 
+/** Contains the SDS Mk3 Swerve drivetrain and methods for path following.
+ * Based on SDS swervelib example code.
+ * Worth replacing with another library since it's hard to modify the underlying sdslib code.
+ */
 public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
   private boolean lockOut = false;
   private boolean pathRunning = false;
