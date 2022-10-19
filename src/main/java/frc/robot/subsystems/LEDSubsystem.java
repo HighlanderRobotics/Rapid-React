@@ -12,8 +12,10 @@ import frc.robot.Constants;
 
 /** Contains the LEDS. */
 public class LEDSubsystem extends SubsystemBase {
+  // LEDS and buffer to write to
   AddressableLED led;
   AddressableLEDBuffer buffer;
+  // Values for various light modes
   int rainbowFirstPixelHue = 0;
   double pulsingValue = 0;
   /** Creates a new LEDSubsystem. */
@@ -25,7 +27,7 @@ public class LEDSubsystem extends SubsystemBase {
     led.start();
   }
 
-  /*
+  /**
   I'm not completely sure of the LED layout but I think that they are addressedd in groups of two like this:
 
   18   18
@@ -49,7 +51,7 @@ public class LEDSubsystem extends SubsystemBase {
     buffer.setHSV(69 - i, h, s, v);
   }
 
-  // set a ratio of the lights on to indicate progress like climber extension
+  /** Set a ratio of the lights on to indicate progress like climber extension */
   public void setProgress(double ratio, boolean reverse, int h, int s, int v) {
     if (ratio < 0.0) {
       ratio = 0.0;
@@ -69,25 +71,30 @@ public class LEDSubsystem extends SubsystemBase {
     }
   }
 
+  /**Sets all the lights to one solid color */
   public void setSolidColor(int h, int s, int v){
     for (int i = 0; i < buffer.getLength(); i ++){
       buffer.setHSV(i, h, s, v);
     }
   }
 
+  /**Sets the front set of lights to a certain color */
   public void setFrontColor(int h, int s, int v){
     for (int i = 18; i <= 34; i++) {
       setSymmetrical(i, h, s, v);
     }
   }
 
+  /**Sets the back set of lights to a certain color */
   public void setBackColor(int h, int s, int v){
     for (int i = 0; i <= 17; i ++){
       setSymmetrical(i, h, s, v);
     }
   }
 
-  // gap = how far between, streak = how many in a row
+  /**Sets the lights to a dashed pattern.
+  * Gap = how far between, streak = how many in a row 
+  */
   public void setAlternating(int gap, int streak, int h, int s, int v) {
     for (int i = 0; i <= 34; i++) {
       if ((i / streak) % (gap + 1) == 0) {
@@ -98,6 +105,7 @@ public class LEDSubsystem extends SubsystemBase {
     }
   }
 
+  /**Sets the lights to blink and flash */
   public void setBlinkingColor(int h, int s, int v, double time){
     if (DriverStation.getMatchTime() % time > time/2){
       setSolidColor(h, s, v);
@@ -106,6 +114,7 @@ public class LEDSubsystem extends SubsystemBase {
     }
   }
 
+  /**Sets the lights to a shifting rainbow */
   public void setRainbow(int increaseAmount) {
     // For every pixel
     for (int i = 0; i <= 34; i++) {
@@ -121,6 +130,7 @@ public class LEDSubsystem extends SubsystemBase {
     rainbowFirstPixelHue %= 180;
   }
 
+  /**Sets the lights to pulse on and off following a sine wave */
   public void setSinePulsing(double increaseAmount) {
     // For every pixel
     for (int i = 0; i <= 34; i++) {
@@ -134,7 +144,7 @@ public class LEDSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    
+    // Sets the leds to the data in the buffer
     led.setData(buffer);
   }
 }
