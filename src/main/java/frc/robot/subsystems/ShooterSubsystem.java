@@ -20,37 +20,27 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.components.Falcon;
 import frc.robot.components.LazyTalonFX;
-import frc.robot.components.ShootingLookup;
 import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Config;
 
 /** Contains the flywheel. */
 public class ShooterSubsystem extends SubsystemBase implements Loggable {
-  
+  // The falcon for the flywheel
   public final TalonFX flywheel;
 
+  // Current RPM target
   private double targetRPM = 0;
 
-  @Config
-  private double currentDistance;
-
-  
-  private double testAngle;
-
-  private ShootingLookup lookup;
-
+  // The matrices for the kalman filter
   public final KalmanFilter<N1, N1, N1> kalmanFilter;
   private final LinearSystem<N1, N1, N1> flywheelSystem;
  
   /** Creates a new ExampleSubsystem. */
   public ShooterSubsystem() {
+    // Configures the falcon
     flywheel = new LazyTalonFX(Constants.FLYWHEEL_MOTOR);
     flywheel.configFactoryDefault();
     flywheel.setNeutralMode(NeutralMode.Coast);
-    // flywheel.configClosedloopRamp(5.0);
     flywheel.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 80, 0.5));
-    // flywheel.configVoltageCompSaturation(12.5);
-    // flywheel.enableVoltageCompensation(true);
     flywheel.selectProfileSlot(0, 0);
     flywheel.config_kP(0, 0.4);
     flywheel.config_kI(0, 0.0);
@@ -64,6 +54,7 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    // Updates the kalmanfilter
     Matrix<N1,N1> u = VecBuilder.fill(flywheel.getMotorOutputVoltage());
     kalmanFilter.predict(u, .01);
     kalmanFilter.correct(u, VecBuilder.fill(flywheel.getSelectedSensorVelocity()));
@@ -75,34 +66,34 @@ public class ShooterSubsystem extends SubsystemBase implements Loggable {
 
   }
 
+  /**Sets the current rpm target and falcon pid setpoint */
   public void setTargetRPM(double rpm){
     //might need to be divided by 2
     targetRPM = rpm;
     flywheel.set(TalonFXControlMode.Velocity, Falcon.rpmToTicks(targetRPM));
   }
-  
-  @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
-  }
 
+  /**Gets the current rpm from the kalman filter, to remove noise */
   public double getFilteredRPM() {
     return Falcon.ticksToRPM(kalmanFilter.getXhat(0));
   }
 
+  /**Gets the current difference between the filtered rpm and target rpm */
   public double getRPMError() {
     return Math.abs(getFilteredRPM() - targetRPM);
   }
 
+  /**Gets the difference between the current unfiltered rpm and target rpm */
   public double getUnfilteredRPMError() {
     return Math.abs(Falcon.ticksToRPM(flywheel.getSelectedSensorVelocity()) - targetRPM);
   }
 
+  /**Gets whether the current rpm (filtered and unfiltered) is less than 10 off from the target */
   public boolean isRPMInRange() {
     return getRPMError() < 10 && getUnfilteredRPMError() < 10;
   }
 
-  
+  /**Gets the current unfiltered rpm */
   public double currentRPM() {
     return Falcon.ticksToRPM(flywheel.getSelectedSensorVelocity());
   }
