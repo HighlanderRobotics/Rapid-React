@@ -21,12 +21,18 @@ import edu.wpi.first.wpilibj.Servo;
  * Contains both motors, the limit switch, and ratchet servo.
  */
 public class ClimberSubsystem extends SubsystemBase implements Loggable {
+  // Climber motors
   public final LazyTalonFX angleMotor;
   public final LazyTalonFX extensionMotor;
+  //TODO wtf is this for
   private boolean lastLimit = false;
+  // Limit switch for resetting angle
   private final ReversibleDigitalInput limitSwitch;
+  // Current extension target
   public double targetDistance = 0;
+  // Used to lock/unlock the ratchet
   private final Servo ratchet;
+  // Records current state of the climb sequence
   public static boolean extendedAndLocked = false;
   public static boolean startedRetracting = false;
   public static boolean startedExtension = false;
@@ -43,15 +49,18 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
     ratchet = new Servo(Constants.CLIMBER_RATCHET_SERVO);
   }
 
+  /**Sets the ratchet to locked, preventing extension */
   public void lockRatchet() {
     ratchet.set(0.1);
   }
 
+  /**Unlocks the ratchet, allowing extension */
   public void unlockRatchet() {
     ratchet.set(0.3);
     extendedAndLocked = false;
   }
 
+  /**Retract the tape if the tapes are extended and ratchet is locked */
   public void retractIfLocked(double power) {
     // shouldn't be extending
     if (power > 0) {
@@ -68,6 +77,7 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
     }
   }
 
+  /**Sets the climber to go to the specified angle */
   @Config
   public void setClimberAngle(double angle){
     if(angle < 0) {
@@ -81,19 +91,22 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
     angleMotor.set(TalonFXControlMode.MotionMagic, ticks);
   }
 
+  /**Bumps the angle up a bit */
   public void increaseAngle(double amount){
     setClimberAngle(getClimberAngle() + amount);
   }
 
+  /**Bumps the angle down a bit */
   public void decreaseAngle(double amount){
     setClimberAngle(getClimberAngle() - amount);
   }
 
+  /**Extends slightly further out */
   public void increaseExtension(double amount){
     setDistance(getDistance() + amount);
   }
   
-
+  /**Returns the current angle the climber is at */
   @Log
   public double getClimberAngle() {
     double ticks = angleMotor.getSelectedSensorPosition();
@@ -101,14 +114,17 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
     return -Falcon.ticksToDegrees(ticks/110);
   }
 
+  /**Converts inches to falcon encoder ticks */
   public static double inchesToTicks(double inches) {
     return inches / 0.1014 * 2048;
   }
 
+  /**Converts falcon encoder ticks to inches */
   public static double ticksToInches(double ticks) {
     return ticks / 2048 * 0.1014;
   }
 
+  /**Sets the target extension distance */
   @Config
   public void setDistance(double distance) {
     unlockRatchet();
@@ -124,11 +140,15 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
     double ticks = inchesToTicks(distance);
     extensionMotor.set(TalonFXControlMode.Position, ticks);
   }
+
+  /**Gets the current extension distance */
   @Log
   public double getDistance(){
     double ticks = extensionMotor.getSelectedSensorPosition();
     return -ticksToInches(ticks);
   }
+  
+  /**Gets whether the limit switch is triggered */
   @Log
   public boolean getClimberLimit(){
       return limitSwitch.get();
@@ -137,6 +157,7 @@ public class ClimberSubsystem extends SubsystemBase implements Loggable {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    // Resets the angle based on the limit switch
     if(getClimberLimit() && !lastLimit) {
       angleMotor.getSensorCollection().setIntegratedSensorPosition(0, 100);
       lastLimit = true;
