@@ -9,6 +9,7 @@ import edu.wpi.first.hal.SerialPortJNI;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.wpilibj.Timer;
 
+/**Wrapper to interface with a color sensor through a rasperry pi instead of I2C. Can't remember where we got it but we didn't write it. */
 public class PicoColorSensor implements AutoCloseable {
   public static class RawColor {
     public RawColor(int r, int g, int b, int _ir) {
