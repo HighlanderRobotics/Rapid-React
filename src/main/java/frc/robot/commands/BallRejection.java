@@ -9,6 +9,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.RoutingSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
+/** Runs the intake and routing backwards to get balls out of the routing syste. */
 public class BallRejection extends CommandBase {
   IntakeSubsystem intakeSubsystem;
   RoutingSubsystem routingSubsystem;

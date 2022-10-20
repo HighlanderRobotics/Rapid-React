@@ -11,9 +11,9 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.LimeLightSubsystem;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
+/** Old attempt to drive "target relative" by having one axis control distance to target and the other control angle around it.
+ * Never used, but the theory was that by having the limelight always point towards the target moving sideways would equal rotating around it.
+ */
 public class TargetRelativeDrive extends CommandBase {
   LimeLightSubsystem m_limelightSubsystem;
   DrivetrainSubsystem m_drivetrainSubsystem;
@@ -32,6 +32,5 @@ public class TargetRelativeDrive extends CommandBase {
     new DefaultDriveCommand(drivetrainSubsystem, translationXSupplier, translationYSupplier, 
       () -> m_limelightSubsystem.autoAim(), fieldRelativeTranslation);
 
-    // Use addRequirements() here to declare subsystem dependencies.
   }
 }

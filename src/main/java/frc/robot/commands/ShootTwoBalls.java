@@ -10,9 +10,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.RoutingSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
+/** Shoots two balls by waiting for the shooter to spin up between each shot, then adding a little extra delay. */
 public class ShootTwoBalls extends SequentialCommandGroup {
   /** Creates a new ShootingSequence. */
   public ShootTwoBalls(RoutingSubsystem routingSubsystem, ShooterSubsystem shooter) {

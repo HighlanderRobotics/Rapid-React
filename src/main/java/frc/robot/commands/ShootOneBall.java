@@ -7,6 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RoutingSubsystem;
 
+/** Shoots one ball by running the routing wheels until the upper beambreak is no longer triggered. */
 public class ShootOneBall extends CommandBase {
 
   RoutingSubsystem routingSubsystem;

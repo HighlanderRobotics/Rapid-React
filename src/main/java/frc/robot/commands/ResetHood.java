@@ -7,6 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.HoodSubsystem;
 
+/** Runs the hood down until it hits the limit switch to reset the encoder. Mainly used at the start of auto for match setup. */
 public class ResetHood extends CommandBase {
   final HoodSubsystem hoodSubsystem;
 

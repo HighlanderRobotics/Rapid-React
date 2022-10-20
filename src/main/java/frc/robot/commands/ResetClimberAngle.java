@@ -9,16 +9,17 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ClimberSubsystem;
 
+/** Runs the climber angle motor down until it hits the limit switch to reset angle encoder. Part of the old climber. */
 public class ResetClimberAngle extends CommandBase {
   final ClimberSubsystem climber;
 
-  /** Command to reset the hood to the back limit switch, calibrating the encoder */
+  /** Command to reset the climber to the back limit switch, calibrating the encoder */
   public ResetClimberAngle(ClimberSubsystem climber) {
     this.climber = climber;
     addRequirements(climber);
   }
 
-  // Move the hood down (is this a good power?)
+  // Move the climber down (is this a good power?)
   @Override
   public void execute() {
     climber.angleMotor.set(TalonFXControlMode.PercentOutput, -0.2);

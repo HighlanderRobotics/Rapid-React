@@ -19,9 +19,7 @@ import frc.robot.subsystems.RoutingSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
+/**A simple two ball auto which drives backwards with the intake out until it intakes a ball, then shoots. */
 public class TwoBallAuto extends ParallelCommandGroup {
   /** Creates a new TwoBallAuto. */
   public TwoBallAuto(

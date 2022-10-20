@@ -11,6 +11,7 @@ import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.RoutingSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
+/** Sets the LEDs based on the routing and vision subsystems state for driver feedback. */
 public class DefaultLedCommand extends CommandBase {
   private final LEDSubsystem ledSubsystem;
   private final VisionSubsystem visionSubsystem;

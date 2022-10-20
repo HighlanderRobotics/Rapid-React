@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 
+/**Unlocks the ratcher, sets the climber to the right angle, and extends it. Part of the old climber. */
 public class ExtendClimber extends SequentialCommandGroup {
   final ClimberSubsystem climber;
 

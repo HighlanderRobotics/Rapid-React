@@ -7,6 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.LEDSubsystem;
 
+/** Command to set the LEDs to a rainbow. Redundant since theres a method to do this in LEDSubsystem now. */
 public class LEDRainbowDemoCommand extends CommandBase {
   LEDSubsystem ledSubsystem;
   int hue = 0;

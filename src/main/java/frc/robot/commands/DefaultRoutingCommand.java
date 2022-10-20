@@ -16,9 +16,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.RoutingSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
+/**Runs the routing as needed to store and reject balls. Part of the in season ball rejection effort, was later replaced with a Trigger in robotcontainer. */
 public class DefaultRoutingCommand extends SequentialCommandGroup {
   /** Creates a new DefaultRoutingCommand. */
   public DefaultRoutingCommand(RoutingSubsystem routingSubsystem, IntakeSubsystem intakeSubsystem, HoodSubsystem hoodSubsystem, ShooterSubsystem shooterSubsystem) {

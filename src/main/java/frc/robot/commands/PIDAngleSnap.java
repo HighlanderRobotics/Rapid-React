@@ -4,15 +4,12 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
+/** "Snaps" the drivetrain to a gyro angle. Was going to be used for climbing but I don't think it was ever run at comp. */
 public class PIDAngleSnap extends PIDCommand {
   private DrivetrainSubsystem drivetrainSubsystem;
   double angle = 0;
