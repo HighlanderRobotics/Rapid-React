@@ -17,9 +17,14 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonUtils;
 import org.photonvision.common.hardware.VisionLEDMode;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
@@ -102,6 +107,22 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
   public void controllerRumble(XboxController controller) {
     controller.setRumble(RumbleType.kLeftRumble, -horizontalOffset * 0.025);
     controller.setRumble(RumbleType.kRightRumble, horizontalOffset * 0.025);
+  }
+
+  public Pose2d getEstimatedPose(Rotation2d gyroAngle){
+    if (isPointingAtTarget){
+      camera.getLatestResult().getBestTarget().getCameraToTarget();
+      return PhotonUtils.estimateFieldToRobot(
+        0.5588,
+        2.0, //arbitrary value for now
+        Math.toRadians(52.0),
+        Math.toRadians(verticalOffset),
+        new Rotation2d(Math.toRadians(horizontalOffset)),
+        gyroAngle,
+        new Pose2d(0, 0, new Rotation2d()), //arbitrary value for now
+        new Transform2d(new Translation2d(-9.75, 0), new Rotation2d()));
+    }
+    return null;
   }
 
   @Override
