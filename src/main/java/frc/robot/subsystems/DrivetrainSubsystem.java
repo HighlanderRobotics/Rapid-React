@@ -28,6 +28,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -272,6 +273,10 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 
   private SwerveModuleState getModuleState(SwerveModule module){
     return new SwerveModuleState(module.getDriveVelocity(), Rotation2d.fromDegrees(Math.toDegrees(module.getSteerAngle())));
+  }
+
+  public void updateOdometry(Pose2d pose,double latency){
+    m_odometry.addVisionMeasurement(pose, Timer.getFPGATimestamp() - latency);
   }
 
   @Override

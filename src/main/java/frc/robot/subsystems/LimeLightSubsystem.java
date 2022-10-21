@@ -20,6 +20,7 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.common.hardware.VisionLEDMode;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -109,10 +110,10 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
     controller.setRumble(RumbleType.kRightRumble, horizontalOffset * 0.025);
   }
 
-  public Pose2d getEstimatedPose(Rotation2d gyroAngle){
+  public Pair<Pose2d,Double> getEstimatedPose(Rotation2d gyroAngle){
     if (isPointingAtTarget){
       camera.getLatestResult().getBestTarget().getCameraToTarget();
-      return PhotonUtils.estimateFieldToRobot(
+      return new Pair<>(PhotonUtils.estimateFieldToRobot(
         0.5588,
         2.0, //arbitrary value for now
         Math.toRadians(52.0),
@@ -120,7 +121,7 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
         new Rotation2d(Math.toRadians(horizontalOffset)),
         gyroAngle,
         new Pose2d(0, 0, new Rotation2d()), //arbitrary value for now
-        new Transform2d(new Translation2d(-9.75, 0), new Rotation2d()));
+        new Transform2d(new Translation2d(-9.75, 0), new Rotation2d())),camera.getLatestResult().getLatencyMillis());
     }
     return null;
   }
