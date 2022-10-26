@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 
+/** Extends the climber a bit? This was part of the old climber and I'm not sure it ever worked */
 public class IncreaseExtension extends SequentialCommandGroup {
   /** Creates a new IncreaseExtension. */
 

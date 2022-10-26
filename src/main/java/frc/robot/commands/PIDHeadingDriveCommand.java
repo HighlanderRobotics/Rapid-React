@@ -10,9 +10,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
+/** Runs the drivetrain with the heading being set by a PID. Never got it to work iirc */
 public class PIDHeadingDriveCommand extends PIDCommand {
   DrivetrainSubsystem drivetrainSubsystem;
   

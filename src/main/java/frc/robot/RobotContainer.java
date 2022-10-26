@@ -4,31 +4,17 @@
 
 package frc.robot;
 
-
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-
-import edu.wpi.first.wpilibj.Compressor;
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.AutonomousChooser;
 import frc.robot.commands.BallRejection;
 import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.commands.ExtendClimber;
 import frc.robot.commands.DefaultLedCommand;
-import frc.robot.commands.IncreaseExtension;
 import frc.robot.commands.LEDRainbowDemoCommand;
 import frc.robot.commands.ResetHood;
-import frc.robot.commands.RetractClimber;
 import frc.robot.commands.ShootingSequence;
 import frc.robot.components.Falcon;
 import frc.robot.subsystems.LimeLightSubsystem;
@@ -41,14 +27,12 @@ import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.RoutingSubsystem;
-import io.github.oblarg.oblog.annotations.Config;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -60,51 +44,40 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
+  // Gamepads/Controllers
   private final XboxController controller = new XboxController(0);
   private final XboxController operator = new XboxController(1);
 
+  // Subsystems
   private final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
-  private ShuffleboardTab tab = Shuffleboard.getTab("Testing");
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   private final HoodSubsystem hoodSubsystem = new HoodSubsystem();
+  // VisionSubsystem was originally made to use two limelights, so we pass a limelight subsystem to it
   private final LimeLightSubsystem limeLightSubsystem = new LimeLightSubsystem("limelight-bottom");
   private final VisionSubsystem visionSubsystem = new VisionSubsystem(new LimeLightSubsystem("limelight-top"),
       limeLightSubsystem);
   private final RoutingSubsystem routingSubsystem = new RoutingSubsystem();
   private final LEDSubsystem ledSubsystem = new LEDSubsystem();
+  // Newer offseason climber, look at ClimberSubsystem for the old tape-measure design
   private final TelescopingClimberSubsystem climberSubsystem = new TelescopingClimberSubsystem();
-  // private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
 
+  // SlewRateLimiters limit the rate the driver can accelerate, preventing robot tipping
   private final SlewRateLimiter forwardLimiter = new SlewRateLimiter(3.5);
   private final SlewRateLimiter strafeLimiter = new SlewRateLimiter(3.5);
+  // A patched-on fix at houston so the flywheel would have a "powered spin down" to prevent jams
+  // Probably not the best way to do this
   private final SlewRateLimiter flywheelLimiter = new SlewRateLimiter(3.0);
 
+  // Holds all of our autonomous paths and publishes them to Shuffleboard
   private final AutonomousChooser chooser = new AutonomousChooser(drivetrainSubsystem, hoodSubsystem, shooterSubsystem,
       visionSubsystem, routingSubsystem, intakeSubsystem, ledSubsystem);
 
-  private final PowerDistribution pdp = new PowerDistribution(0, ModuleType.kCTRE);
-
+  // Whether the ratchet should be locked on robot disable
   private boolean shouldLockRatchet = true;
 
+  // Limits the drive base movement rate for demoing the robot so spectators can drive it
   double demoRate = 1.0;
-
-  @Config
-  double hoodTarget = 20.0;
-  @Config
-  double targetRPM = 500.0;
-
-  // oblog setters
-  @Config
-  public void setHoodTarget(double newTarget) {
-    hoodTarget = newTarget;
-  }
-
-  @Config
-  public void setRPM(double newRPM) {
-    targetRPM = newRPM;
-  }
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -121,7 +94,8 @@ public class RobotContainer {
             * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
         true));
 
-        // This block of SmartDashboard.putData calls puts testing buttons on the smart dashboard
+    // This block of SmartDashboard.putData calls puts testing buttons on the smart
+    // dashboard
     SmartDashboard.putData("Demo Drive Mode", new InstantCommand(() -> demoRate = 0.5));
 
     SmartDashboard.putData("Reg Drive Mode", new InstantCommand(() -> demoRate = 1.0));
@@ -136,8 +110,6 @@ public class RobotContainer {
     // System.out.println(path.sample(0.0).poseMeters.getX());
     // System.out.println(drivetrainSubsystem.m_odometry.getPoseMeters().getX());
     // }));
-    SmartDashboard.putNumber("Amp Draw", pdp.getTotalCurrent());
-
     SmartDashboard.putData("Climber to 0", new RunCommand(() -> climberSubsystem.setSetpoint(0), climberSubsystem));
     SmartDashboard.putData("Climber to 50,000",
         new RunCommand(() -> climberSubsystem.setSetpoint(-50000), climberSubsystem));
@@ -210,8 +182,8 @@ public class RobotContainer {
       intakeSubsystem.retract();
       intakeSubsystem.setIntakeRPM(0);
     }, intakeSubsystem));
-    // By default, set the hood subsystem to go to an arbitrary position
-    hoodSubsystem.setDefaultCommand(new RunCommand(() -> hoodSubsystem.setSetpoint(hoodTarget), hoodSubsystem));
+    // By default, set the hood subsystem to go to the bottom of its movement range
+    hoodSubsystem.setDefaultCommand(new RunCommand(() -> hoodSubsystem.setSetpoint(0), hoodSubsystem));
     // Enable the hood PID
     hoodSubsystem.enable();
     // By default, spin the wheels as necessary to hold both balls
@@ -220,7 +192,8 @@ public class RobotContainer {
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
     // By default, show the balls in the robot and the whether the target is visible
     ledSubsystem.setDefaultCommand(new DefaultLedCommand(ledSubsystem, visionSubsystem, routingSubsystem));
-    // By default, lock the mantis arms, hold the climber at its starting position, and leave the ratchet open
+    // By default, lock the mantis arms, hold the climber at its starting position,
+    // and leave the ratchet open
     climberSubsystem.setDefaultCommand(new RunCommand(() -> {
       climberSubsystem.extendSolenoid();
       climberSubsystem.setSetpoint(0);
@@ -244,15 +217,17 @@ public class RobotContainer {
         .whenPressed(new InstantCommand(() -> drivetrainSubsystem.resetGyroscope(0)));
     // Runs the shooting sequence
     new Button(controller::getAButton)
-            .whileHeld(new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem, controller)
-            .alongWith(new InstantCommand(() -> {
-              controller.setRumble(RumbleType.kRightRumble, 1.0);
-              controller.setRumble(RumbleType.kLeftRumble, 1.0);
-            }))
-            .andThen(new InstantCommand(() -> {
-              flywheelLimiter.reset(Falcon.ticksToRPM(shooterSubsystem.flywheel.getSelectedSensorVelocity()));
-              controller.setRumble(RumbleType.kRightRumble, 0.0);
-              controller.setRumble(RumbleType.kLeftRumble, 0.0);})));
+        .whileHeld(new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem,
+            routingSubsystem, ledSubsystem, controller)
+                .alongWith(new InstantCommand(() -> {
+                  controller.setRumble(RumbleType.kRightRumble, 1.0);
+                  controller.setRumble(RumbleType.kLeftRumble, 1.0);
+                }))
+                .andThen(new InstantCommand(() -> {
+                  flywheelLimiter.reset(Falcon.ticksToRPM(shooterSubsystem.flywheel.getSelectedSensorVelocity()));
+                  controller.setRumble(RumbleType.kRightRumble, 0.0);
+                  controller.setRumble(RumbleType.kLeftRumble, 0.0);
+                })));
     new Button(controller::getYButton)
         .whileHeld(
             new RunCommand(() -> {
@@ -283,9 +258,9 @@ public class RobotContainer {
     // Puts the climber up to the mid bar
     new Button(operator::getAButton)
         .toggleWhenPressed(new SequentialCommandGroup(
-          new InstantCommand(() -> climberSubsystem.unlockRatchet(), climberSubsystem),
-          new WaitCommand(.2),
-          new RunCommand(() -> climberSubsystem.setSetpoint(TelescopingClimberSubsystem.convertInchesToTicks(-21)))));
+            new InstantCommand(() -> climberSubsystem.unlockRatchet(), climberSubsystem),
+            new WaitCommand(.2),
+            new RunCommand(() -> climberSubsystem.setSetpoint(TelescopingClimberSubsystem.convertInchesToTicks(-21)))));
     // Pulls the climber into the robot
     new Button(operator::getBButton)
         .toggleWhenPressed(new RunCommand(() -> {
@@ -312,30 +287,18 @@ public class RobotContainer {
               shouldLockRatchet = false;
               climberSubsystem.setSetpoint(TelescopingClimberSubsystem.convertInchesToTicks(-10));
             }));
-    // new Button(operator::getAButton)
-    // .toggleWhenPressed(new ExtendClimber(climberSubsystem, ledSubsystem, 38,
-    // 20.0));
-    // new Button(operator::getBButton)
-    // .whenActive(new RetractClimber(climberSubsystem));
-    // new Button(operator::getLeftBumper)
-    // .whenPressed(new InstantCommand(() -> climberSubsystem.decreaseAngle(0.5)));
-    // new Button(operator::getRightBumper)
-    // .toggleWhenPressed(new IncreaseExtension(climberSubsystem));
-    // new Button(operator::getStartButton)
-    // .whenPressed(new InstantCommand(() -> climberSubsystem.extendedAndLocked =
-    // false));
-
   }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
-   * @return the command to run in autonomous
+   * Takes the command from the autonomous chooser
    */
   public Command getAutonomousCommand() {
     return chooser.getAutoCommand();
   }
 
+  // Adds a deadband to the controller to prevent drifting when the joystick is not pressed, but not exactly at 0
   private static double deadband(double value, double deadband) {
     if (Math.abs(value) > deadband) {
       if (value > 0.0) {
@@ -348,6 +311,7 @@ public class RobotContainer {
     }
   }
 
+  // Squares the output of the joystick and applies the deadband
   private static double modifyAxis(double value) {
 
     // slow it down if the climber is out
@@ -383,17 +347,17 @@ public class RobotContainer {
     }
   }
 
+  // Sets the LEDS to a nice team purple
   void disabledLEDPeriodic() {
     ledSubsystem.setSolidColor(140, 255, 255);
   }
 
   // Called on teleop end to lock the ratchet if the robot is not traversed
   public void climberRachetTeleopExit() {
-    if(shouldLockRatchet){
+    if (shouldLockRatchet) {
       climberSubsystem.lockRatchet();
     } else {
       climberSubsystem.unlockRatchet();
     }
   }
 }
-

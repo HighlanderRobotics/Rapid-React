@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.ShooterSubsystem;
 
+/**Waits until the shooting subsystem is at a consistent rpm */
 public class WaitUntilConsistent extends CommandBase {
 
   private ShooterSubsystem shooter;
@@ -29,20 +30,16 @@ public class WaitUntilConsistent extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    // Reset the timer if the shooter rpm is not in range
     if (!shooter.isRPMInRange()) {
       timer.reset();
     }
   }
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-
-  }
-
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    // End if the shooter rpm has been within range for enough time
     return timer.hasElapsed(time);
   }
 }

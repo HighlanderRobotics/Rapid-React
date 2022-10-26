@@ -17,10 +17,12 @@ public class LazyTalonFX extends TalonFX {
         super(deviceNumber);
     }
 
+    /**Gets the last value sent to the motor */
     public double getLastSet() {
         return mLastSet;
     }
 
+    /**Sets the motors behaviour if the new value is different then the last one. */
     @Override
     public void set(TalonFXControlMode mode, double value) {
         if (value != mLastSet || mode != mLastControlMode) {

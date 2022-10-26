@@ -9,12 +9,9 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
+/** Uses vision measurements to point towards the goal. Used for the shooting sequence. */
 public class AutoAim extends CommandBase{
   VisionSubsystem m_visionSubsystem;
   DrivetrainSubsystem m_drivetrainSubsystem;

@@ -7,6 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RoutingSubsystem;
 
+/** Runs routing until one ball is in the top slot */
 public class RouteOneBall extends CommandBase {
 
   RoutingSubsystem routingSubsystem;

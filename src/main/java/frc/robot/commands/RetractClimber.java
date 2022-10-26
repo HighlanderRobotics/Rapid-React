@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 
+/** Locks the ratchet and pulls in the climber. Part of the old climber iirc */
 public class RetractClimber extends SequentialCommandGroup {
   final ClimberSubsystem climber;
 

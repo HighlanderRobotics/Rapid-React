@@ -4,8 +4,6 @@
 
 package frc.robot.commands;
 
-import java.time.Instant;
-
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
@@ -29,8 +27,9 @@ import frc.robot.subsystems.RoutingSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
-/** Add your docs here. */
+/** Contains all of our auto routines and puts them in a list on the shuffleboard. */
 public class AutonomousChooser {
+  // The list of auto choices
     SendableChooser<Command> chooser = new SendableChooser<Command>();
 
     DrivetrainSubsystem drivetrainSubsystem;
@@ -58,8 +57,10 @@ public class AutonomousChooser {
         this.intakeSubsystem = intakeSubsystem;
         this.ledSubsystem = ledSubsystem;
         
+        // MUST add all auto routines here to get them to appear on dashboard
         chooser.setDefaultOption("UNIVERSAL 2 BALL", new TwoBallAuto(drivetrainSubsystem, hoodSubsystem, shooterSubsystem, visionSubsystem, routingSubsystem, intakeSubsystem, ledSubsystem));
         chooser.addOption("NONE", new PrintCommand("owo"));
+        chooser.addOption("1 BALL", getOneBallAuto());
         chooser.addOption("TERMINAL 3 BALL 0 HIDE", getTerminal3Ball());
         chooser.addOption("HANGAR 2 BALL 2 HIDE", getHangar2Ball2Hide());
         chooser.addOption("TERMINAL TARMAC EDGE 3 BALL", getTarmacEdgeTerminal3Ball());
@@ -70,20 +71,24 @@ public class AutonomousChooser {
         SmartDashboard.putData(chooser);
     }
 
+    // Returns the auto command for robot container
     public Command getAutoCommand(){
         return chooser.getSelected();
     }
 
+    /** Wrapper around shooting sequence to make it easier to write out and less verbose, and adds a time out */ 
     private Command shoot(double time){
       return new ShootingSequence(
                 hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem, new XboxController(0))
                 .withTimeout(time);
     }
 
+    /** Wrapper around shooting sequence to make it easier to write */
     private Command shoot(){
       return shoot(3.0);
     }
 
+    /** Wrapper around running the intake and routing systems to make it easier to write */
     private Command runIntakeAndRouting() {
       return new ParallelCommandGroup(
         new WaitCommand(1.0).andThen(new RunCommand(() -> 
@@ -94,6 +99,7 @@ public class AutonomousChooser {
         (new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem)));
     }
 
+    /** Runs a 3 ball auto on the terminal side of the field. */
     private Command getTerminal3Ball(){
         return new SequentialCommandGroup(
           new ResetHood(hoodSubsystem),
@@ -107,6 +113,7 @@ public class AutonomousChooser {
           shoot());      
     }
 
+    /** Runs a 2 ball and 2 "hide" auto on the hangar side of the field. Never got this to work */
     private Command getHangar2Ball2Hide(){
       return new SequentialCommandGroup(
         new ResetHood(hoodSubsystem),
@@ -121,6 +128,7 @@ public class AutonomousChooser {
       );
     }
 
+    /** Runs a 2 ball and 1 "hide" auto on the hangar side of the field. Our main auto. */
     private Command getHangar2Ball1Hide(){
       return new SequentialCommandGroup(
         new ResetHood(hoodSubsystem),
@@ -143,6 +151,7 @@ public class AutonomousChooser {
         );
     }
 
+    /** Runs a 3 ball auto on the terminal side of the field, starting at the edge of the tarmac. */
     private Command getTarmacEdgeTerminal3Ball(){
       return new SequentialCommandGroup(
         new ResetHood(hoodSubsystem),
@@ -158,6 +167,7 @@ public class AutonomousChooser {
       );
     }
 
+    /** Runs a 4 ball auto with chezy champs rules (extra preload ball) */
     private Command getChezyChamps4Ball(){
       return new SequentialCommandGroup(
         new ResetHood(hoodSubsystem),
@@ -169,6 +179,7 @@ public class AutonomousChooser {
       );
     }
 
+    /** Runs a "Universal" 3 ball auto with chezy champs rules (extra preload) */
     private Command getChezyChampsUniversal3Ball() {
       return new SequentialCommandGroup(
         new InstantCommand(() -> startAngle = drivetrainSubsystem.getGyroscopeRotation().getDegrees()),
@@ -179,6 +190,7 @@ public class AutonomousChooser {
       );
     }
 
+    /** Wrapper to reset the odometry of the drivebase at the start of a path */
     private Command resetOdo(PathPlannerTrajectory path){
       return new SequentialCommandGroup(
       new PrintCommand("" + path.getInitialState().holonomicRotation.getDegrees()),
@@ -189,6 +201,7 @@ public class AutonomousChooser {
       
     }
     
+    /** A one ball auto that moves backwards and shoots. */
     private Command getOneBallAuto() {
       return new SequentialCommandGroup(
         new WaitCommand (1),

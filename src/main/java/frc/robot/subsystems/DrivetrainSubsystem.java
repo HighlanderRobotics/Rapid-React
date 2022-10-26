@@ -34,9 +34,12 @@ import frc.robot.commands.SwerveController;
 import io.github.oblarg.oblog.Loggable;
 import static frc.robot.Constants.*;
 
+/** Contains the SDS Mk3 Swerve drivetrain and methods for path following.
+ * Based on SDS swervelib example code.
+ * Worth replacing with another library since it's hard to modify the underlying sdslib code.
+ */
 public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
   private boolean lockOut = false;
-  private boolean pathRunning = false;
 
   /**
    * The maximum voltage that will be delivered to the drive motors.
@@ -44,7 +47,6 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
    * This can be reduced to cap the robot's maximum speed. Typically, this is useful during initial testing of the robot.
    */
   public static final double MAX_VOLTAGE = 12.0;
-  // FIXME Measure the drivetrain's maximum velocity or calculate the theoretical.
   //  The formula for calculating the theoretical maximum velocity is:
   //   <Motor free speed RPM> / 60 * <Drive reduction> * <Wheel diameter meters> * pi
   //  By default this value is setup for a Mk3 standard module using Falcon500s to drive.
@@ -58,7 +60,6 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
   public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 *
           SdsModuleConfigurations.MK3_STANDARD.getDriveReduction() *
           0.0955 * Math.PI;
-          //SdsModuleConfigurations.MK3_STANDARD.getWheelDiameter() * Math.PI;
   /**
    * The maximum angular velocity of the robot in radians per second.
    * <p>
@@ -83,10 +84,8 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
   // By default we use a Pigeon for our gyroscope. But if you use another gyroscope, like a NavX, you can change this.
   // The important thing about how you configure your gyroscope is that rotating the robot counter-clockwise should
   // cause the angle reading to increase until it wraps back over to zero.
-  // FIXME Remove if you are using a Pigeon
-//   private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
-  // FIXME Uncomment if you are using a NavX
- private final AHRS m_navx = new AHRS(Port.kUSB); // NavX connected over MXP
+  
+ private final AHRS m_navx = new AHRS(Port.kUSB); // NavX connected over USB
  public final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation());
 
   // These are our modules. We initialize them in the constructor.
@@ -95,37 +94,24 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
   private final SwerveModule m_backLeftModule;
   private final SwerveModule m_backRightModule;
 
+  // Current target speed for the drivebase
   private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
+  // Offset used to reset gyro
   private double yawOffset = 0;
 
+  // Field widgit for dashboard
   private final Field2d m_field = new Field2d();
   
 
   public DrivetrainSubsystem() {
+    // Makes a tab to show each swerve module
     ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
+    // Adds the heading and field widget to shuffleboard
     SmartDashboard.putNumber("Heading", 0);
     SmartDashboard.putData("Field", m_field);
-    // There are 4 methods you can call to create your swerve modules.
-    // The method you use depends on what motors you are using.
-    //
-    // Mk3SwerveModuleHelper.createFalcon500(...)
-    //   Your module has two Falcon 500s on it. One for steering and one for driving.
-    //
-    // Mk3SwerveModuleHelper.createNeo(...)
-    //   Your module has two NEOs on it. One for steering and one for driving.
-    //
-    // Mk3SwerveModuleHelper.createFalcon500Neo(...)
-    //   Your module has a Falcon 500 and a NEO on it. The Falcon 500 is for driving and the NEO is for steering.
-    //
-    // Mk3SwerveModuleHelper.createNeoFalcon500(...)
-    //   Your module has a NEO and a Falcon 500 on it. The NEO is for driving and the Falcon 500 is for steering.
-    //
-    // Similar helpers also exist for Mk4 modules using the Mk4SwerveModuleHelper class.
 
-    // By default we will use Falcon 500s in standard configuration. But if you use a different configuration or motors
-    // you MUST change it. If you do not, your code will crash on startup.
-    // FIXME Setup motor configuration
+    // Configure Falcon-Falcon swerve modules
     m_frontLeftModule = Mk3SwerveModuleHelper.createFalcon500(
             // This parameter is optional, but will allow you to see the current state of the module on the dashboard.
             tab.getLayout("Front Left Module", BuiltInLayouts.kList)
@@ -179,28 +165,21 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
   }
 
   /**
-   * Sets the gyroscope angle to zero. This can be used to set the direction the robot is currently facing to the
-   * 'forwards' direction.
+   * Sets the gyroscope angle to the given value. Used to reset at the start of auto.
    */
   public void resetGyroscope(double value) {
-    // FIXME Remove if you are using a Pigeon
-//     m_pigeon.setFusedHeading(0.0);
-
-    // FIXME Uncomment if you are using a NavX
    System.out.println("reset");
    m_navx.zeroYaw();
    yawOffset = getGyroscopeRotation().getDegrees() + yawOffset - 90 + value;
   }
 
+  /**Resets the current angle to 0 or forward. Used in teleop to reset field relative drive */
   public void zeroGyroscope(){
     resetGyroscope(0);
   }
 
+  /**Returns the current heading. */
   public Rotation2d getGyroscopeRotation() {
-    // FIXME Remove if you are using a Pigeon
-//     return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
-
-    // FIXME Uncomment if you are using a NavX
    if (m_navx.isMagnetometerCalibrated()) {
      // We will only get valid fused headings if the magnetometer is calibrated
      return Rotation2d.fromDegrees(360 - m_navx.getFusedHeading() - yawOffset);
@@ -216,45 +195,52 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
    }
 }
 
+  /**Sets the current desired speeds (x, y, theta) */
   public void drive(ChassisSpeeds chassisSpeeds) {
     m_chassisSpeeds = chassisSpeeds;
   }
 
+  /**Sets the drive base to "Lock Out", pointing the modules perpendicular to each other to make the robot hard to push */
   public void lock(){
     lockOut = true;
   }
 
+  /**Sets the drive base to normal driving again. */
   public void unlock(){
     lockOut = false;
   }
 
+  /**Toggles whether to "Lock Out", pointing the modules perpendicular to each other to make the robot hard to push */
   public void toggleLock(){
     lockOut = !lockOut;
   }
 
+  /**Follows a PathPlanner path, see SwerveController command for more info */
   public Command followPathCommand(PathPlannerTrajectory path) {
     return new SequentialCommandGroup(
-      new InstantCommand(() -> pathRunning = true),
-      new SwerveController(
-        path,
-        () -> m_odometry.getPoseMeters(),
-        m_kinematics,
-        new PIDController(0.5, 0.0,0.0 ), //coppied from 3175 since they have a similar bot and idk where to get these values
+      new SwerveController( // Creates a Swerve controller command
+        path, // The Path we want to follow
+        () -> m_odometry.getPoseMeters(), // Lambda that returns the current pose as a Pose2d
+        m_kinematics, // Returns the kinematics of the drive base
+        // PID controllers for x, y, and theta
+        new PIDController(0.5, 0.0, 0.0), // coppied from 3175 since they have a similar bot and idk where to get these values
         new PIDController(0.5, 0.0, 0.0), //was 0.0080395 
         new ProfiledPIDController(0.6, 0.0, 0.0, new Constraints(2, 2)), //was 0.003
-        (SwerveModuleState[] states) -> {
+        (SwerveModuleState[] states) -> { // Consumes the module states to set the modules moving in the directions we want
           m_chassisSpeeds = m_kinematics.toChassisSpeeds(states);
         },
-        this
+        this // The drivetrain subsystem gets added as a requirement
       ),
-      new InstantCommand(() -> { pathRunning = false; m_chassisSpeeds = new ChassisSpeeds(0, 0, 0);})
+      new InstantCommand(() -> { m_chassisSpeeds = new ChassisSpeeds(0, 0, 0);}) // Stop at the end of the path
     );
   }
 
+  /**Returns the state of a swerve module */
   private SwerveModuleState getModuleState(SwerveModule module){
     return new SwerveModuleState(module.getDriveVelocity(), Rotation2d.fromDegrees(Math.toDegrees(module.getSteerAngle())));
   }
 
+  /**Runs every processor loop to set the modules to move based on the chassis speeds. */
   @Override
   public void periodic() {
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
@@ -279,7 +265,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
         m_backRightModule.set(0, 45);
     }
   
-
+    // Update dashboard
     SmartDashboard.putNumber("heading", getGyroscopeRotation().getDegrees());
 
     m_field.setRobotPose(m_odometry.getPoseMeters());

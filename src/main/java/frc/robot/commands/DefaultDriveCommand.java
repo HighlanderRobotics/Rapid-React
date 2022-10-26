@@ -6,6 +6,7 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 
 import java.util.function.DoubleSupplier;
 
+/** Runs the swerve drivetrain based on joystick inputs and whether or not it should be field relative. */
 public class DefaultDriveCommand extends CommandBase {
     private final DrivetrainSubsystem m_drivetrainSubsystem;
 

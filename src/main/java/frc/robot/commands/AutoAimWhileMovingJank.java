@@ -6,19 +6,12 @@ package frc.robot.commands;
 
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.PIDCommand;
-import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.LimeLightSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
+/** Begginings of a system to aim at the target while moving, to help set up for shots. Never got finished. */
 public class AutoAimWhileMovingJank extends CommandBase{
   VisionSubsystem m_visionSubsystem;
   DrivetrainSubsystem m_drivetrainSubsystem;

@@ -17,13 +17,16 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 
+/** Contains the hood motor, encoder, and limit switches. */
 public class HoodSubsystem extends PIDSubsystem implements Loggable {
-    /** Creates a new ExampleSubsystem. */
+    // The motor controller for the hood motor
     public final CANSparkMax hood;
+    // The encoder which measures hood extension
     public final Encoder angleEncoder;
+    // Limit switches to prevent overrunning endstops
     public final ReversibleDigitalInput topLimitSwitch;
     public final ReversibleDigitalInput bottomLimitSwitch;
-    // keep track of it to figure out when it's hit
+    // Current target angle
     private double currentSetpoint;
     
     // Feedforward for the hood
@@ -31,6 +34,7 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
     // Other two numbers were found on https://reca.lc/arm based on the assumptions:
     // 1 NEO 550, 5in to CoM, 5lbs; should update this if we have more information
     public final ArmFeedforward feedforward = new ArmFeedforward(0, 0.008, 0.0391);
+    // Total rotations the encoder has gone through
     double rotations;
     
     public HoodSubsystem()
@@ -44,11 +48,9 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
         bottomLimitSwitch = new ReversibleDigitalInput(Constants.HOOD_LIMIT_SWITCH_BOTTOM, true);
     }
 
+    /**Sets the motor power based on PID */
     @Override
     protected void useOutput(double output, double setpoint) {
-        // the angle to the center of mass
-        // assuming this is 5 degrees from the center
-        double centerAngle = Math.toRadians(setpoint - 5);
         // adjust output with feedforward (removed for now)
         double adjustedPower = output + 0; //feedforward.calculate(centerAngle, 0);
 
@@ -60,10 +62,12 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
         hood.set(adjustedPower);
     }
 
+    // Angle the hood is at when each limit switch is triggered
     //need calibration
     public double topLimit = 40;
     public double bottomLimit = 0;
 
+    /**Sets the current desired angle */
     @Override
     public void setSetpoint(double setpoint) {
         if (setpoint < bottomLimit) {
@@ -76,6 +80,7 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
         super.setSetpoint(setpoint);
     }
 
+    /**Gets the current motor positition */
     @Override
     protected double getMeasurement() {
         // 2048 encoder ticks in a rotation
@@ -84,19 +89,23 @@ public class HoodSubsystem extends PIDSubsystem implements Loggable {
         return (rotations/1.47) * 40;
     }
 
+    /**Checks if the current angle is close enough to the desired angle */
     @Log
     public boolean atTargetAngle() {
         return Math.abs(currentSetpoint - getMeasurement()) < 5.0;
     }
 
+    /**Gets whether the upper limit switch is pressed */
     public boolean getUpperLimit(){
         return topLimitSwitch.get();
     }
     
+    /**Gets whether the lower limit switch is pressed */
     public boolean getLowerLimit(){
         return bottomLimitSwitch.get();
     }
 
+    /**Runs periodically. Resets the hood angle when the lower limit switch is pressed and updates the PID */
     @Override
     public void periodic() {
         super.periodic();
