@@ -37,7 +37,6 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TelescopingClimberSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.RoutingSubsystem;
@@ -70,8 +69,7 @@ public class RobotContainer {
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   private final HoodSubsystem hoodSubsystem = new HoodSubsystem();
   private final LimeLightSubsystem limeLightSubsystem = new LimeLightSubsystem("gloworm");
-  private final VisionSubsystem visionSubsystem = new VisionSubsystem(new LimeLightSubsystem("gloworm"),
-      limeLightSubsystem);
+  
   private final RoutingSubsystem routingSubsystem = new RoutingSubsystem();
   private final LEDSubsystem ledSubsystem = new LEDSubsystem();
   private final TelescopingClimberSubsystem climberSubsystem = new TelescopingClimberSubsystem();
@@ -82,7 +80,7 @@ public class RobotContainer {
   private final SlewRateLimiter flywheelLimiter = new SlewRateLimiter(3.0);
 
   private final AutonomousChooser chooser = new AutonomousChooser(drivetrainSubsystem, hoodSubsystem, shooterSubsystem,
-      visionSubsystem, routingSubsystem, intakeSubsystem, ledSubsystem);
+      limeLightSubsystem, routingSubsystem, intakeSubsystem, ledSubsystem);
 
   private final PowerDistribution pdp = new PowerDistribution(0, ModuleType.kCTRE);
 
@@ -219,7 +217,7 @@ public class RobotContainer {
     // By default, don't spin the flywheel
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
     // By default, show the balls in the robot and the whether the target is visible
-    ledSubsystem.setDefaultCommand(new DefaultLedCommand(ledSubsystem, visionSubsystem, routingSubsystem));
+    ledSubsystem.setDefaultCommand(new DefaultLedCommand(ledSubsystem, limeLightSubsystem, routingSubsystem));
     // By default, lock the mantis arms, hold the climber at its starting position, and leave the ratchet open
     climberSubsystem.setDefaultCommand(new RunCommand(() -> {
       climberSubsystem.extendSolenoid();
@@ -239,7 +237,7 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    new Trigger(limeLightSubsystem::isPointingAtTarget)
+    new Trigger(limeLightSubsystem::isTargetInView)
       .whileActiveContinuous(
         new InstantCommand(() -> 
           drivetrainSubsystem.updateOdometry(
@@ -249,7 +247,7 @@ public class RobotContainer {
         .whenPressed(new InstantCommand(() -> drivetrainSubsystem.resetGyroscope(0)));
     // Runs the shooting sequence
     new Button(controller::getAButton)
-            .whileHeld(new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem, controller)
+            .whileHeld(new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, limeLightSubsystem, routingSubsystem, ledSubsystem, controller)
             .alongWith(new InstantCommand(() -> {
               controller.setRumble(RumbleType.kRightRumble, 1.0);
               controller.setRumble(RumbleType.kLeftRumble, 1.0);

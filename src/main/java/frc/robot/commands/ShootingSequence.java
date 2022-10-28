@@ -14,9 +14,9 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.LimeLightSubsystem;
 import frc.robot.subsystems.RoutingSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -35,18 +35,18 @@ public class ShootingSequence extends ParallelCommandGroup {
   public ShootingSequence(HoodSubsystem hoodSubsystem,
   ShooterSubsystem shooterSubsystem,
   DrivetrainSubsystem drivetrainSubsystem,
-  VisionSubsystem visionSubsystem,
+  LimeLightSubsystem limelightSubsystem,
   RoutingSubsystem routingSubsystem,
   LEDSubsystem ledSubsystem,
   XboxController controller) {
     addCommands(
-      new AutoAim(visionSubsystem, drivetrainSubsystem, controller),
+      new AutoAim(limelightSubsystem, drivetrainSubsystem, controller),
       new WaitCommand(0.15)
-      .andThen(new RunCommand(() -> shooterSubsystem.setTargetRPM(visionSubsystem.getTargetRPM()), shooterSubsystem)),
-      new RunCommand(() -> hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()), hoodSubsystem),
+      .andThen(new RunCommand(() -> shooterSubsystem.setTargetRPM(limelightSubsystem.getRPM()), shooterSubsystem)),
+      new RunCommand(() -> hoodSubsystem.setSetpoint(limelightSubsystem.getHoodAngle()), hoodSubsystem),
       new SequentialCommandGroup(
         new InstantCommand(() -> printTime("started")),
-        new WaitUntilCommand(visionSubsystem::pointingAtTarget)
+        new WaitUntilCommand(limelightSubsystem::pointingAtTarget)
           .andThen(new InstantCommand(() -> printTime("autoaim"))),
         new ParallelCommandGroup(
           new WaitUntilCommand(shooterSubsystem::isRPMInRange)

@@ -17,7 +17,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.RoutingSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.LimeLightSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -28,7 +28,7 @@ public class TwoBallAuto extends ParallelCommandGroup {
     DrivetrainSubsystem drivetrainSubsystem, 
     HoodSubsystem hoodSubsystem, 
     ShooterSubsystem shooterSubsystem, 
-    VisionSubsystem visionSubsystem, 
+    LimeLightSubsystem LimeLightSubsystem, 
     RoutingSubsystem routingSubsystem,
     IntakeSubsystem intakeSubsystem,
     LEDSubsystem ledSubsystem) {
@@ -44,8 +44,8 @@ public class TwoBallAuto extends ParallelCommandGroup {
           new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem)
         ),
         new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem).withTimeout(.25),
-        new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem, new XboxController(0)),
-        new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem, new XboxController(0))
+        new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, LimeLightSubsystem, routingSubsystem, ledSubsystem, new XboxController(0)),
+        new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, LimeLightSubsystem, routingSubsystem, ledSubsystem, new XboxController(0))
       )
     );
     addRequirements(drivetrainSubsystem, hoodSubsystem, shooterSubsystem, routingSubsystem, intakeSubsystem);

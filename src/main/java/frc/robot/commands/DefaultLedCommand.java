@@ -9,16 +9,16 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.RoutingSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.LimeLightSubsystem;
 
 public class DefaultLedCommand extends CommandBase {
   private final LEDSubsystem ledSubsystem;
-  private final VisionSubsystem visionSubsystem;
+  private final LimeLightSubsystem limelightSubsystem;
   private final RoutingSubsystem routingSubsystem;
   /** Creates a new DefaultLedCommand. */
-  public DefaultLedCommand(LEDSubsystem ledSubsystem, VisionSubsystem visionSubsystem, RoutingSubsystem routingSubsystem) {
+  public DefaultLedCommand(LEDSubsystem ledSubsystem, LimeLightSubsystem limeLightSubsystem, RoutingSubsystem routingSubsystem) {
     this.ledSubsystem = ledSubsystem;
-    this.visionSubsystem = visionSubsystem;
+    this.limelightSubsystem = limeLightSubsystem;
     this.routingSubsystem = routingSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(ledSubsystem);
@@ -37,7 +37,7 @@ public class DefaultLedCommand extends CommandBase {
       }
     } else {
       // otherwise show shoowing indicator with red/green for target lock
-      boolean target = visionSubsystem.lowerLimeLight.isPointingAtTarget;
+      boolean target = limelightSubsystem.isTargetInView();
 
       // no ball
       if (!routingSubsystem.upperBeambreak.get()) {

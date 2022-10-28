@@ -27,7 +27,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.RoutingSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.LimeLightSubsystem;
 
 /** Add your docs here. */
 public class AutonomousChooser {
@@ -36,7 +36,7 @@ public class AutonomousChooser {
     DrivetrainSubsystem drivetrainSubsystem;
     HoodSubsystem hoodSubsystem;
     ShooterSubsystem shooterSubsystem;
-    VisionSubsystem visionSubsystem;
+    LimeLightSubsystem limeLightSubsystem;
     RoutingSubsystem routingSubsystem;
     IntakeSubsystem intakeSubsystem;
     LEDSubsystem ledSubsystem;
@@ -46,19 +46,19 @@ public class AutonomousChooser {
         DrivetrainSubsystem drivetrainSubsystem, 
         HoodSubsystem hoodSubsystem, 
         ShooterSubsystem shooterSubsystem, 
-        VisionSubsystem visionSubsystem, 
+        LimeLightSubsystem limeLightSubsystem, 
         RoutingSubsystem routingSubsystem,
         IntakeSubsystem intakeSubsystem,
         LEDSubsystem ledSubsystem){
         this.drivetrainSubsystem = drivetrainSubsystem;
         this.hoodSubsystem = hoodSubsystem;
         this.shooterSubsystem = shooterSubsystem;
-        this.visionSubsystem = visionSubsystem;
+        this.limeLightSubsystem = limeLightSubsystem;
         this.routingSubsystem = routingSubsystem;
         this.intakeSubsystem = intakeSubsystem;
         this.ledSubsystem = ledSubsystem;
         
-        chooser.setDefaultOption("UNIVERSAL 2 BALL", new TwoBallAuto(drivetrainSubsystem, hoodSubsystem, shooterSubsystem, visionSubsystem, routingSubsystem, intakeSubsystem, ledSubsystem));
+        chooser.setDefaultOption("UNIVERSAL 2 BALL", new TwoBallAuto(drivetrainSubsystem, hoodSubsystem, shooterSubsystem, limeLightSubsystem, routingSubsystem, intakeSubsystem, ledSubsystem));
         chooser.addOption("NONE", new PrintCommand("owo"));
         chooser.addOption("TERMINAL 3 BALL 0 HIDE", getTerminal3Ball());
         chooser.addOption("HANGAR 2 BALL 2 HIDE", getHangar2Ball2Hide());
@@ -76,7 +76,7 @@ public class AutonomousChooser {
 
     private Command shoot(double time){
       return new ShootingSequence(
-                hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem, new XboxController(0))
+                hoodSubsystem, shooterSubsystem, drivetrainSubsystem, limeLightSubsystem, routingSubsystem, ledSubsystem, new XboxController(0))
                 .withTimeout(time);
     }
 
@@ -175,7 +175,7 @@ public class AutonomousChooser {
         new ResetHood(hoodSubsystem),
         shoot(2.0),
         // new PIDAngleSnap(drivetrainSubsystem, startAngle),
-        new TwoBallAuto(drivetrainSubsystem, hoodSubsystem, shooterSubsystem, visionSubsystem, routingSubsystem, intakeSubsystem, ledSubsystem)
+        new TwoBallAuto(drivetrainSubsystem, hoodSubsystem, shooterSubsystem, limeLightSubsystem, routingSubsystem, intakeSubsystem, ledSubsystem)
       );
     }
 
@@ -198,8 +198,8 @@ public class AutonomousChooser {
           new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem)
         ),
         new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem).withTimeout(.25),
-        new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem, new XboxController(0)),
-        new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, visionSubsystem, routingSubsystem, ledSubsystem, new XboxController(0))
+        new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, limeLightSubsystem, routingSubsystem, ledSubsystem, new XboxController(0)),
+        new ShootingSequence(hoodSubsystem, shooterSubsystem, drivetrainSubsystem, limeLightSubsystem, routingSubsystem, ledSubsystem, new XboxController(0))
       
       );
     }

@@ -8,7 +8,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.LimeLightSubsystem;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 
 
@@ -16,12 +16,12 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class AutoAim extends CommandBase{
-  VisionSubsystem m_visionSubsystem;
+  LimeLightSubsystem m_visionSubsystem;
   DrivetrainSubsystem m_drivetrainSubsystem;
   XboxController m_controller;
   double endThreshold = 0.5;
   /** Creates a new AutoAim. */
-  public AutoAim(VisionSubsystem visionSubsystem, DrivetrainSubsystem drivetrainSubsystem, XboxController controller) {
+  public AutoAim(LimeLightSubsystem visionSubsystem, DrivetrainSubsystem drivetrainSubsystem, XboxController controller) {
         m_visionSubsystem = visionSubsystem;
         m_drivetrainSubsystem = drivetrainSubsystem;
         m_controller = controller;
@@ -38,7 +38,7 @@ public class AutoAim extends CommandBase{
 
   @Override
   public void execute () {
-    m_drivetrainSubsystem.drive(new ChassisSpeeds(0, 0, m_visionSubsystem.pidOutput()));
+    m_drivetrainSubsystem.drive(new ChassisSpeeds(0, 0, m_visionSubsystem.autoAim()));
   }
 
   public void end(){
