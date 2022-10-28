@@ -70,7 +70,7 @@ public class RobotContainer {
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   private final HoodSubsystem hoodSubsystem = new HoodSubsystem();
   private final LimeLightSubsystem limeLightSubsystem = new LimeLightSubsystem("gloworm");
-  private final VisionSubsystem visionSubsystem = new VisionSubsystem(new LimeLightSubsystem("limelight-top"),
+  private final VisionSubsystem visionSubsystem = new VisionSubsystem(new LimeLightSubsystem("gloworm"),
       limeLightSubsystem);
   private final RoutingSubsystem routingSubsystem = new RoutingSubsystem();
   private final LEDSubsystem ledSubsystem = new LEDSubsystem();
@@ -239,6 +239,11 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    new Trigger(limeLightSubsystem::isPointingAtTarget)
+      .whileActiveContinuous(
+        new InstantCommand(() -> 
+          drivetrainSubsystem.updateOdometry(
+              limeLightSubsystem.getEstimatedPose(drivetrainSubsystem.getGyroscopeRotation()))));
     // Resets the field relative gyro heading on the swerve drive
     new Button(controller::getRightStickButton)
         .whenPressed(new InstantCommand(() -> drivetrainSubsystem.resetGyroscope(0)));

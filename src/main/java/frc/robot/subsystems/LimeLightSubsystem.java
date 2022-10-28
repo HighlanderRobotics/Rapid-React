@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
@@ -142,8 +143,10 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
       pidOutput = 0;
     }
 
-    
-    
+    if (isPointingAtTarget) {
+      SmartDashboard.putNumber("Camera estimated pose X", getEstimatedPose(new Rotation2d()).getFirst().getX());
+      SmartDashboard.putNumber("Camera estimated pose Y", getEstimatedPose(new Rotation2d()).getFirst().getY());
+    }
   }
 
   

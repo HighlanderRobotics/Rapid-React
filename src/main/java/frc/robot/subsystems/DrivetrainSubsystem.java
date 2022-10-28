@@ -14,6 +14,7 @@ import com.swervedrivespecialties.swervelib.SwerveModule;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -275,8 +276,8 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     return new SwerveModuleState(module.getDriveVelocity(), Rotation2d.fromDegrees(Math.toDegrees(module.getSteerAngle())));
   }
 
-  public void updateOdometry(Pose2d pose,double latency){
-    m_odometry.addVisionMeasurement(pose, Timer.getFPGATimestamp() - latency);
+  public void updateOdometry(Pair<Pose2d, Double> data){
+    m_odometry.addVisionMeasurement(data.getFirst(), Timer.getFPGATimestamp() - data.getSecond());
   }
 
   @Override
