@@ -146,12 +146,13 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
       camera.getLatestResult().getBestTarget().getCameraToTarget();
       return new Pair<>(PhotonUtils.estimateFieldToRobot(
         0.5588,
-        2.0, //arbitrary value for now
+        1.8288, //arbitrary value for now
         Math.toRadians(52.0),
         Math.toRadians(verticalOffset),
         new Rotation2d(Math.toRadians(horizontalOffset)),
         gyroAngle,
-        new Pose2d(0, 0, new Rotation2d()), //arbitrary value for now
+        // Units in feet
+        new Pose2d(20, 5, new Rotation2d()), //arbitrary value for now
         new Transform2d(new Translation2d(-9.75, 0), new Rotation2d())),camera.getLatestResult().getLatencyMillis());
     }
     return null;

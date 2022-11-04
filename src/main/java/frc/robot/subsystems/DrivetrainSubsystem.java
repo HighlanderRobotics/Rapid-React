@@ -124,7 +124,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 
     odometryStateStdDevs = new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(0.02, 0.02, 0.01); // TODO: Find actual numbers for this
     odometryLocalMeasurementStdDevs = new MatBuilder<N1, N1>(Nat.N1(), Nat.N1()).fill(0.02); // TODO: Find actual numbers for this
-    odometryVisionMeasurementStdDevs = new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(0.02, 0.02, 0.01); // TODO: Find actual numbers for this
+    odometryVisionMeasurementStdDevs = new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(0.2, 0.2, 0.1); // TODO: Find actual numbers for this
 
     m_odometry = new SwerveDrivePoseEstimator(Rotation2d.fromDegrees(m_navx.getAngle()), new Pose2d(), m_kinematics, odometryStateStdDevs, odometryLocalMeasurementStdDevs, odometryVisionMeasurementStdDevs);
     // There are 4 methods you can call to create your swerve modules.
@@ -148,10 +148,6 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     // you MUST change it. If you do not, your code will crash on startup.
     // FIXME Setup motor configuration
     m_frontLeftModule = Mk3SwerveModuleHelper.createFalcon500(
-            // This parameter is optional, but will allow you to see the current state of the module on the dashboard.
-            tab.getLayout("Front Left Module", BuiltInLayouts.kList)
-                    .withSize(2, 4)
-                    .withPosition(0, 0),
             // This can either be STANDARD or FAST depending on your gear configuration
             Mk3SwerveModuleHelper.GearRatio.STANDARD,
             // This is the ID of the drive motor
@@ -166,9 +162,6 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 
     // We will do the same for the other modules
     m_frontRightModule = Mk3SwerveModuleHelper.createFalcon500(
-            tab.getLayout("Front Right Module", BuiltInLayouts.kList)
-                    .withSize(2, 4)
-                    .withPosition(2, 0),
             Mk3SwerveModuleHelper.GearRatio.STANDARD,
             FRONT_RIGHT_MODULE_DRIVE_MOTOR,
             FRONT_RIGHT_MODULE_STEER_MOTOR,
@@ -177,9 +170,6 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     );
 
     m_backLeftModule = Mk3SwerveModuleHelper.createFalcon500(
-            tab.getLayout("Back Left Module", BuiltInLayouts.kList)
-                    .withSize(2, 4)
-                    .withPosition(4, 0),
             Mk3SwerveModuleHelper.GearRatio.STANDARD,
             BACK_LEFT_MODULE_DRIVE_MOTOR,
             BACK_LEFT_MODULE_STEER_MOTOR,
@@ -188,9 +178,6 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     );
 
     m_backRightModule = Mk3SwerveModuleHelper.createFalcon500(
-            tab.getLayout("Back Right Module", BuiltInLayouts.kList)
-                    .withSize(2, 4)
-                    .withPosition(6, 0),
             Mk3SwerveModuleHelper.GearRatio.STANDARD,
             BACK_RIGHT_MODULE_DRIVE_MOTOR,
             BACK_RIGHT_MODULE_STEER_MOTOR,
@@ -277,6 +264,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
   }
 
   public void updateOdometry(Pair<Pose2d, Double> data){
+    System.out.println(data.getFirst());
     m_odometry.addVisionMeasurement(data.getFirst(), Timer.getFPGATimestamp() - data.getSecond());
   }
 

@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.Compressor;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
@@ -128,9 +130,7 @@ public class RobotContainer {
     // SmartDashboard.putData("Check path", new InstantCommand(() -> {
     // PathPlannerTrajectory path = PathPlanner.loadPath("Hub Scale Test", 0.5,
     // 0.5);
-    // drivetrainSubsystem.m_odometry.resetPosition(
-    // new Pose2d(path.getInitialState().poseMeters.getTranslation(),
-    // path.getInitialState().holonomicRotation), new Rotation2d());
+    SmartDashboard.putData("Reset Odo", new InstantCommand(() -> drivetrainSubsystem.m_odometry.resetPosition(new Pose2d(), new Rotation2d())));
     // System.out.println(path.sample(0.0).poseMeters.getX());
     // System.out.println(drivetrainSubsystem.m_odometry.getPoseMeters().getX());
     // }));
