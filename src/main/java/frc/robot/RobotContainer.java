@@ -130,7 +130,7 @@ public class RobotContainer {
     // SmartDashboard.putData("Check path", new InstantCommand(() -> {
     // PathPlannerTrajectory path = PathPlanner.loadPath("Hub Scale Test", 0.5,
     // 0.5);
-    SmartDashboard.putData("Reset Odo", new InstantCommand(() -> drivetrainSubsystem.m_odometry.resetPosition(new Pose2d(), new Rotation2d())));
+    SmartDashboard.putData("Reset Odo", new InstantCommand(() -> drivetrainSubsystem.m_poseEstimator.resetPosition(new Pose2d(), new Rotation2d())));
     // System.out.println(path.sample(0.0).poseMeters.getX());
     // System.out.println(drivetrainSubsystem.m_odometry.getPoseMeters().getX());
     // }));

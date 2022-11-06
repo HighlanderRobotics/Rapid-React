@@ -102,7 +102,10 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
  private final Matrix<N1, N1> odometryLocalMeasurementStdDevs;
  private final Matrix<N3, N1> odometryVisionMeasurementStdDevs;
 
- public final SwerveDrivePoseEstimator m_odometry;
+ // Fuses vision measurements and wheel odometry
+ public final SwerveDrivePoseEstimator m_poseEstimator;
+ // Uses only wheel odometry, for debugging purposes
+ public final SwerveDriveOdometry m_odometry;
 
   // These are our modules. We initialize them in the constructor.
   private final SwerveModule m_frontLeftModule;
@@ -121,12 +124,15 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
     SmartDashboard.putNumber("Heading", 0);
     SmartDashboard.putData("Field", m_field);
+    m_field.getObject("Pure Odometry Pose").setPose(new Pose2d());
 
     odometryStateStdDevs = new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(0.02, 0.02, 0.01); // TODO: Find actual numbers for this
     odometryLocalMeasurementStdDevs = new MatBuilder<N1, N1>(Nat.N1(), Nat.N1()).fill(0.02); // TODO: Find actual numbers for this
     odometryVisionMeasurementStdDevs = new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(0.2, 0.2, 0.1); // TODO: Find actual numbers for this
 
-    m_odometry = new SwerveDrivePoseEstimator(Rotation2d.fromDegrees(m_navx.getAngle()), new Pose2d(), m_kinematics, odometryStateStdDevs, odometryLocalMeasurementStdDevs, odometryVisionMeasurementStdDevs);
+    m_poseEstimator = new SwerveDrivePoseEstimator(Rotation2d.fromDegrees(m_navx.getAngle()), new Pose2d(), m_kinematics, odometryStateStdDevs, odometryLocalMeasurementStdDevs, odometryVisionMeasurementStdDevs);
+    
+    m_odometry = new SwerveDriveOdometry(m_kinematics, Rotation2d.fromDegrees(m_navx.getAngle()));
     // There are 4 methods you can call to create your swerve modules.
     // The method you use depends on what motors you are using.
     //
@@ -245,7 +251,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
       new InstantCommand(() -> pathRunning = true),
       new SwerveController(
         path,
-        () -> m_odometry.getEstimatedPosition(),
+        () -> m_poseEstimator.getEstimatedPosition(),
         m_kinematics,
         new PIDController(0.5, 0.0,0.0 ), //coppied from 3175 since they have a similar bot and idk where to get these values
         new PIDController(0.5, 0.0, 0.0), //was 0.0080395 
@@ -265,19 +271,27 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 
   public void updateOdometry(Pair<Pose2d, Double> data){
     System.out.println(data.getFirst());
-    m_odometry.addVisionMeasurement(data.getFirst(), Timer.getFPGATimestamp() - data.getSecond());
+    m_poseEstimator.addVisionMeasurement(data.getFirst(), Timer.getFPGATimestamp() - data.getSecond());
   }
 
   @Override
   public void periodic() {
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
 
-
-    m_odometry.update(getGyroscopeRotation(), 
+    // Updates pose estimator
+    m_poseEstimator.update(getGyroscopeRotation(), 
       getModuleState(m_frontLeftModule), 
       getModuleState(m_frontRightModule),
       getModuleState(m_backLeftModule),
       getModuleState(m_backRightModule));
+
+    m_odometry.update(getGyroscopeRotation(),
+      getModuleState(m_frontLeftModule), 
+      getModuleState(m_frontRightModule),
+      getModuleState(m_backLeftModule),
+      getModuleState(m_backRightModule));
+
+    // Prevents modules from going faster than max speed
     SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
     
     if(!lockOut){
@@ -295,10 +309,12 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 
     SmartDashboard.putNumber("heading", getGyroscopeRotation().getDegrees());
 
-    m_field.setRobotPose(m_odometry.getEstimatedPosition());
-    SmartDashboard.putData("Field", m_field);
+    m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
+    m_field.getObject("Pure Odometry Pose").setPose(m_odometry.getPoseMeters());
 
-    SmartDashboard.putNumber("X Pose", m_odometry.getEstimatedPosition().getX());
-    SmartDashboard.putNumber("Y Pose", m_odometry.getEstimatedPosition().getY());
+    // SmartDashboard.putData("Field", m_field);
+
+    SmartDashboard.putNumber("X Pose", m_poseEstimator.getEstimatedPosition().getX());
+    SmartDashboard.putNumber("Y Pose", m_poseEstimator.getEstimatedPosition().getY());
   }
 }

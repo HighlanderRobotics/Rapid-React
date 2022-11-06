@@ -183,7 +183,7 @@ public class AutonomousChooser {
       return new SequentialCommandGroup(
       new PrintCommand("" + path.getInitialState().holonomicRotation.getDegrees()),
       new InstantCommand(() -> drivetrainSubsystem.resetGyroscope(path.getInitialState().holonomicRotation.getDegrees())),
-      new InstantCommand(() -> drivetrainSubsystem.m_odometry.resetPosition(
+      new InstantCommand(() -> drivetrainSubsystem.m_poseEstimator.resetPosition(
         new Pose2d(path.getInitialState().poseMeters.getTranslation(), 
         path.getInitialState().holonomicRotation), drivetrainSubsystem.getGyroscopeRotation())));
       
