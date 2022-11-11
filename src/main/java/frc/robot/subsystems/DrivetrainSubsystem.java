@@ -126,6 +126,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     SmartDashboard.putData("Field", m_field);
     m_field.getObject("Pure Odometry Pose").setPose(new Pose2d());
     m_field.getObject("Latest Vision Pose").setPose(new Pose2d());
+    m_field.getObject("Vision Target").setPose(new Pose2d(20, 5, new Rotation2d(-Math.PI / 2)));
 
     odometryStateStdDevs = new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(0.02, 0.02, 0.01); // TODO: Find actual numbers for this
     odometryLocalMeasurementStdDevs = new MatBuilder<N1, N1>(Nat.N1(), Nat.N1()).fill(0.02); // TODO: Find actual numbers for this

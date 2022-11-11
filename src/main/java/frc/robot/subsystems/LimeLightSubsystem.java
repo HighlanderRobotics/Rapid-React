@@ -28,6 +28,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
@@ -145,15 +146,15 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
     if (isPointingAtTarget){
       camera.getLatestResult().getBestTarget().getCameraToTarget();
       return new Pair<>(PhotonUtils.estimateFieldToRobot(
-        0.5588,
-        1.8288, //arbitrary value for now
+        0.5488,
+        Units.inchesToMeters(85), //arbitrary value for now
         Math.toRadians(52.0),
         Math.toRadians(verticalOffset),
         new Rotation2d(Math.toRadians(horizontalOffset)),
         gyroAngle,
         // Units in feet
-        new Pose2d(20, 5, new Rotation2d()), //arbitrary value for now
-        new Transform2d(new Translation2d(-9.75, 0), new Rotation2d())),camera.getLatestResult().getLatencyMillis());
+        new Pose2d(Units.feetToMeters(20),Units.feetToMeters(5), new Rotation2d(-Math.PI / 2)), //arbitrary value for now
+        new Transform2d(new Translation2d(-0.248, 0), new Rotation2d())),camera.getLatestResult().getLatencyMillis());//9.75
     }
     return null;
   }
