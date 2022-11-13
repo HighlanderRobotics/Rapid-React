@@ -275,9 +275,11 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
   }
 
   public void updateOdometry(Pair<Pose2d, Double> data){
-    System.out.println(data.getFirst());
-    m_field.getObject("Latest Vision Pose").setPose(data.getFirst());
-    m_poseEstimator.addVisionMeasurement(data.getFirst(), Timer.getFPGATimestamp() - data.getSecond());
+    if (data.getFirst() != null) {
+      System.out.println(data.getFirst());
+      m_field.getObject("Latest Vision Pose").setPose(data.getFirst());
+      m_poseEstimator.addVisionMeasurement(data.getFirst(), Timer.getFPGATimestamp() - data.getSecond());
+    }
   }
 
   public double getHeadingAtTime(double time){

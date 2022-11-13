@@ -147,17 +147,31 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
 
   public Pair<Pose2d,Double> getEstimatedPose(Rotation2d gyroAngle){
     if (isPointingAtTarget){
-      PhotonPipelineResult result = camera.getLatestResult();
-      return new Pair<>(PhotonUtils.estimateFieldToRobot(
-        0.5488,
-        Units.inchesToMeters(89), //arbitrary value for now, changed when target is moved
-        Math.toRadians(52.0),
-        Math.toRadians(result.getBestTarget().getPitch()),
-        new Rotation2d(Math.toRadians(-result.getBestTarget().getYaw())),
-        gyroAngle,
-        new Pose2d(Units.feetToMeters(3) ,Units.feetToMeters(12), new Rotation2d(Math.PI)), //arbitrary value for now, changed when target is moved
-        new Transform2d(new Translation2d(-0.248, 0), new Rotation2d())),//9.75
-        result.getLatencyMillis());
+      for (PhotonTrackedTarget target : result.getTargets()){
+        double targetHeight = 0;
+        Pose2d targetPose = new Pose2d();
+        int targetId = target.getFiducialId();
+        switch (targetId) {
+          case 0:
+            {
+              targetHeight = Units.inchesToMeters(89); //arbitrary value for now, change when target is moved
+              targetPose = new Pose2d(Units.feetToMeters(6), Units.feetToMeters(12), new Rotation2d()); //arbitrary value for now, change when target is moved
+              break;
+            }
+          default:
+            return null;
+        }
+        return new Pair<>(PhotonUtils.estimateFieldToRobot(
+          0.5488,
+          targetHeight,
+          Math.toRadians(52.0),
+          Math.toRadians(result.getBestTarget().getPitch()),
+          new Rotation2d(Math.toRadians(-result.getBestTarget().getYaw())),
+          gyroAngle,
+          targetPose,
+          new Transform2d(new Translation2d(-0.248, 0), new Rotation2d())),//9.75
+          result.getLatencyMillis());
+      }
     }
     return null;
   }
