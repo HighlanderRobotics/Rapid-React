@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -241,7 +242,9 @@ public class RobotContainer {
       .whileActiveContinuous(
         new InstantCommand(() -> 
           drivetrainSubsystem.updateOdometry(
-              limeLightSubsystem.getEstimatedPose(drivetrainSubsystem.getGyroscopeRotation()))));
+              limeLightSubsystem.getEstimatedPose(
+                Rotation2d.fromDegrees(drivetrainSubsystem.getHeadingAtTime(Timer.getFPGATimestamp()-limeLightSubsystem.getCameraResultLatency()))
+                ))));
     // Resets the field relative gyro heading on the swerve drive
     new Button(controller::getRightStickButton)
         .whenPressed(new InstantCommand(() -> drivetrainSubsystem.resetGyroscope(0)));

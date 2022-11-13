@@ -44,6 +44,8 @@ import frc.robot.commands.SwerveController;
 import io.github.oblarg.oblog.Loggable;
 import static frc.robot.Constants.*;
 
+import java.util.TreeMap;
+
 public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
   private boolean lockOut = false;
   private boolean pathRunning = false;
@@ -97,6 +99,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 //   private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
   // FIXME Uncomment if you are using a NavX
  private final AHRS m_navx = new AHRS(Port.kUSB); // NavX connected over MXP
+ private TreeMap<Double, Double> pastHeadings = new TreeMap<>();
 
  private final Matrix<N3, N1> odometryStateStdDevs;
  private final Matrix<N1, N1> odometryLocalMeasurementStdDevs;
@@ -277,9 +280,15 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     m_poseEstimator.addVisionMeasurement(data.getFirst(), Timer.getFPGATimestamp() - data.getSecond());
   }
 
+  public double getHeadingAtTime(double time){
+    return pastHeadings.get(time);
+  }
+
   @Override
   public void periodic() {
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
+
+    pastHeadings.putIfAbsent(Timer.getFPGATimestamp(), getGyroscopeRotation().getDegrees());
 
     // Updates pose estimator
     m_poseEstimator.update(getGyroscopeRotation(), 

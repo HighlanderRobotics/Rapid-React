@@ -21,6 +21,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.common.hardware.VisionLEDMode;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.PIDController;
@@ -48,6 +50,7 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
   public String tableName;
   PhotonCamera camera;
   private ShootingLookup lookup;
+  PhotonPipelineResult result;
 
 
   
@@ -91,8 +94,8 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
     
 
     //read values periodically
-    x = camera.getLatestResult().getBestTarget().getYaw();
-    y = camera.getLatestResult().getBestTarget().getPitch(); 
+    x = result.getBestTarget().getYaw();
+    y = result.getBestTarget().getPitch(); 
   }
 
   public double getArea() {
@@ -144,28 +147,34 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
 
   public Pair<Pose2d,Double> getEstimatedPose(Rotation2d gyroAngle){
     if (isPointingAtTarget){
-      camera.getLatestResult().getBestTarget().getCameraToTarget();
+      PhotonPipelineResult result = camera.getLatestResult();
       return new Pair<>(PhotonUtils.estimateFieldToRobot(
         0.5488,
-        Units.inchesToMeters(85), //arbitrary value for now
+        Units.inchesToMeters(89), //arbitrary value for now, changed when target is moved
         Math.toRadians(52.0),
-        Math.toRadians(verticalOffset),
-        new Rotation2d(Math.toRadians(horizontalOffset)),
+        Math.toRadians(result.getBestTarget().getPitch()),
+        new Rotation2d(Math.toRadians(-result.getBestTarget().getYaw())),
         gyroAngle,
-        // Units in feet
-        new Pose2d(Units.feetToMeters(20),Units.feetToMeters(5), new Rotation2d(-Math.PI / 2)), //arbitrary value for now
-        new Transform2d(new Translation2d(-0.248, 0), new Rotation2d())),camera.getLatestResult().getLatencyMillis());//9.75
+        new Pose2d(Units.feetToMeters(3) ,Units.feetToMeters(12), new Rotation2d(Math.PI)), //arbitrary value for now, changed when target is moved
+        new Transform2d(new Translation2d(-0.248, 0), new Rotation2d())),//9.75
+        result.getLatencyMillis());
     }
     return null;
+  }
+
+  public double getCameraResultLatency(){
+    return result.getLatencyMillis();
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if (camera.getLatestResult().getBestTarget() != null) {
-      horizontalOffset = camera.getLatestResult().getBestTarget().getYaw();
-      verticalOffset = camera.getLatestResult().getBestTarget().getPitch(); 
-      isPointingAtTarget = camera.getLatestResult().hasTargets();
+    result = camera.getLatestResult();
+    PhotonTrackedTarget bestLatestResult = result.getBestTarget();
+    if (bestLatestResult != null) {
+      horizontalOffset = bestLatestResult.getYaw();
+      verticalOffset = bestLatestResult.getPitch(); 
+      isPointingAtTarget = true;
       pidOutput = autoAim();
     } 
     else{
