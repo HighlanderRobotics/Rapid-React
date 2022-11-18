@@ -18,6 +18,9 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.common.hardware.VisionLEDMode;
@@ -145,8 +148,9 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
     controller.setRumble(RumbleType.kRightRumble, horizontalOffset * 0.025);
   }
 
-  public Pair<Pose2d,Double> getEstimatedPose(Rotation2d gyroAngle){
+  public Pair<List<Pose2d>,Double> getEstimatedPose(Rotation2d gyroAngle){
     if (isPointingAtTarget){
+      List<Pose2d> poses = new ArrayList<Pose2d>();
       for (PhotonTrackedTarget target : result.getTargets()){
         double targetHeight = 0;
         Pose2d targetPose = new Pose2d();
@@ -161,7 +165,8 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
           default:
             return null;
         }
-        return new Pair<>(PhotonUtils.estimateFieldToRobot(
+
+        poses.add(PhotonUtils.estimateFieldToRobot(
           0.5488,
           targetHeight,
           Math.toRadians(52.0),
@@ -169,9 +174,10 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
           new Rotation2d(Math.toRadians(-result.getBestTarget().getYaw())),
           gyroAngle,
           targetPose,
-          new Transform2d(new Translation2d(-0.248, 0), new Rotation2d())),//9.75
-          result.getLatencyMillis());
+          new Transform2d(new Translation2d(-0.248, 0), new Rotation2d()))//9.75
+          );
       }
+      return new Pair(poses, result.getLatencyMillis());
     }
     return null;
   }
@@ -199,8 +205,8 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
     }
 
     if (isPointingAtTarget) {
-      SmartDashboard.putNumber("Camera estimated pose X", getEstimatedPose(new Rotation2d()).getFirst().getX());
-      SmartDashboard.putNumber("Camera estimated pose Y", getEstimatedPose(new Rotation2d()).getFirst().getY());
+      SmartDashboard.putNumber("Camera estimated pose X", getEstimatedPose(new Rotation2d()).getFirst().get(0).getX());
+      SmartDashboard.putNumber("Camera estimated pose Y", getEstimatedPose(new Rotation2d()).getFirst().get(0).getY());
     }
   }
 

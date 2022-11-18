@@ -44,6 +44,7 @@ import frc.robot.commands.SwerveController;
 import io.github.oblarg.oblog.Loggable;
 import static frc.robot.Constants.*;
 
+import java.util.List;
 import java.util.TreeMap;
 
 public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
@@ -129,7 +130,6 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     SmartDashboard.putData("Field", m_field);
     m_field.getObject("Pure Odometry Pose").setPose(new Pose2d());
     m_field.getObject("Latest Vision Pose").setPose(new Pose2d());
-    m_field.getObject("Vision Target").setPose(new Pose2d(20, 5, new Rotation2d(-Math.PI / 2)));
 
     odometryStateStdDevs = new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(0.02, 0.02, 0.01); // TODO: Find actual numbers for this
     odometryLocalMeasurementStdDevs = new MatBuilder<N1, N1>(Nat.N1(), Nat.N1()).fill(0.02); // TODO: Find actual numbers for this
@@ -274,11 +274,13 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     return new SwerveModuleState(module.getDriveVelocity(), Rotation2d.fromDegrees(Math.toDegrees(module.getSteerAngle())));
   }
 
-  public void updateOdometry(Pair<Pose2d, Double> data){
+  public void updateOdometry(Pair<List<Pose2d>, Double> data){
     if (data.getFirst() != null) {
       System.out.println(data.getFirst());
-      m_field.getObject("Latest Vision Pose").setPose(data.getFirst());
-      m_poseEstimator.addVisionMeasurement(data.getFirst(), Timer.getFPGATimestamp() - data.getSecond());
+      m_field.getObject("Latest Vision Pose").setPoses(data.getFirst());
+      for (Pose2d pose : data.getFirst()){
+        m_poseEstimator.addVisionMeasurement(pose, Timer.getFPGATimestamp() - data.getSecond());
+      }
     }
   }
 
