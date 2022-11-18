@@ -148,13 +148,15 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
     controller.setRumble(RumbleType.kRightRumble, horizontalOffset * 0.025);
   }
 
-  public Pair<List<Pose2d>,Double> getEstimatedPose(Rotation2d gyroAngle){
+  public Pair<List<Pose2d>,Double> getEstimatedPose(){
     if (isPointingAtTarget){
       List<Pose2d> poses = new ArrayList<Pose2d>();
       for (PhotonTrackedTarget target : result.getTargets()){
         double targetHeight = 0;
         Pose2d targetPose = new Pose2d();
         int targetId = target.getFiducialId();
+
+        //depending on which target were looking at these values will be different
         switch (targetId) {
           case 0:
             {
@@ -167,12 +169,12 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
         }
 
         poses.add(PhotonUtils.estimateFieldToRobot(
-          0.5488,
+          0.5488,  //camera height in meters
           targetHeight,
-          Math.toRadians(52.0),
+          Math.toRadians(52.0),  //camera pitch in degrees
           Math.toRadians(result.getBestTarget().getPitch()),
           new Rotation2d(Math.toRadians(-result.getBestTarget().getYaw())),
-          gyroAngle,
+          targetPose.getRotation().plus(Rotation2d.fromDegrees(target.getYaw())),
           targetPose,
           new Transform2d(new Translation2d(-0.248, 0), new Rotation2d()))//9.75
           );
@@ -204,9 +206,10 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
       pidOutput = 0;
     }
 
+    //log position to dash
     if (isPointingAtTarget) {
-      SmartDashboard.putNumber("Camera estimated pose X", getEstimatedPose(new Rotation2d()).getFirst().get(0).getX());
-      SmartDashboard.putNumber("Camera estimated pose Y", getEstimatedPose(new Rotation2d()).getFirst().get(0).getY());
+      // SmartDashboard.putNumber("Camera estimated pose X", getEstimatedPose());
+      // SmartDashboard.putNumber("Camera estimated pose Y", getEstimatedPose());
     }
   }
 

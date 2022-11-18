@@ -242,9 +242,7 @@ public class RobotContainer {
       .whileActiveContinuous(
         new InstantCommand(() -> 
           drivetrainSubsystem.updateOdometry(
-              limeLightSubsystem.getEstimatedPose(
-                Rotation2d.fromDegrees(drivetrainSubsystem.getHeadingAtTime(Timer.getFPGATimestamp()-limeLightSubsystem.getCameraResultLatency()))
-                ))));
+              limeLightSubsystem.getEstimatedPose())));
     // Resets the field relative gyro heading on the swerve drive
     new Button(controller::getRightStickButton)
         .whenPressed(new InstantCommand(() -> drivetrainSubsystem.resetGyroscope(0)));

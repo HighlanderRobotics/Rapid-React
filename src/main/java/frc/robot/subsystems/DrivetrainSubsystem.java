@@ -19,6 +19,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -275,8 +276,9 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
   }
 
   public void updateOdometry(Pair<List<Pose2d>, Double> data){
+    System.out.println(data.getFirst());
+
     if (data.getFirst() != null) {
-      System.out.println(data.getFirst());
       m_field.getObject("Latest Vision Pose").setPoses(data.getFirst());
       for (Pose2d pose : data.getFirst()){
         m_poseEstimator.addVisionMeasurement(pose, Timer.getFPGATimestamp() - data.getSecond());
