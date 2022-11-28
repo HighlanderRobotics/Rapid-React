@@ -152,10 +152,14 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
    * @return a pair of the list of poses from each target, and the latency of the result
    */
   public Pair<List<Pose2d>, Double> getEstimatedPose(){
-    PhotonPipelineResult result = camera.getLatestResult();
+    // Only do work if we actually have targets, if we don't return null
     if (result.hasTargets()){
+      // List that we're going to return later
       List<Pose2d> poses = new ArrayList<Pose2d>();
+      // Loop through all the targets
       for (PhotonTrackedTarget target : result.getTargets()){
+        // Use a switch statement to lookup the pose of the marker
+        // Later will switch this to use wpilibs json file to lookup pose of marker
         Pose3d targetPose3d = new Pose3d();
         switch (target.getFiducialId()) {
           case 0:
@@ -164,25 +168,40 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
               break;
             }
           default:
-            return null;
+          // If theres a target we don't have a pose for, skip that target
+            continue;
         }
+        // For debugging show the pose ambiguity
         SmartDashboard.putNumber("Ambiguity", target.getPoseAmbiguity());
+        // Reject targets with a high ambiguity. Threshold should be tuned
+        // TODO: also look at pitch and roll and reject if our pitch and roll are high (so we don't localize while not flat on the floor)
         if (target.getPoseAmbiguity() < 0.1) {
-          
+          // Get the cameras pose on the field
           Pose3d fieldToCamera = targetPose3d.transformBy(target.getCameraToTarget().inverse());
-            
-          Pose3d pose3dFlipped = fieldToCamera.transformBy(new Transform3d(new Translation3d(-0.248, 0.0, -0.5488), new Rotation3d()));//rotate PI rad around target
+          // Transform that by the cameras position on the robot to get the robots pose on the field
+          // For some reason this is rotated 180 degrees around the target
+          // I couldn't figure out why so theres an extra step to deal with that
+          Pose3d pose3dFlipped = fieldToCamera.transformBy(new Transform3d(new Translation3d(-0.248, 0.0, -0.5488), new Rotation3d()));
+          // Rotate by 180 degrees around the target
           Pose3d pose3d = new Pose3d(
-            pose3dFlipped.getTranslation().minus(targetPose3d.getTranslation()).rotateBy(new Rotation3d(0.0, 0.0, Math.PI)).plus(targetPose3d.getTranslation()),
+            pose3dFlipped.getTranslation()
+              .minus(targetPose3d.getTranslation())
+              .rotateBy(new Rotation3d(0.0, 0.0, Math.PI))
+              .plus(targetPose3d.getTranslation()),
+            // Sometimes the rotation is off, may need to take another look at how this is handling rotation
             pose3dFlipped.getRotation().plus(new Rotation3d(0.0, 0.0, Math.PI)));
 
+          // Turn the pose3d into a pose2d, since we assume we are flat on the floor and have no pitch or roll
           Pose2d pose = new Pose2d(pose3d.getX(), pose3d.getY(), new Rotation2d(pose3d.getRotation().getAngle()));
 
+          // Add the pose to our list of poses
           poses.add(pose);
         }
+        // Return the list of poses and the latency
         return new Pair<>(poses, result.getLatencyMillis());
       }
     }
+    // Returns null if no targets are found
     return null;
   }
 
