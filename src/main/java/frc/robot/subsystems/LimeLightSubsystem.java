@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonUtils;
 import org.photonvision.common.hardware.VisionLEDMode;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
@@ -30,13 +29,13 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
-
 
 
 public class LimeLightSubsystem extends SubsystemBase implements Loggable{
@@ -148,38 +147,41 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
     controller.setRumble(RumbleType.kRightRumble, horizontalOffset * 0.025);
   }
 
-  public Pair<List<Pose2d>,Double> getEstimatedPose(){
-    if (isPointingAtTarget){
+  /**Processes the vision result.
+   * 
+   * @return a pair of the list of poses from each target, and the latency of the result
+   */
+  public Pair<List<Pose2d>, Double> getEstimatedPose(){
+    PhotonPipelineResult result = camera.getLatestResult();
+    if (result.hasTargets()){
       List<Pose2d> poses = new ArrayList<Pose2d>();
       for (PhotonTrackedTarget target : result.getTargets()){
-        double targetHeight = 0;
-        Pose2d targetPose = new Pose2d();
-        int targetId = target.getFiducialId();
-
-        //depending on which target were looking at these values will be different
-        switch (targetId) {
+        Pose3d targetPose3d = new Pose3d();
+        switch (target.getFiducialId()) {
           case 0:
             {
-              targetHeight = Units.inchesToMeters(89); //arbitrary value for now, change when target is moved
-              targetPose = new Pose2d(Units.feetToMeters(6), Units.feetToMeters(12), new Rotation2d()); //arbitrary value for now, change when target is moved
+              targetPose3d = new Pose3d(Units.feetToMeters(6), Units.feetToMeters(12), 0, new Rotation3d(0, 0, 0));
               break;
             }
           default:
             return null;
         }
+        SmartDashboard.putNumber("Ambiguity", target.getPoseAmbiguity());
+        if (target.getPoseAmbiguity() < 0.1) {
+          
+          Pose3d fieldToCamera = targetPose3d.transformBy(target.getCameraToTarget().inverse());
+            
+          Pose3d pose3dFlipped = fieldToCamera.transformBy(new Transform3d(new Translation3d(-0.248, 0.0, -0.5488), new Rotation3d()));//rotate PI rad around target
+          Pose3d pose3d = new Pose3d(
+            pose3dFlipped.getTranslation().minus(targetPose3d.getTranslation()).rotateBy(new Rotation3d(0.0, 0.0, Math.PI)).plus(targetPose3d.getTranslation()),
+            pose3dFlipped.getRotation().plus(new Rotation3d(0.0, 0.0, Math.PI)));
 
-        poses.add(PhotonUtils.estimateFieldToRobot(
-          0.5488,  //camera height in meters
-          targetHeight,
-          Math.toRadians(52.0),  //camera pitch in degrees
-          Math.toRadians(result.getBestTarget().getPitch()),
-          new Rotation2d(Math.toRadians(-result.getBestTarget().getYaw())),
-          targetPose.getRotation().plus(Rotation2d.fromDegrees(target.getYaw())),
-          targetPose,
-          new Transform2d(new Translation2d(-0.248, 0), new Rotation2d()))//9.75
-          );
+          Pose2d pose = new Pose2d(pose3d.getX(), pose3d.getY(), new Rotation2d(pose3d.getRotation().getAngle()));
+
+          poses.add(pose);
+        }
+        return new Pair<>(poses, result.getLatencyMillis());
       }
-      return new Pair(poses, result.getLatencyMillis());
     }
     return null;
   }

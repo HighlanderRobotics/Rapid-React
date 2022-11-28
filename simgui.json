@@ -1,4 +1,18 @@
 {
+  "HALProvider": {
+    "Other Devices": {
+      "SPARK MAX [11]": {
+        "header": {
+          "open": true
+        }
+      },
+      "Talon FX[15]": {
+        "header": {
+          "open": true
+        }
+      }
+    }
+  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
@@ -11,6 +25,7 @@
       "/LiveWindow/LimeLightSubsystem": "Subsystem",
       "/LiveWindow/RoutingSubsystem": "Subsystem",
       "/LiveWindow/ShooterSubsystem": "Subsystem",
+      "/LiveWindow/TelescopingClimberSubsystem": "Subsystem",
       "/LiveWindow/TelescopingClimberSubsystem/PID Controller": "PIDController",
       "/LiveWindow/TestingSubsystem": "Subsystem",
       "/LiveWindow/Ungrouped/DigitalInput[1]": "Digital Input",
