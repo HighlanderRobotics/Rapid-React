@@ -214,7 +214,7 @@ public class RobotContainer {
     // Enable the hood PID
     hoodSubsystem.enable();
     // By default, spin the wheels as necessary to hold both balls
-    routingSubsystem.setDefaultCommand(new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem));
+    // routingSubsystem.setDefaultCommand(new RunCommand(() -> routingSubsystem.runRouting(true), routingSubsystem));
     // By default, don't spin the flywheel
     shooterSubsystem.setDefaultCommand(new RunCommand(() -> shooterSubsystem.setTargetRPM(0), shooterSubsystem));
     // By default, show the balls in the robot and the whether the target is visible

@@ -5,6 +5,11 @@
 package frc.robot;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -83,4 +88,15 @@ public final class Constants {
     //econdsPerMeter = 0.0006;
     // public static final double kaVoltSecondsSquaredPerMeter = -0.0055;
     public static final int LED_PORT = 8;
+
+    public static final double CAMERA_TO_ROBOT_X_METERS = -0.248;
+    public static final double CAMERA_TO_ROBOT_Y_METERS = 0.0;
+    public static final double CAMERA_TO_ROBOT_Z_METERS = -0.5488;
+    public static final double CAMERA_TO_ROBOT_PITCH_RADIANS = Units.degreesToRadians(90 - 52);
+    public static final Transform3d CAMERA_TO_ROBOT = new Transform3d(
+        new Translation3d(CAMERA_TO_ROBOT_X_METERS, CAMERA_TO_ROBOT_Y_METERS, CAMERA_TO_ROBOT_Z_METERS),
+        new Rotation3d(0, CAMERA_TO_ROBOT_PITCH_RADIANS, 0)); 
+    public static final Pose3d TARGET_POSE = new Pose3d(
+        Units.feetToMeters(6), Units.feetToMeters(6), Units.inchesToMeters(70), 
+        new Rotation3d(0, 0, Math.PI));
 }

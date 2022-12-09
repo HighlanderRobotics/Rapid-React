@@ -30,6 +30,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -41,6 +42,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.commands.SwerveController;
 import io.github.oblarg.oblog.Loggable;
 import static frc.robot.Constants.*;
@@ -131,7 +133,9 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     SmartDashboard.putData("Field", m_field);
     m_field.getObject("Pure Odometry Pose").setPose(new Pose2d());
     m_field.getObject("Latest Vision Pose").setPose(new Pose2d());
+    m_field.getObject("Target").setPose(Constants.TARGET_POSE.toPose2d());
 
+    // These matrices are in the form [x, y, theta], using the measurement units for these (ie meters, radians)
     odometryStateStdDevs = new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(0.02, 0.02, 0.01); // TODO: Find actual numbers for this
     odometryLocalMeasurementStdDevs = new MatBuilder<N1, N1>(Nat.N1(), Nat.N1()).fill(0.02); // TODO: Find actual numbers for this
     odometryVisionMeasurementStdDevs = new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(0.2, 0.2, 0.1); // TODO: Find actual numbers for this
@@ -278,7 +282,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
   public void updateOdometry(Pair<List<Pose2d>, Double> data){
     System.out.println(data.getFirst());
 
-    if (data.getFirst() != null) {
+    if (data != null) {
       m_field.getObject("Latest Vision Pose").setPoses(data.getFirst());
       for (Pose2d pose : data.getFirst()){
         m_poseEstimator.addVisionMeasurement(pose, Timer.getFPGATimestamp() - data.getSecond());

@@ -6,6 +6,10 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/LiveWindow/HoodSubsystem/PID Controller": "PIDController",
+      "/LiveWindow/IntakeSubsystem": "Subsystem",
+      "/LiveWindow/LEDSubsystem": "Subsystem",
+      "/LiveWindow/LimeLightSubsystem": "Subsystem",
+      "/LiveWindow/TelescopingClimberSubsystem": "Subsystem",
       "/LiveWindow/TelescopingClimberSubsystem/PID Controller": "PIDController",
       "/LiveWindow/Ungrouped/DigitalInput[1]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[2]": "Digital Input",
@@ -55,13 +59,39 @@
       "/SmartDashboard/Ratchet Unlock": "Command",
       "/SmartDashboard/Reg Drive Mode": "Command",
       "/SmartDashboard/Reset Climber to 0": "Command",
+      "/SmartDashboard/Reset Odo": "Command",
       "/SmartDashboard/Retract Climber Solenoid": "Command",
       "/SmartDashboard/SendableChooser[0]": "String Chooser",
+      "/SmartDashboard/Set angle 225": "Command",
+      "/SmartDashboard/Set angle 45": "Command",
+      "/SmartDashboard/Set angle 60": "Command",
       "/SmartDashboard/Sick Pipes": "Command",
       "/SmartDashboard/Traverse Sequence": "Command"
     },
     "windows": {
       "/SmartDashboard/Field": {
+        "Latest Vision Pose": {
+          "arrowColor": [
+            255.0,
+            0.0,
+            0.0,
+            255.0
+          ],
+          "color": [
+            0.9456814527511597,
+            0.0,
+            0.9578059315681458,
+            255.0
+          ]
+        },
+        "Target": {
+          "color": [
+            0.0,
+            255.0,
+            225.94937133789063,
+            255.0
+          ]
+        },
         "window": {
           "visible": true
         }

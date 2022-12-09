@@ -162,9 +162,9 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
         // Later will switch this to use wpilibs json file to lookup pose of marker
         Pose3d targetPose3d = new Pose3d();
         switch (target.getFiducialId()) {
-          case 0:
+          case 1:
             {
-              targetPose3d = new Pose3d(Units.feetToMeters(6), Units.feetToMeters(12), 0, new Rotation3d(0, 0, 0));
+              targetPose3d = Constants.TARGET_POSE;
               break;
             }
           default:
@@ -177,22 +177,23 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
         // TODO: also look at pitch and roll and reject if our pitch and roll are high (so we don't localize while not flat on the floor)
         if (target.getPoseAmbiguity() < 0.1) {
           // Get the cameras pose on the field
-          Pose3d fieldToCamera = targetPose3d.transformBy(target.getCameraToTarget().inverse());
+          Pose3d fieldToCamera = targetPose3d.transformBy(target.getCameraToTarget());
+          poses.add(fieldToCamera.toPose2d());
           // Transform that by the cameras position on the robot to get the robots pose on the field
           // For some reason this is rotated 180 degrees around the target
           // I couldn't figure out why so theres an extra step to deal with that
-          Pose3d pose3dFlipped = fieldToCamera.transformBy(new Transform3d(new Translation3d(-0.248, 0.0, -0.5488), new Rotation3d()));
+          Pose3d pose3d = fieldToCamera.transformBy(Constants.CAMERA_TO_ROBOT);
           // Rotate by 180 degrees around the target
-          Pose3d pose3d = new Pose3d(
-            pose3dFlipped.getTranslation()
-              .minus(targetPose3d.getTranslation())
-              .rotateBy(new Rotation3d(0.0, 0.0, Math.PI))
-              .plus(targetPose3d.getTranslation()),
+          // Pose3d pose3d = new Pose3d(
+          //   pose3dFlipped.getTranslation()
+          //     .minus(targetPose3d.getTranslation())
+          //     .rotateBy(new Rotation3d(0.0, 0.0, Math.PI))
+          //     .plus(targetPose3d.getTranslation()),
             // Sometimes the rotation is off, may need to take another look at how this is handling rotation
-            pose3dFlipped.getRotation().plus(new Rotation3d(0.0, 0.0, Math.PI)));
+            // pose3dFlipped.getRotation().plus(new Rotation3d(0.0, 0.0, Math.PI)));
 
           // Turn the pose3d into a pose2d, since we assume we are flat on the floor and have no pitch or roll
-          Pose2d pose = new Pose2d(pose3d.getX(), pose3d.getY(), new Rotation2d(pose3d.getRotation().getAngle()));
+          Pose2d pose = pose3d.toPose2d();
 
           // Add the pose to our list of poses
           poses.add(pose);
