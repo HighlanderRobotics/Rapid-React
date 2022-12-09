@@ -180,18 +180,8 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
           Pose3d fieldToCamera = targetPose3d.transformBy(target.getCameraToTarget());
           poses.add(fieldToCamera.toPose2d());
           // Transform that by the cameras position on the robot to get the robots pose on the field
-          // For some reason this is rotated 180 degrees around the target
-          // I couldn't figure out why so theres an extra step to deal with that
           Pose3d pose3d = fieldToCamera.transformBy(Constants.CAMERA_TO_ROBOT);
-          // Rotate by 180 degrees around the target
-          // Pose3d pose3d = new Pose3d(
-          //   pose3dFlipped.getTranslation()
-          //     .minus(targetPose3d.getTranslation())
-          //     .rotateBy(new Rotation3d(0.0, 0.0, Math.PI))
-          //     .plus(targetPose3d.getTranslation()),
-            // Sometimes the rotation is off, may need to take another look at how this is handling rotation
-            // pose3dFlipped.getRotation().plus(new Rotation3d(0.0, 0.0, Math.PI)));
-
+          
           // Turn the pose3d into a pose2d, since we assume we are flat on the floor and have no pitch or roll
           Pose2d pose = pose3d.toPose2d();
 
