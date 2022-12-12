@@ -176,17 +176,9 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
         // Reject targets with a high ambiguity. Threshold should be tuned
         // TODO: also look at pitch and roll and reject if our pitch and roll are high (so we don't localize while not flat on the floor)
         if (target.getPoseAmbiguity() < 0.1) {
-          // Get the cameras pose on the field
-          Pose3d fieldToCamera = targetPose3d.transformBy(target.getCameraToTarget());
-          poses.add(fieldToCamera.toPose2d());
-          // Transform that by the cameras position on the robot to get the robots pose on the field
-          Pose3d pose3d = fieldToCamera.transformBy(Constants.CAMERA_TO_ROBOT);
-          
-          // Turn the pose3d into a pose2d, since we assume we are flat on the floor and have no pitch or roll
-          Pose2d pose = pose3d.toPose2d();
-
-          // Add the pose to our list of poses
-          poses.add(pose);
+          // Calculate and add the pose to our list of poses
+          // May need to invert the camera to robot transform?
+          poses.add(getFieldToRobot(targetPose3d, Constants.CAMERA_TO_ROBOT, target.getCameraToTarget()).toPose2d());
         }
         // Return the list of poses and the latency
         return new Pair<>(poses, result.getLatencyMillis());
@@ -195,6 +187,19 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
     // Returns null if no targets are found
     return null;
   }
+
+   /**
+     * Estimates the pose of the robot in the field coordinate system, given the id of the fiducial, the robot relative to the
+     * camera, and the target relative to the camera.
+     * Stolen from mdurrani834
+     * @param tagPose Pose3d the field relative pose of the target
+     * @param robotToCamera Transform3d of the robot relative to the camera. Origin of the robot is defined as the center.
+     * @param cameraToTarget Transform3d of the target relative to the camera, returned by PhotonVision
+     * @return Pose Robot position relative to the field.
+     */
+  private Pose3d getFieldToRobot(Pose3d tagPose, Transform3d robotToCamera, Transform3d cameraToTarget) {
+    return tagPose.plus(cameraToTarget.inverse()).plus(robotToCamera.inverse()); 
+  }   
 
   public double getCameraResultLatency(){
     return result.getLatencyMillis();
