@@ -275,7 +275,8 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
       m_field.getObject("Latest Vision Pose").setPoses(data.getFirst());
       SmartDashboard.putNumber("Latency", data.getSecond());
       for (Pose2d pose : data.getFirst()){
-        resetToVision(pose);
+        // Data is in milliseconds, need to convert to seconds
+        m_poseEstimator.addVisionMeasurement(pose, Timer.getFPGATimestamp() - (data.getSecond() / 1000));
         resetGyroscope(pose.getRotation().getDegrees());
       }
     }
