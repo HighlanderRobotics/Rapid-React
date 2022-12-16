@@ -14,6 +14,7 @@
     },
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/LiveWindow/HoodSubsystem": "Subsystem",
       "/LiveWindow/HoodSubsystem/PID Controller": "PIDController",
       "/LiveWindow/IntakeSubsystem": "Subsystem",
       "/LiveWindow/LEDSubsystem": "Subsystem",
@@ -70,6 +71,7 @@
       "/SmartDashboard/Reg Drive Mode": "Command",
       "/SmartDashboard/Reset Climber to 0": "Command",
       "/SmartDashboard/Reset Odo": "Command",
+      "/SmartDashboard/Reset Odo to 10, 10": "Command",
       "/SmartDashboard/Reset Odo to Vision": "Command",
       "/SmartDashboard/Retract Climber Solenoid": "Command",
       "/SmartDashboard/SendableChooser[0]": "String Chooser",

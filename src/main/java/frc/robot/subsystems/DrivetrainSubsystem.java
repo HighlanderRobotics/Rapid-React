@@ -129,7 +129,6 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
     SmartDashboard.putNumber("Heading", 0);
     SmartDashboard.putData("Field", m_field);
-    m_field.getObject("Pure Odometry Pose").setPose(new Pose2d());
     m_field.getObject("Latest Vision Pose").setPose(new Pose2d());
     m_field.getObject("Target").setPose(Constants.TARGET_POSE.toPose2d());
 
@@ -210,7 +209,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     // FIXME Uncomment if you are using a NavX
    System.out.println("reset");
    m_navx.zeroYaw();
-   yawOffset = getGyroscopeRotation().getDegrees() + yawOffset - 90 + value;
+   
   }
 
   public void zeroGyroscope(){
@@ -221,19 +220,12 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     // FIXME Remove if you are using a Pigeon
 //     return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
 
-    // FIXME Uncomment if you are using a NavX
-   if (m_navx.isMagnetometerCalibrated()) {
-     // We will only get valid fused headings if the magnetometer is calibrated
-     return Rotation2d.fromDegrees(360 - m_navx.getFusedHeading() - yawOffset);
-   }
-
-
    // We have to invert the angle of the NavX so that rotating the robot counter-clockwise makes the angle increase.
-   if(m_navx.getYaw()<0){ 
-        return Rotation2d.fromDegrees(m_navx.getYaw());
+   if(m_navx.getYaw() < 0){ 
+        return Rotation2d.fromDegrees(m_navx.getYaw() + 180);
    }
    else{
-        return Rotation2d.fromDegrees(360 - m_navx.getYaw());
+        return Rotation2d.fromDegrees(360 - m_navx.getYaw() + 180);
    }
 }
 
@@ -281,9 +273,10 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 
     if (data != null) {
       m_field.getObject("Latest Vision Pose").setPoses(data.getFirst());
+      SmartDashboard.putNumber("Latency", data.getSecond());
       for (Pose2d pose : data.getFirst()){
-        m_poseEstimator.addVisionMeasurement(pose, Timer.getFPGATimestamp() - data.getSecond());
-        resetGyroscope(pose.getRotation().getDegrees() + 90);
+        resetToVision(pose);
+        resetGyroscope(pose.getRotation().getDegrees());
       }
     }
   }
@@ -303,7 +296,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     pastHeadings.putIfAbsent(Timer.getFPGATimestamp(), getGyroscopeRotation().getDegrees());
 
     // Updates pose estimator
-    m_poseEstimator.update(getGyroscopeRotation(), 
+    m_poseEstimator.update(m_navx.getRotation2d().minus(new Rotation2d(Math.PI)), 
       getModuleState(m_frontLeftModule), 
       getModuleState(m_frontRightModule),
       getModuleState(m_backLeftModule),

@@ -14,6 +14,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Timer;
@@ -164,6 +165,7 @@ public class RobotContainer {
         })));
     SmartDashboard.putData("Reset Climber to 0", new InstantCommand(() -> climberSubsystem.resetClimbMotor()));
     SmartDashboard.putData("Reset Odo to Vision", new InstantCommand(() -> drivetrainSubsystem.resetToVision(limeLightSubsystem.getEstimatedPose().getFirst().get(0))));
+    SmartDashboard.putData("Reset Odo to 10, 10", new InstantCommand(() -> drivetrainSubsystem.resetToVision(new Pose2d(Units.feetToMeters(10), Units.feetToMeters(10), new Rotation2d(Math.PI / 2)))));
     // SmartDashboard.putData("Aim", new RunCommand(() ->
     // hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()),
     // hoodSubsystem));
