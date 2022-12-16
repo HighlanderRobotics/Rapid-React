@@ -1,6 +1,15 @@
 {
   "NetworkTables": {
+    "CameraPublisher": {
+      "gloworm-output": {
+        "open": true
+      },
+      "open": true
+    },
     "SmartDashboard": {
+      "Reset Odo to Vision": {
+        "open": true
+      },
       "open": true
     },
     "types": {
@@ -9,6 +18,7 @@
       "/LiveWindow/IntakeSubsystem": "Subsystem",
       "/LiveWindow/LEDSubsystem": "Subsystem",
       "/LiveWindow/LimeLightSubsystem": "Subsystem",
+      "/LiveWindow/RoutingSubsystem": "Subsystem",
       "/LiveWindow/TelescopingClimberSubsystem": "Subsystem",
       "/LiveWindow/TelescopingClimberSubsystem/PID Controller": "PIDController",
       "/LiveWindow/Ungrouped/DigitalInput[1]": "Digital Input",
@@ -60,6 +70,7 @@
       "/SmartDashboard/Reg Drive Mode": "Command",
       "/SmartDashboard/Reset Climber to 0": "Command",
       "/SmartDashboard/Reset Odo": "Command",
+      "/SmartDashboard/Reset Odo to Vision": "Command",
       "/SmartDashboard/Retract Climber Solenoid": "Command",
       "/SmartDashboard/SendableChooser[0]": "String Chooser",
       "/SmartDashboard/Set angle 225": "Command",
@@ -92,6 +103,11 @@
             255.0
           ]
         },
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Reset Odo to Vision": {
         "window": {
           "visible": true
         }

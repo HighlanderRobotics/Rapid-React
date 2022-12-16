@@ -163,6 +163,7 @@ public class RobotContainer {
         new RunCommand(() -> {
         })));
     SmartDashboard.putData("Reset Climber to 0", new InstantCommand(() -> climberSubsystem.resetClimbMotor()));
+    SmartDashboard.putData("Reset Odo to Vision", new InstantCommand(() -> drivetrainSubsystem.resetToVision(limeLightSubsystem.getEstimatedPose().getFirst().get(0))));
     // SmartDashboard.putData("Aim", new RunCommand(() ->
     // hoodSubsystem.setSetpoint(visionSubsystem.getTargetHoodAngle()),
     // hoodSubsystem));

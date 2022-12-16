@@ -89,14 +89,14 @@ public final class Constants {
     // public static final double kaVoltSecondsSquaredPerMeter = -0.0055;
     public static final int LED_PORT = 8;
 
-    public static final double CAMERA_TO_ROBOT_X_METERS = -0.248;
+    public static final double CAMERA_TO_ROBOT_X_METERS = 0.248;
     public static final double CAMERA_TO_ROBOT_Y_METERS = 0.0;
-    public static final double CAMERA_TO_ROBOT_Z_METERS = -0.5488;
+    public static final double CAMERA_TO_ROBOT_Z_METERS = 0.5488;
     public static final double CAMERA_TO_ROBOT_PITCH_RADIANS = Units.degreesToRadians(90 - 52);
     public static final Transform3d CAMERA_TO_ROBOT = new Transform3d(
         new Translation3d(CAMERA_TO_ROBOT_X_METERS, CAMERA_TO_ROBOT_Y_METERS, CAMERA_TO_ROBOT_Z_METERS),
         new Rotation3d(0, CAMERA_TO_ROBOT_PITCH_RADIANS, 0)); 
     public static final Pose3d TARGET_POSE = new Pose3d(
-        Units.feetToMeters(6), Units.feetToMeters(6), Units.inchesToMeters(70), 
-        new Rotation3d(0, 0, Math.PI));
+        Units.feetToMeters(6), Units.feetToMeters(0), Units.inchesToMeters(75), 
+        new Rotation3d(0, 0, Math.PI / 2));
 }

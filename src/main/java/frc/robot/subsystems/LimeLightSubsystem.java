@@ -104,12 +104,10 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
     return areaOffset;
   }
 
-  @Log
   public double getHorizontalOffset() {
     return horizontalOffset;
   }
 
-  @Log
   public double getVerticalOffset() {
     return verticalOffset;
   }
@@ -178,7 +176,7 @@ public class LimeLightSubsystem extends SubsystemBase implements Loggable{
         if (target.getPoseAmbiguity() < 0.1) {
           // Calculate and add the pose to our list of poses
           // May need to invert the camera to robot transform?
-          poses.add(getFieldToRobot(targetPose3d, Constants.CAMERA_TO_ROBOT, target.getCameraToTarget()).toPose2d());
+          poses.add(getFieldToRobot(targetPose3d, Constants.CAMERA_TO_ROBOT, target.getBestCameraToTarget()).toPose2d());
         }
         // Return the list of poses and the latency
         return new Pair<>(poses, result.getLatencyMillis());

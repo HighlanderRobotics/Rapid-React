@@ -111,8 +111,6 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 
  // Fuses vision measurements and wheel odometry
  public final SwerveDrivePoseEstimator m_poseEstimator;
- // Uses only wheel odometry, for debugging purposes
- public final SwerveDriveOdometry m_odometry;
 
   // These are our modules. We initialize them in the constructor.
   private final SwerveModule m_frontLeftModule;
@@ -136,13 +134,12 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     m_field.getObject("Target").setPose(Constants.TARGET_POSE.toPose2d());
 
     // These matrices are in the form [x, y, theta], using the measurement units for these (ie meters, radians)
-    odometryStateStdDevs = new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(0.02, 0.02, 0.01); // TODO: Find actual numbers for this
+    odometryStateStdDevs = new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(0.1, 0.1, 0.02); // TODO: Find actual numbers for this
     odometryLocalMeasurementStdDevs = new MatBuilder<N1, N1>(Nat.N1(), Nat.N1()).fill(0.02); // TODO: Find actual numbers for this
-    odometryVisionMeasurementStdDevs = new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(0.2, 0.2, 0.1); // TODO: Find actual numbers for this
+    odometryVisionMeasurementStdDevs = new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(0.05, 0.05, 0.1); // TODO: Find actual numbers for this
 
     m_poseEstimator = new SwerveDrivePoseEstimator(Rotation2d.fromDegrees(m_navx.getAngle()), new Pose2d(), m_kinematics, odometryStateStdDevs, odometryLocalMeasurementStdDevs, odometryVisionMeasurementStdDevs);
     
-    m_odometry = new SwerveDriveOdometry(m_kinematics, Rotation2d.fromDegrees(m_navx.getAngle()));
     // There are 4 methods you can call to create your swerve modules.
     // The method you use depends on what motors you are using.
     //
@@ -286,8 +283,13 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
       m_field.getObject("Latest Vision Pose").setPoses(data.getFirst());
       for (Pose2d pose : data.getFirst()){
         m_poseEstimator.addVisionMeasurement(pose, Timer.getFPGATimestamp() - data.getSecond());
+        resetGyroscope(pose.getRotation().getDegrees() + 90);
       }
     }
+  }
+
+  public void resetToVision(Pose2d pose){
+    m_poseEstimator.resetPosition(pose, getGyroscopeRotation());
   }
 
   public double getHeadingAtTime(double time){
@@ -302,12 +304,6 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 
     // Updates pose estimator
     m_poseEstimator.update(getGyroscopeRotation(), 
-      getModuleState(m_frontLeftModule), 
-      getModuleState(m_frontRightModule),
-      getModuleState(m_backLeftModule),
-      getModuleState(m_backRightModule));
-
-    m_odometry.update(getGyroscopeRotation(),
       getModuleState(m_frontLeftModule), 
       getModuleState(m_frontRightModule),
       getModuleState(m_backLeftModule),
@@ -332,7 +328,6 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     SmartDashboard.putNumber("heading", getGyroscopeRotation().getDegrees());
 
     m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
-    m_field.getObject("Pure Odometry Pose").setPose(m_odometry.getPoseMeters());
 
     // SmartDashboard.putData("Field", m_field);
 
